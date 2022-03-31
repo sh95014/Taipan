@@ -177,6 +177,15 @@ class Game: ObservableObject {
         cash / price[merchandise]!
     }
     
+    func canAffordAny() -> Bool {
+        for (_, price) in self.price {
+            if cash >= price {
+                return true
+            }
+        }
+        return false
+    }
+    
     func buy(_ merchandise: Merchandise, _ amount: Int) {
         if cash >= price[merchandise]! * amount {
             cash -= price[merchandise]! * amount

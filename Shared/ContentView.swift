@@ -166,6 +166,7 @@ struct TradingView: View {
                             Text("Buy")
                                 .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
                         }
+                        .withDisabledStyle(!game.canAffordAny())
                         Spacer()
                         RoundRectButton {
                             isShowingSellModal = true
@@ -181,7 +182,7 @@ struct TradingView: View {
                             Text("Visit\nBank")
                                 .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
                         }
-                        .withDisabledStyle(game.currentCity != .hongkong)
+                        .withDisabledStyle(game.currentCity != .hongkong || (game.cash <= 0 && game.bank <= 0))
                         Spacer()
                         RoundRectButton {
                             isShowingTransferModal = true
@@ -189,7 +190,7 @@ struct TradingView: View {
                             Text("Transfer\nCargo")
                                 .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
                         }
-                        .withDisabledStyle(game.currentCity != .hongkong)
+                        .withDisabledStyle(game.currentCity != .hongkong || (!game.canSell() && game.warehouseUsedCapacity == 0))
                         Spacer()
                         RoundRectButton {
                             isShowingDestinationModal = true
