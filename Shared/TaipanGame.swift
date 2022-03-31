@@ -98,16 +98,12 @@ class Game: ObservableObject {
     // MARK: - Ship
     
     @Published var shipDamage: Int = 0
-    var shipStatus: Int {
-        100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100)
-    }
+    var shipStatus: Int { 100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100) }
     var fancyShipStatus: String {
         let statusStrings = [ "Critical", "Poor", "Fair", "Good", "Prime", "Perfect" ]
         return "\(statusStrings[shipStatus / 20]): \(shipStatus)"
     }
-    var shipInDanger: Bool {
-        shipStatus < 40
-    }
+    var shipInDanger: Bool { shipStatus < 40 }
     
     @Published var shipCapacity: Int = 60
     @Published var shipHold: [Merchandise: Int] = [:]
@@ -122,10 +118,15 @@ class Game: ObservableObject {
         return freeCapacity
     }
     
+    func transferToShip(_ merchandise: Merchandise, _ amount: Int) {
+        shipHold[merchandise] = (shipHold[merchandise] ?? 0) + amount
+        warehouse[merchandise] = warehouse[merchandise]! - amount
+    }
+    
     // MARK: - Warehouse
     
     @Published var warehouse: [Merchandise: Int] = [:]
-    let warehouseCapacity = 5000
+    let warehouseCapacity = 10000
     
     var warehouseUsedCapacity: Int {
         var usedCapacity = 0
@@ -139,6 +140,11 @@ class Game: ObservableObject {
         return warehouseCapacity - warehouseUsedCapacity
     }
     
+    func transferToWarehouse(_ merchandise: Merchandise, _ amount: Int) {
+        warehouse[merchandise] = (warehouse[merchandise] ?? 0) + amount
+        shipHold[merchandise] = shipHold[merchandise]! - amount
+    }
+
     // MARK: - Market
     
     enum Merchandise: String, CaseIterable {
@@ -270,9 +276,7 @@ class Game: ObservableObject {
     
     @Published var debt: Int = 0
     
-    var maximumLoan: Int {
-        cash * 2
-    }
+    var maximumLoan: Int { cash * 2 }
     
     func borrow(_ amount: Int) {
         debt += amount

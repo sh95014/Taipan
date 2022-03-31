@@ -15,10 +15,11 @@ struct TradingView: View {
     @Binding var isShowingBorrowModal: Bool
     @Binding var isShowingRepayModal: Bool
     @Binding var isShowingBankModal: Bool
-
+    @Binding var isShowingTransferModal: Bool
+    
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
-
+    
     var body: some View {
         VStack {
             Group {
@@ -27,7 +28,7 @@ struct TradingView: View {
                 Text(verbatim: "15 \(game.month.rawValue) \(game.year)")
                     .padding(.bottom, 5)
             }
-
+            
             HStack {
                 VStack {
                     Text("Location")
@@ -48,7 +49,7 @@ struct TradingView: View {
                         .foregroundColor(game.shipInDanger ? .warningColor : .defaultColor)
                 }
             }
-
+            
             RoundRectVStack(.defaultColor) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
@@ -77,7 +78,7 @@ struct TradingView: View {
                 }
                 .padding(.horizontal, 50)
             }
-
+            
             RoundRectVStack(game.shipFreeCapacity >= 0 ? .defaultColor : .warningColor) {
                 HStack {
                     if game.shipFreeCapacity >= 0 {
@@ -108,28 +109,28 @@ struct TradingView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 50)
             }
-
+            
             HStack {
                 Text("Cash: \(game.cash.fancyFormatted())")
                 Spacer()
                 Text("Bank: \(game.bank.fancyFormatted())")
             }
-
+            
             Divider()
                 .background(Color.defaultColor)
-
+            
             switch game.state {
             case .trading:
                 Group {
                     Text("Comprador's Report")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, 5)
-
+                    
                     Spacer()
-
+                    
                     Text("Taipan, present prices per unit here are")
                         .withQuestionStyle()
-
+                    
                     HStack {
                         Spacer()
                         VStack(alignment: .leading) {
@@ -152,12 +153,12 @@ struct TradingView: View {
                         Spacer()
                     }
                     .padding(.vertical, 3)
-
+                    
                     Spacer()
-
+                    
                     Text("Shall I")
                         .frame(maxWidth: .infinity, alignment: .leading)
-
+                    
                     HStack {
                         RoundRectButton {
                             isShowingBuyModal = true
@@ -183,12 +184,7 @@ struct TradingView: View {
                         .withDisabledStyle(game.currentCity != .hongkong)
                         Spacer()
                         RoundRectButton {
-                            if let silk = game.warehouse[Game.Merchandise.silk] {
-                                game.warehouse[Game.Merchandise.silk] = silk + 20
-                            }
-                            else {
-                                game.warehouse[Game.Merchandise.silk] = 20
-                            }
+                            isShowingTransferModal = true
                         } content: {
                             Text("Transfer\nCargo")
                                 .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
@@ -209,7 +205,7 @@ struct TradingView: View {
                     } content: {
                         Text("Retire")
                     }
-                    .withDisabledStyle(game.cash + game.bank < 1000000)
+                    .withDisabledStyle(game.currentCity != .hongkong || game.cash + game.bank < 1000000)
                 }
             case .arriving:
                 VStack {
@@ -304,7 +300,7 @@ struct TradingView: View {
 struct KeypadView: View {
     @Binding var amount: Int
     var limitHint: String?
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -619,9 +615,112 @@ struct BankModalView: View {
     }
 }
 
+struct TransferModalView: View {
+    @EnvironmentObject private var game: Game
+    @Binding var isShowingTransferModal: Bool
+    @State private var selectedMerchandise: Game.Merchandise?
+    @State private var toWarehouse: Bool?
+    @State private var amount = 0
+    
+    var body: some View {
+        VStack {
+            if let selectedMerchandise = selectedMerchandise,
+               let toWarehouse = toWarehouse {
+                if toWarehouse {
+                    Text("How much \(selectedMerchandise.rawValue) shall I move to the warehouse, Taipan?")
+                }
+                else {
+                    Text("How much \(selectedMerchandise.rawValue) shall I move aboard ship, Taipan?")
+                }
+                
+                let transferLimit = toWarehouse ? game.shipHold[selectedMerchandise]! : game.warehouse[selectedMerchandise]!
+                KeypadView(
+                    amount: $amount,
+                    limitHint: "You have \(transferLimit.formatted())"
+                )
+                HStack {
+                    RoundRectButton {
+                        isShowingTransferModal = false
+                        self.selectedMerchandise = nil
+                    } content: {
+                        Text("Cancel")
+                            .frame(minWidth: 80)
+                    }
+                    .withCancelStyle()
+                    RoundRectButton {
+                        if toWarehouse {
+                            game.transferToWarehouse(selectedMerchandise, amount)
+                        }
+                        else {
+                            game.transferToShip(selectedMerchandise, amount)
+                        }
+                        isShowingTransferModal = false
+                    } content: {
+                        Text("Transfer")
+                            .frame(minWidth: 80)
+                    }
+                    .withDisabledStyle(amount == 0 || amount > transferLimit)
+                }
+            }
+            else {
+                Text("What shall I transfer, Taipan?")
+                    .padding(.bottom, 20)
+
+                HStack {
+                    VStack {
+                        Text("Ship")
+                        ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
+                            FullWidthButton {
+                                selectedMerchandise = item
+                                toWarehouse = true
+                            } content: {
+                                VStack {
+                                    Label(item.rawValue, systemImage: "chevron.compact.right")
+                                        .frame(maxWidth: .infinity)
+                                        .labelStyle(TrailingLabelStyle())
+                                    Text("You have \(game.shipHold[item] ?? 0)")
+                                        .font(.captionFont)
+                                }
+                            }
+                            .withDisabledStyle(game.shipHold[item] == nil || game.shipHold[item]! == 0)
+                        }
+                    }
+                    VStack {
+                        Text("Warehouse")
+                        ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
+                            FullWidthButton {
+                                selectedMerchandise = item
+                                toWarehouse = false
+                            } content: {
+                                VStack {
+                                    Label(item.rawValue, systemImage: "chevron.compact.left")
+                                        .frame(maxWidth: .infinity)
+                                        .labelStyle(LeadingLabelStyle())
+                                    Text("You have \(game.warehouse[item] ?? 0)")
+                                        .font(.captionFont)
+                                }
+                            }
+                            .withDisabledStyle(game.warehouse[item] == nil || game.warehouse[item]! == 0)
+                        }
+                    }
+                }
+                
+                FullWidthButton {
+                    isShowingTransferModal = false
+                    self.selectedMerchandise = nil
+                } content: {
+                    Text("Cancel")
+                }
+                .withCancelStyle()
+            }
+        }
+        .withModalStyle(.sheetColor)
+    }
+}
+
 struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
-
+    
     @EnvironmentObject private var game: Game
     @State private var isShowingBuyModal = false
     @State private var isShowingSellModal = false
@@ -629,7 +728,8 @@ struct ContentView: View {
     @State private var isShowingBorrowModal = false
     @State private var isShowingRepayModal = false
     @State private var isShowingBankModal = false
-
+    @State private var isShowingTransferModal = false
+    
     var body: some View {
         ZStack {
             TradingView(isShowingBuyModal: $isShowingBuyModal,
@@ -637,10 +737,11 @@ struct ContentView: View {
                         isShowingDestinationModal: $isShowingDestinationModal,
                         isShowingBorrowModal: $isShowingBorrowModal,
                         isShowingRepayModal: $isShowingRepayModal,
-                        isShowingBankModal: $isShowingBankModal)
+                        isShowingBankModal: $isShowingBankModal,
+                        isShowingTransferModal: $isShowingTransferModal)
                 .blur(radius: isShowingModal ? 3 : 0)
                 .disabled(isShowingModal)
-
+            
             if isShowingBuyModal {
                 BuyModalView(isShowingBuyModal: $isShowingBuyModal)
             }
@@ -659,12 +760,15 @@ struct ContentView: View {
             else if isShowingBankModal {
                 BankModalView(isShowingBankModal: $isShowingBankModal)
             }
+            else if isShowingTransferModal {
+                TransferModalView(isShowingTransferModal: $isShowingTransferModal)
+            }
         }
         .foregroundColor(.defaultColor)
         .background(Color.backgroundColor)
         .font(bodyFont)
     }
-
+    
     var isShowingModal: Bool {
         isShowingBuyModal || isShowingSellModal || isShowingDestinationModal ||
         isShowingBorrowModal
@@ -686,12 +790,12 @@ struct ContentView_Previews: PreviewProvider {
 struct FullWidthButton<Content: View>: View {
     let action: () -> Void
     let content: () -> Content
-
+    
     init(_ action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.action = action
         self.content = content
     }
-
+    
     var body: some View {
         Button {
             action()
@@ -714,12 +818,12 @@ struct KeypadButton<Content: View>: View {
     let action: () -> Void
     let content: () -> Content
     let size: CGFloat = 40.0
-
+    
     init(_ action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.action = action
         self.content = content
     }
-
+    
     var body: some View {
         Button {
             action()
@@ -740,12 +844,12 @@ struct KeypadButton<Content: View>: View {
 struct RoundRectButton<Content: View>: View {
     let action: () -> Void
     let content: () -> Content
-
+    
     init(_ action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.action = action
         self.content = content
     }
-
+    
     var body: some View {
         Button {
             action()
@@ -765,12 +869,12 @@ struct RoundRectButton<Content: View>: View {
 struct RoundRectVStack<Content: View>: View {
     let color: Color
     let content: () -> Content
-
+    
     init(_ color: Color, @ViewBuilder content: @escaping () -> Content) {
         self.color = color
         self.content = content
     }
-
+    
     var body: some View {
         VStack {
             content()
@@ -788,7 +892,38 @@ struct RoundRectVStack<Content: View>: View {
     }
 }
 
-// MARK: - Extensions
+// MARK: - Styling
+
+extension Color {
+    static let defaultColor = Color.orange
+    static let warningColor = Color.red
+    static let sheetColor = Color.init(white: 0.15)
+    static let backgroundColor = Color.black
+}
+
+extension Font {
+    static let titleFont = Font.custom("MorrisRoman-Black", size: 30)
+    static let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
+    static let captionFont = Font.custom("MorrisRoman-Black", size: 16)
+}
+
+struct LeadingLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.icon
+            configuration.title
+        }
+    }
+}
+
+struct TrailingLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.title
+            configuration.icon
+        }
+    }
+}
 
 extension Text {
     func withTextFieldStyle(width: CGFloat) -> some View {
@@ -843,18 +978,4 @@ extension VStack {
     }
 }
 
-// MARK: - Styling
-
-extension Font {
-    static let titleFont = Font.custom("MorrisRoman-Black", size: 30)
-    static let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
-    static let captionFont = Font.custom("MorrisRoman-Black", size: 16)
-}
-
-extension Color {
-    static let defaultColor = Color.orange
-    static let warningColor = Color.red
-    static let sheetColor = Color.init(white: 0.15)
-    static let backgroundColor = Color.black
-}
 
