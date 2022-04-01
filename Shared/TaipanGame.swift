@@ -39,25 +39,32 @@ class Game: ObservableObject {
     @Published var cash: Int = 50000
     
     // used to override the random events
+    var dbgLiYuenDemand: Int? = nil
     var dbgMakeShipOffer = false
     var dbgMakeGunOffer = false
     var dbgOpiumSeized = false
     var dbgWarehouseTheft = false
+    var dbgLiYuenMessage = false
     var dbgPriceDrop = false
     var dbgPriceJump = false
-    var dbgRobbery = true
+    var dbgRobbery = false
     
     init() {
+        // we're already in Hong Kong, so skip the "Arriving..." pane
         currentCity = .hongkong
         setPrices()
-        state = .elderBrotherWuBusiness
+        transitionTo(.liYuenExtortion)
     }
     
     // MARK: - State Machine
     
     enum State: String {
         case arriving
-        case liYuanExtortion
+        case liYuenExtortion
+        case notEnoughCash
+        case borrowForLiYuen
+        case borrowedForLiYuen
+        case elderBrotherWuPirateWarning
         case mcHenryOffer
         case elderBrotherWuWarning1
         case elderBrotherWuWarning2
@@ -67,7 +74,7 @@ class Game: ObservableObject {
         case newGunOffer
         case opiumSeized
         case warehouseTheft
-        case liYuanMessage
+        case liYuenMessage
         case goodPrices
         case priceDrop
         case priceJump
@@ -95,6 +102,23 @@ class Game: ObservableObject {
     
     func transitionTo(_ newState: State) {
         switch newState {
+        case .liYuenExtortion:
+            if currentCity == .hongkong && cash > 0 && liYuenCounter == liYuenCounterWantsMoney {
+                liYuenExtortion()
+                state = newState
+            }
+            else {
+                transitionTo(.mcHenryOffer)
+            }
+        case .notEnoughCash:
+            setTimer(3)
+            state = newState
+        case .borrowedForLiYuen:
+            setTimer(5)
+            state = newState
+        case .elderBrotherWuPirateWarning:
+            setTimer(5)
+            state = newState
         case .mcHenryOffer:
             if currentCity == .hongkong && shipDamage > 0 {
                 setMcHenryOffer()
@@ -141,10 +165,25 @@ class Game: ObservableObject {
                 setTimer(5)
             }
             else {
-                transitionTo(.liYuanMessage)
+                transitionTo(.liYuenMessage)
             }
-        case .liYuanMessage:
-            transitionTo(.goodPrices)
+        case .liYuenMessage:
+            if Int.random(1, in: 20) {
+                if liYuenCounter >= liYuenCounterJustPaid {
+                    liYuenCounter += 1
+                }
+                if liYuenCounter == 4 {
+                    liYuenCounter = liYuenCounterWantsMoney
+                }
+            }
+            if currentCity != .hongkong && liYuenCounter == liYuenCounterWantsMoney && (Int.random(3, in: 4) || dbgLiYuenMessage) {
+                dbgLiYuenMessage = false
+                state = newState
+                setTimer(3)
+            }
+            else {
+                transitionTo(.goodPrices)
+            }
         case .goodPrices:
             if Int.random(1, in: 9) || dbgPriceDrop || dbgPriceJump {
                 if Int.random(1, in: 2) || dbgPriceDrop {
@@ -185,6 +224,24 @@ class Game: ObservableObject {
         case (.arriving, .tap): timer?.invalidate(); fallthrough
         case (.arriving, .timer):
             arriveAt(destinationCity!)
+            transitionTo(.liYuenExtortion)
+        case (.liYuenExtortion, .yes):
+            transitionTo(payLiYuen() ? .mcHenryOffer : .notEnoughCash)
+        case (.liYuenExtortion, .no):
+            transitionTo(.mcHenryOffer)
+        case (.notEnoughCash, .tap): timer?.invalidate(); fallthrough
+        case (.notEnoughCash, .timer):
+            transitionTo(.borrowForLiYuen)
+        case (.borrowForLiYuen, .yes):
+            borrowForLiYuen()
+            transitionTo(.borrowedForLiYuen)
+        case (.borrowForLiYuen, .no):
+            transitionTo(.elderBrotherWuPirateWarning)
+        case (.borrowedForLiYuen, .tap): timer?.invalidate(); fallthrough
+        case (.borrowedForLiYuen, .timer):
+            transitionTo(.mcHenryOffer)
+        case (.elderBrotherWuPirateWarning, .tap): timer?.invalidate(); fallthrough
+        case (.elderBrotherWuPirateWarning, .timer):
             transitionTo(.mcHenryOffer)
         case (.mcHenryOffer, .no),
              (.mcHenryOffer, .repaired):
@@ -214,7 +271,10 @@ class Game: ObservableObject {
             transitionTo(.warehouseTheft)
         case (.warehouseTheft, .tap): timer?.invalidate(); fallthrough
         case (.warehouseTheft, .timer):
-            transitionTo(.liYuanMessage)
+            transitionTo(.liYuenMessage)
+        case (.liYuenMessage, .tap): timer?.invalidate(); fallthrough
+        case (.liYuenMessage, .timer):
+            transitionTo(.goodPrices)
         case (.priceDrop, .tap): timer?.invalidate(); fallthrough
         case (.priceDrop, .timer):
             transitionTo(.robbery)
@@ -425,9 +485,40 @@ class Game: ObservableObject {
         setPrices()
     }
     
-    // MARK: - Li Yuan
+    // MARK: - Li Yuen
     
-    private var liYuanPaidOff = false
+    private var liYuenCounter: Int = 0
+    let liYuenCounterWantsMoney: Int = 0
+    let liYuenCounterJustPaid: Int = 1
+    @Published var liYuenDemand: Int?
+    
+    private func liYuenExtortion() {
+        if let dbgLiYuenDemand = dbgLiYuenDemand {
+            liYuenDemand = dbgLiYuenDemand
+            self.dbgLiYuenDemand = nil
+        }
+        else if months <= 12 {
+            // Link's implementation has this as:
+            //   float i = 1.8, j = 0,
+            //   amount = ((cash / i) * ((float) rand() / RAND_MAX)) + j;
+            // which can be zero, so let's enforce a floor
+            liYuenDemand = 50 + Int.random(in: 0...Int(Double(cash) / 1.8))
+        }
+        else {
+            liYuenDemand = Int.random(in: 1000 * months...2000 * months) + Int.random(in: 0...Int(Double(cash) / 1.4))
+        }
+    }
+    
+    private func payLiYuen() -> Bool {
+        if cash >= liYuenDemand! {
+            cash -= liYuenDemand!
+            liYuenCounter = liYuenCounterJustPaid
+            return true
+        }
+        else {
+            return false
+        }
+    }
     
     // MARK: - Mc Henry
     
@@ -456,6 +547,12 @@ class Game: ObservableObject {
     func borrow(_ amount: Int) {
         debt += amount
         cash += amount
+    }
+    
+    func borrowForLiYuen() {
+        debt += liYuenDemand! - cash
+        cash = 0
+        liYuenCounter = liYuenCounterJustPaid
     }
     
     func repay(_ amount: Int) {

@@ -217,6 +217,16 @@ struct TradingView: View {
                     Spacer()
                 }
                 .withTappableStyle(game)
+            case .liYuenExtortion:
+                LiYuenExtortionView()
+            case .notEnoughCash:
+                NotEnoughCashView()
+            case .borrowForLiYuen:
+                BorrowForLiYuenView()
+            case .borrowedForLiYuen:
+                BorrowedForLiYuenView()
+            case .elderBrotherWuPirateWarning:
+                ElderBrotherWuPirateWarningView()
             case .mcHenryOffer:
                 McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
@@ -236,6 +246,8 @@ struct TradingView: View {
                 OpiumSeizedView()
             case .warehouseTheft:
                 WarehouseTheftView()
+            case .liYuenMessage:
+                LiYuenMessageView()
             case .priceDrop:
                 PriceDropView()
             case .priceJump:
@@ -247,6 +259,107 @@ struct TradingView: View {
             }
         }
         .padding(.horizontal, 8)
+    }
+}
+
+struct LiYuenExtortionView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Li Yuen asks \(game.liYuenDemand!.formatted()) in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?")
+                .withMessageStyle()
+            Spacer()
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    game.sendEvent(.yes)
+                } content: {
+                    Text("Yes")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
+    }
+}
+
+struct NotEnoughCashView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Taipan, you do not have enough cash!!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct BorrowForLiYuenView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Do you want Elder Brother Wu to make up the difference for you?")
+                .withMessageStyle()
+            Spacer()
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    game.sendEvent(.yes)
+                } content: {
+                    Text("Yes")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
+    }
+}
+
+struct BorrowedForLiYuenView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct ElderBrotherWuPirateWarningView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
     }
 }
 
@@ -318,6 +431,12 @@ struct ElderBrotherWuBusinessView: View {
             Spacer()
             HStack {
                 RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
                     isShowingBorrowModal = true
                 } content: {
                     Text("Borrow")
@@ -331,12 +450,6 @@ struct ElderBrotherWuBusinessView: View {
                         .frame(minWidth:100, minHeight:30)
                 }
                 .withDisabledStyle(game.debt <= 0)
-                RoundRectButton {
-                    game.sendEvent(.no)
-                } content: {
-                    Text("No")
-                        .frame(minWidth:100, minHeight:30)
-                }
             }
         }
     }
@@ -423,6 +536,21 @@ struct WarehouseTheftView: View {
             Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Messenger reports large theft from warehouse, Taipan.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct LiYuenMessageView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Li Yuen has sent a Lieutenant, Taipan.  He says his admiral wishes to see you in Hong Kong, posthaste!")
                 .withMessageStyle()
             Spacer()
         }
