@@ -129,7 +129,7 @@ struct TradingView: View {
                     Spacer()
                     
                     Text("Taipan, present prices per unit here are")
-                        .withQuestionStyle()
+                        .withMessageStyle()
                     
                     HStack {
                         Spacer()
@@ -216,85 +216,163 @@ struct TradingView: View {
                     Spacer()
                 }
                 .withTappableStyle(game)
-            case .elderBrotherWu:
-                VStack {
-                    Text("Comprador's Report")
-                        .withReportStyle()
-                    Text("Do you have business with Elder Brother Wu, the moneylender?")
-                        .withQuestionStyle()
-                    Spacer()
-                    HStack {
-                        RoundRectButton {
-                            isShowingBorrowModal = true
-                        } content: {
-                            Text("Borrow")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                        .withDisabledStyle(game.cash <= 0)
-                        RoundRectButton {
-                            isShowingRepayModal = true
-                        } content: {
-                            Text("Repay")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                        .withDisabledStyle(game.debt <= 0)
-                        RoundRectButton {
-                            game.sendEvent(.no)
-                        } content: {
-                            Text("No")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                    }
-                }
+            case .elderBrotherWuWarning1:
+                ElderBrotherWuWarning1View()
+            case .elderBrotherWuWarning2:
+                ElderBrotherWuWarning2View()
+            case .elderBrotherWuWarning3:
+                ElderBrotherWuWarning3View()
+            case .elderBrotherWuBusiness:
+                ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
+                                           isShowingRepayModal: $isShowingRepayModal)
             case .newShipOffer:
-                VStack {
-                    Text("Comprador's Report")
-                        .withReportStyle()
-                    Text("Do you wish to trade in your \(game.shipDamage > 0 ? "damaged" : "fine") ship for one with 50 more capacity by paying an additional \(game.offerAmount.formatted()), Taipan?")
-                        .withQuestionStyle()
-                    Spacer()
-                    HStack {
-                        RoundRectButton {
-                            game.sendEvent(.no)
-                        } content: {
-                            Text("No")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                        RoundRectButton {
-                            game.sendEvent(.yes)
-                        } content: {
-                            Text("Yes")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                    }
-                }
+                NewShipOfferView()
             case .newGunOffer:
-                VStack {
-                    Text("Comprador's Report")
-                        .withReportStyle()
-                    Text("Do you wish to buy a ship's gun for \(game.offerAmount.formatted()), Taipan?")
-                        .withQuestionStyle()
-                    Spacer()
-                    HStack {
-                        RoundRectButton {
-                            game.sendEvent(.no)
-                        } content: {
-                            Text("No")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                        RoundRectButton {
-                            game.sendEvent(.yes)
-                        } content: {
-                            Text("Yes")
-                                .frame(minWidth:100, minHeight:30)
-                        }
-                    }
-                }
+                NewGunOfferView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
         }
         .padding(.horizontal, 8)
+    }
+}
+
+struct ElderBrotherWuWarning1View: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct ElderBrotherWuWarning2View: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one's debts.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct ElderBrotherWuWarning3View: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct ElderBrotherWuBusinessView: View {
+    @EnvironmentObject private var game: Game
+    @Binding var isShowingBorrowModal: Bool
+    @Binding var isShowingRepayModal: Bool
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Do you have business with Elder Brother Wu, the moneylender?")
+                .withMessageStyle()
+            Spacer()
+            HStack {
+                RoundRectButton {
+                    isShowingBorrowModal = true
+                } content: {
+                    Text("Borrow")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                .withDisabledStyle(game.cash <= 0)
+                RoundRectButton {
+                    isShowingRepayModal = true
+                } content: {
+                    Text("Repay")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                .withDisabledStyle(game.debt <= 0)
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
+    }
+}
+
+struct NewShipOfferView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Do you wish to trade in your \(game.shipDamage > 0 ? "damaged" : "fine") ship for one with 50 more capacity by paying an additional \(game.offerAmount.formatted()), Taipan?")
+                .withMessageStyle()
+            Spacer()
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    game.sendEvent(.yes)
+                } content: {
+                    Text("Yes")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
+    }
+}
+
+struct NewGunOfferView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Do you wish to buy a ship's gun for \(game.offerAmount.formatted()), Taipan?")
+                .withMessageStyle()
+            Spacer()
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    game.sendEvent(.yes)
+                } content: {
+                    Text("Yes")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
     }
 }
 
@@ -946,7 +1024,7 @@ extension Text {
             .padding(.bottom, 20)
     }
     
-    func withQuestionStyle() -> some View {
+    func withMessageStyle() -> some View {
         self.frame(maxWidth: .infinity, alignment: .leading)
     }
 }

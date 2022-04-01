@@ -38,21 +38,35 @@ class Game: ObservableObject {
     @Published var companyName: String?
     @Published var cash: Int = 50000
     
+    // used to override the random events
+    var makeNextOffer = false
+    var makeShipOffer = false
+    var makeGunOffer = false
+    
     init() {
         currentCity = .hongkong
         setPrices()
-        state = .elderBrotherWu
+        state = .elderBrotherWuBusiness
     }
     
     // MARK: - State Machine
     
     enum State: String {
         case arriving
-        case trading
         case liYuanExtortion
-        case elderBrotherWu
+        case mcHenryOffer
+        case elderBrotherWuWarning1
+        case elderBrotherWuWarning2
+        case elderBrotherWuWarning3
+        case elderBrotherWuBusiness
         case newShipOffer
         case newGunOffer
+        case opiumSeized
+        case warehouseTheft
+        case liYuanMessage
+        case goodPrices
+        case robbery
+        case trading
     }
     
     enum Event: String {
@@ -67,18 +81,44 @@ class Game: ObservableObject {
     
     func sendEvent(_ event: Event) {
         switch (state, event) {
+            
         case (.arriving, .tap):
             timer?.invalidate()
             fallthrough
         case (.arriving, .timer):
             arriveAt(destinationCity!)
             if currentCity == .hongkong {
-                state = .elderBrotherWu
+                if debt > 10000 && !elderBrotherWuWarningIssued {
+                    state = .elderBrotherWuWarning1
+                }
+                else {
+                    state = .elderBrotherWuBusiness
+                }
             }
             else {
                 state = newShipOrGunOffer() ?? .trading
             }
-        case (.elderBrotherWu, .no):
+            
+        case (.elderBrotherWuWarning1, .tap):
+            timer?.invalidate()
+            fallthrough
+        case (.elderBrotherWuWarning1, .timer):
+            state = .elderBrotherWuWarning2
+            
+        case (.elderBrotherWuWarning2, .tap):
+            timer?.invalidate()
+            fallthrough
+        case (.elderBrotherWuWarning2, .timer):
+            state = .elderBrotherWuWarning3
+            
+        case (.elderBrotherWuWarning3, .tap):
+            timer?.invalidate()
+            fallthrough
+        case (.elderBrotherWuWarning3, .timer):
+            elderBrotherWuWarningIssued = true
+            state = .elderBrotherWuBusiness
+            
+        case (.elderBrotherWuBusiness, .no):
             state = newShipOrGunOffer() ?? .trading
         case (.newShipOffer, .yes):
             state = upgradeShip() ?? .trading
@@ -284,6 +324,8 @@ class Game: ObservableObject {
     // MARK: - Elder Brother Wu
     
     @Published var debt: Int = 0
+    var elderBrotherWuWarningIssued = false
+    let elderBrotherWuBraves = Int.random(in: 50...149)
     
     var maximumLoan: Int { cash * 2 }
     
@@ -314,13 +356,15 @@ class Game: ObservableObject {
         }
     }
     
-    // MARK: -
+    // MARK: - Special Offers
     
     var offerAmount: Int = 0
     
     func newShipOrGunOffer() -> State? {
-        if Int.random(1, in: 4, comment: "make offer?") {
-            if Int.random(1, in: 2, comment: "ship?") {
+        if Int.random(1, in: 4, comment: "make offer?") || makeNextOffer {
+            makeNextOffer = false
+            if Int.random(1, in: 2, comment: "ship?") || makeShipOffer {
+                makeShipOffer = false
                 let months = (year - 1860) * 12 + month.index()
                 offerAmount = 1000 + Int.random(in: 0...1000 * (months + 5) / 6) * (shipCapacity / 50)
                 if cash >= offerAmount {
@@ -328,6 +372,7 @@ class Game: ObservableObject {
                 }
             }
             else {
+                makeGunOffer = false;
                 return newGunOffer()
             }
         }
@@ -350,7 +395,7 @@ class Game: ObservableObject {
         shipCapacity += 50
         shipDamage = 0
         
-        if Int.random(1, in: 2, comment: "gun?") {
+        if Int.random(1, in: 2, comment: "gun?") || makeGunOffer {
             return newGunOffer()
         }
         return nil
