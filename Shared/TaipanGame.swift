@@ -39,11 +39,12 @@ class Game: ObservableObject {
     @Published var cash: Int = 50000
     
     // used to override the random events
-    var dbgMakeNextOffer = false
     var dbgMakeShipOffer = false
     var dbgMakeGunOffer = false
     var dbgOpiumSeized = false
     var dbgWarehouseTheft = false
+    var dbgPriceDrop = false
+    var dbgPriceJump = false
     
     init() {
         currentCity = .hongkong
@@ -67,6 +68,8 @@ class Game: ObservableObject {
         case warehouseTheft
         case liYuanMessage
         case goodPrices
+        case priceDrop
+        case priceJump
         case robbery
         case trading
     }
@@ -140,6 +143,28 @@ class Game: ObservableObject {
                 transitionTo(.liYuanMessage)
             }
         case .liYuanMessage:
+            transitionTo(.goodPrices)
+        case .goodPrices:
+            if Int.random(1, in: 9) || dbgPriceDrop || dbgPriceJump {
+                if Int.random(1, in: 2) || dbgPriceDrop {
+                    transitionTo(.priceDrop)
+                }
+                else {
+                    transitionTo(.priceJump)
+                }
+            }
+            else {
+                transitionTo(.robbery)
+            }
+        case .priceDrop:
+            priceDrop()
+            state = newState
+            setTimer(3)
+        case .priceJump:
+            priceJump()
+            state = newState
+            setTimer(3)
+        case .robbery:
             transitionTo(.trading)
         default:
             state = newState
@@ -182,6 +207,12 @@ class Game: ObservableObject {
         case (.warehouseTheft, .tap): timer?.invalidate(); fallthrough
         case (.warehouseTheft, .timer):
             transitionTo(.liYuanMessage)
+        case (.priceDrop, .tap): timer?.invalidate(); fallthrough
+        case (.priceDrop, .timer):
+            transitionTo(.robbery)
+        case (.priceJump, .tap): timer?.invalidate(); fallthrough
+        case (.priceJump, .timer):
+            transitionTo(.robbery)
         default:
             print("illegal event \(event) in state \(state)")
             break
@@ -268,6 +299,20 @@ class Game: ObservableObject {
         for merchandise in Merchandise.allCases {
             price[merchandise] = priceMultiplier[currentCity!]![merchandise]! / 2 * Int.random(in: 1...3) * basePrice[merchandise]!
         }
+    }
+    
+    @Published var goodPriceMerchandise: Merchandise?
+    
+    private func priceDrop() {
+        goodPriceMerchandise = Merchandise.allCases.randomElement()!
+        price[goodPriceMerchandise!]! /= 5
+        dbgPriceDrop = false
+    }
+    
+    private func priceJump() {
+        goodPriceMerchandise = Merchandise.allCases.randomElement()!
+        price[goodPriceMerchandise!]! *= Int.random(in: 5...9)
+        dbgPriceJump = false
     }
     
     func canAfford(_ merchandise: Merchandise) -> Int {
@@ -429,8 +474,7 @@ class Game: ObservableObject {
     var offerAmount: Int = 0
     
     private func newShipOrGunOffer() -> State? {
-        if Int.random(1, in: 4, comment: "make offer?") || dbgMakeNextOffer {
-            dbgMakeNextOffer = false
+        if Int.random(1, in: 4, comment: "make offer?") || dbgMakeShipOffer || dbgMakeGunOffer {
             if Int.random(1, in: 2, comment: "ship?") || dbgMakeShipOffer {
                 dbgMakeShipOffer = false
                 offerAmount = 1000 + Int.random(in: 0...1000 * (months + 5) / 6) * (shipCapacity / 50)

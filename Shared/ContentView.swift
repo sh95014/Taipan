@@ -236,6 +236,10 @@ struct TradingView: View {
                 OpiumSeizedView()
             case .warehouseTheft:
                 WarehouseTheftView()
+            case .priceDrop:
+                PriceDropView()
+            case .priceJump:
+                PriceJumpView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -417,6 +421,36 @@ struct WarehouseTheftView: View {
             Text("Comprador's Report")
                 .withReportStyle()
             Text("Messenger reports large theft from warehouse, Taipan.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct PriceDropView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has dropped to \(game.price[game.goodPriceMerchandise!]!)!!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct PriceJumpView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has risen to \(game.price[game.goodPriceMerchandise!]!)!!")
                 .withMessageStyle()
             Spacer()
         }
