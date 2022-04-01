@@ -16,7 +16,8 @@ struct TradingView: View {
     @Binding var isShowingRepayModal: Bool
     @Binding var isShowingBankModal: Bool
     @Binding var isShowingTransferModal: Bool
-    
+    @Binding var isShowingRepairModal: Bool
+
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
     
@@ -216,12 +217,14 @@ struct TradingView: View {
                     Spacer()
                 }
                 .withTappableStyle(game)
+            case .mcHenryOffer:
+                McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
-                ElderBrotherWuWarning1View()
+                ElderBrotherWuWarningView(page: 1)
             case .elderBrotherWuWarning2:
-                ElderBrotherWuWarning2View()
+                ElderBrotherWuWarningView(page: 2)
             case .elderBrotherWuWarning3:
-                ElderBrotherWuWarning3View()
+                ElderBrotherWuWarningView(page: 3)
             case .elderBrotherWuBusiness:
                 ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
                                            isShowingRepayModal: $isShowingRepayModal)
@@ -237,45 +240,54 @@ struct TradingView: View {
     }
 }
 
-struct ElderBrotherWuWarning1View: View {
+struct McHenryOfferView: View {
     @EnvironmentObject private var game: Game
-    
+    @Binding var isShowingRepairModal: Bool
+
     var body: some View {
         VStack {
             Text("Comprador's Report")
                 .withReportStyle()
-            Text("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
+            Text("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!!  He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"")
                 .withMessageStyle()
             Spacer()
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    isShowingRepairModal = true
+                } content: {
+                    Text("Repair")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
         }
-        .withTappableStyle(game)
     }
 }
 
-struct ElderBrotherWuWarning2View: View {
+struct ElderBrotherWuWarningView: View {
     @EnvironmentObject private var game: Game
+    var page: Int
     
     var body: some View {
         VStack {
             Text("Comprador's Report")
                 .withReportStyle()
-            Text("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one's debts.")
-                .withMessageStyle()
-            Spacer()
-        }
-        .withTappableStyle(game)
-    }
-}
-
-struct ElderBrotherWuWarning3View: View {
-    @EnvironmentObject private var game: Game
-    
-    var body: some View {
-        VStack {
-            Text("Comprador's Report")
-                .withReportStyle()
-            Text("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
-                .withMessageStyle()
+            switch page {
+            case 1:
+                Text("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
+                    .withMessageStyle()
+            case 2:
+                Text("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one's debts.")
+                    .withMessageStyle()
+            default:
+                Text("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
+                    .withMessageStyle()
+            }
             Spacer()
         }
         .withTappableStyle(game)
@@ -797,6 +809,44 @@ struct TransferModalView: View {
     }
 }
 
+struct RepairModalView: View {
+    @EnvironmentObject private var game: Game
+    @Binding var isShowingRepairModal: Bool
+    @State private var amount = 0
+    
+    var body: some View {
+        VStack {
+            let shipDamagePercent = 100 - game.shipStatus
+            Text("Och, 'tis a pity to be \(shipDamagePercent.formatted(.percent)) damaged.\nWe can fix yer whole ship for \(game.mcHenryOffer!.formatted()), or make partial repairs if you wish.\nHow much will ye spend?")
+            KeypadView(
+                amount: $amount,
+                limitHint: "You have\n\(game.cash.formatted())"
+            )
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                    isShowingRepairModal = false
+                } content: {
+                    Text("Cancel")
+                        .frame(minWidth: 80)
+                }
+                .withCancelStyle()
+                RoundRectButton {
+                    game.repair(amount)
+                    isShowingRepairModal = false
+                } content: {
+                    Text("Repair")
+                        .frame(minWidth: 80)
+                }
+                .withDisabledStyle(amount == 0 || amount > min(game.cash, game.mcHenryOffer!))
+            }
+        }
+        .withModalStyle(.sheetColor)
+    }
+}
+
+
+
 struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
     
@@ -808,6 +858,7 @@ struct ContentView: View {
     @State private var isShowingRepayModal = false
     @State private var isShowingBankModal = false
     @State private var isShowingTransferModal = false
+    @State private var isShowingRepairModal = false
     
     var body: some View {
         ZStack {
@@ -817,7 +868,8 @@ struct ContentView: View {
                         isShowingBorrowModal: $isShowingBorrowModal,
                         isShowingRepayModal: $isShowingRepayModal,
                         isShowingBankModal: $isShowingBankModal,
-                        isShowingTransferModal: $isShowingTransferModal)
+                        isShowingTransferModal: $isShowingTransferModal,
+                        isShowingRepairModal: $isShowingRepairModal)
                 .blur(radius: isShowingModal ? 3 : 0)
                 .disabled(isShowingModal)
             
@@ -842,6 +894,9 @@ struct ContentView: View {
             else if isShowingTransferModal {
                 TransferModalView(isShowingTransferModal: $isShowingTransferModal)
             }
+            else if isShowingRepairModal {
+                RepairModalView(isShowingRepairModal: $isShowingRepairModal)
+            }
         }
         .foregroundColor(.defaultColor)
         .background(Color.backgroundColor)
@@ -850,7 +905,7 @@ struct ContentView: View {
     
     var isShowingModal: Bool {
         isShowingBuyModal || isShowingSellModal || isShowingDestinationModal ||
-        isShowingBorrowModal
+        isShowingBorrowModal || isShowingRepairModal
     }
 }
 

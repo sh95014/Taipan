@@ -74,50 +74,58 @@ class Game: ObservableObject {
         case timer
         case yes
         case no
+        case repaired
     }
     
     @Published var state: State = .trading
-    var timer: Timer?
+    private var timer: Timer?
+    
+    private func setTimer(_ interval: TimeInterval) {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [self] timer in
+            sendEvent(.timer)
+        }
+    }
     
     func sendEvent(_ event: Event) {
         switch (state, event) {
             
-        case (.arriving, .tap):
-            timer?.invalidate()
-            fallthrough
+        case (.arriving, .tap): timer?.invalidate(); fallthrough
         case (.arriving, .timer):
             arriveAt(destinationCity!)
             if currentCity == .hongkong {
-                if debt > 10000 && !elderBrotherWuWarningIssued {
-                    state = .elderBrotherWuWarning1
+                if shipDamage > 0 {
+                    setMcHenryOffer()
+                    state = .mcHenryOffer
                 }
                 else {
-                    state = .elderBrotherWuBusiness
+                    fallthrough
                 }
             }
             else {
                 state = newShipOrGunOffer() ?? .trading
             }
-            
-        case (.elderBrotherWuWarning1, .tap):
-            timer?.invalidate()
-            fallthrough
+        case (.mcHenryOffer, .no),
+             (.mcHenryOffer, .repaired):
+            if debt > 10000 && !elderBrotherWuWarningIssued {
+                state = .elderBrotherWuWarning1
+                setTimer(3)
+            }
+            else {
+                state = .elderBrotherWuBusiness
+            }
+        case (.elderBrotherWuWarning1, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning1, .timer):
             state = .elderBrotherWuWarning2
-            
-        case (.elderBrotherWuWarning2, .tap):
-            timer?.invalidate()
-            fallthrough
+            setTimer(3)
+        case (.elderBrotherWuWarning2, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning2, .timer):
             state = .elderBrotherWuWarning3
-            
-        case (.elderBrotherWuWarning3, .tap):
-            timer?.invalidate()
-            fallthrough
+            setTimer(5)
+        case (.elderBrotherWuWarning3, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning3, .timer):
             elderBrotherWuWarningIssued = true
             state = .elderBrotherWuBusiness
-            
         case (.elderBrotherWuBusiness, .no):
             state = newShipOrGunOffer() ?? .trading
         case (.newShipOffer, .yes):
@@ -148,7 +156,7 @@ class Game: ObservableObject {
     @Published var shipCapacity: Int = 60
     @Published var shipHold: [Merchandise: Int] = [:]
     @Published var shipGuns: Int = 3
-    let gunWeight = 10
+    private let gunWeight = 10
     
     var shipFreeCapacity: Int {
         var freeCapacity = shipCapacity - shipGuns * gunWeight
@@ -166,7 +174,7 @@ class Game: ObservableObject {
     // MARK: - Warehouse
     
     @Published var warehouse: [Merchandise: Int] = [:]
-    let warehouseCapacity = 10000
+    private let warehouseCapacity = 10000
     
     var warehouseUsedCapacity: Int {
         var usedCapacity = 0
@@ -176,9 +184,7 @@ class Game: ObservableObject {
         return usedCapacity
     }
     
-    var warehouseFreeCapacity: Int {
-        return warehouseCapacity - warehouseUsedCapacity
-    }
+    var warehouseFreeCapacity: Int { warehouseCapacity - warehouseUsedCapacity }
     
     func transferToWarehouse(_ merchandise: Merchandise, _ amount: Int) {
         warehouse[merchandise] = (warehouse[merchandise] ?? 0) + amount
@@ -195,7 +201,7 @@ class Game: ObservableObject {
         var shortValue: String { self.rawValue.components(separatedBy: " ").first! }
     }
     
-    let priceMultiplier: [City: [Merchandise: Int]] = [
+    private let priceMultiplier: [City: [Merchandise: Int]] = [
         .hongkong:  [ .opium:   11, .silk:  11, .arms: 12, .general: 10 ],
         .shanghai:  [ .opium:   16, .silk:  14, .arms: 16, .general: 11 ],
         .nagasaki:  [ .opium:   15, .silk:  15, .arms: 10, .general: 12 ],
@@ -204,10 +210,10 @@ class Game: ObservableObject {
         .singapore: [ .opium:   10, .silk:  13, .arms: 14, .general: 15 ],
         .batavia:   [ .opium:   13, .silk:  12, .arms: 15, .general: 16 ],
     ]
-    let basePrice: [Merchandise: Int] = [ .opium: 1000, .silk: 100, .arms: 10, .general:  1 ]
+    private let basePrice: [Merchandise: Int] = [ .opium: 1000, .silk: 100, .arms: 10, .general:  1 ]
     @Published var price: [Merchandise: Int] = [:]
     
-    func setPrices() {
+    private func setPrices() {
         for merchandise in Merchandise.allCases {
             price[merchandise] = priceMultiplier[currentCity!]![merchandise]! / 2 * Int.random(in: 1...3) * basePrice[merchandise]!
         }
@@ -287,8 +293,9 @@ class Game: ObservableObject {
     @Published var destinationCity: City?
     @Published var month: Month = .january
     @Published var year: Int = 1860
+    private var months: Int { (year - 1860) * 12 + month.index() }
     
-    func aMonthPassed() {
+    private func aMonthPassed() {
         if month == .december {
             year += 1
         }
@@ -302,12 +309,10 @@ class Game: ObservableObject {
         debt = Int(Double(debt) * 1.1)
         bank = Int(Double(bank) * 1.005)
         state = .arriving
-        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [self] timer in
-            sendEvent(.timer)
-        }
+        setTimer(3)
     }
     
-    func arriveAt(_ city: City) {
+    private func arriveAt(_ city: City) {
         currentCity = city
         destinationCity = nil
         setPrices()
@@ -315,16 +320,28 @@ class Game: ObservableObject {
     
     // MARK: - Li Yuan
     
-    var liYuanPaidOff = false
+    private var liYuanPaidOff = false
     
-    func liYuanExtortion() {
-        
+    // MARK: - Mc Henry
+    
+    var mcHenryOffer: Int?
+    private var mcHenryRate: Int?
+    private func setMcHenryOffer() {
+        mcHenryRate = Int(Double(60 * (months + 3) / 4) * Double.random(in: 0.0...1.0) + Double(25 * (months + 3) / 4 * shipCapacity / 50))
+        mcHenryOffer = mcHenryRate! * shipDamage + 1
+    }
+    
+    func repair(_ amount: Int) {
+        shipDamage -= Int(Double(amount / mcHenryRate!) + 0.5)
+        shipDamage = max(shipDamage, 0)
+        cash -= amount
+        sendEvent(.repaired)
     }
     
     // MARK: - Elder Brother Wu
     
     @Published var debt: Int = 0
-    var elderBrotherWuWarningIssued = false
+    private var elderBrotherWuWarningIssued = false
     let elderBrotherWuBraves = Int.random(in: 50...149)
     
     var maximumLoan: Int { cash * 2 }
@@ -360,7 +377,7 @@ class Game: ObservableObject {
     
     var offerAmount: Int = 0
     
-    func newShipOrGunOffer() -> State? {
+    private func newShipOrGunOffer() -> State? {
         if Int.random(1, in: 4, comment: "make offer?") || makeNextOffer {
             makeNextOffer = false
             if Int.random(1, in: 2, comment: "ship?") || makeShipOffer {
@@ -379,9 +396,8 @@ class Game: ObservableObject {
         return nil
     }
     
-    func newGunOffer() -> State? {
+    private func newGunOffer() -> State? {
         if shipGuns < 1000 {
-            let months = (year - 1860) * 12 + month.index()
             offerAmount = 500 + Int.random(in: 0...1000 * (months + 5) / 6)
             if cash >= offerAmount && shipFreeCapacity > gunWeight {
                 return .newGunOffer
@@ -390,7 +406,7 @@ class Game: ObservableObject {
         return nil
     }
     
-    func upgradeShip() -> State? {
+    private func upgradeShip() -> State? {
         cash -= offerAmount
         shipCapacity += 50
         shipDamage = 0
@@ -401,7 +417,7 @@ class Game: ObservableObject {
         return nil
     }
     
-    func buyGun() {
+    private func buyGun() {
         cash -= offerAmount
         shipGuns += 1
     }
