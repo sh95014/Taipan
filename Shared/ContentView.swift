@@ -123,7 +123,7 @@ struct TradingView: View {
             switch game.state {
             case .trading:
                 Group {
-                    Text("Comprador's Report")
+                    Text("Comprador‘s Report")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, 5)
                     
@@ -211,7 +211,7 @@ struct TradingView: View {
                 }
             case .arriving:
                 VStack {
-                    Text("Captain's Report")
+                    Text("Captain‘s Report")
                         .withReportStyle()
                     Text("Arriving at \(game.destinationCity!.rawValue)...")
                     Spacer()
@@ -240,6 +240,8 @@ struct TradingView: View {
                 PriceDropView()
             case .priceJump:
                 PriceJumpView()
+            case .robbery:
+                RobberyView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -254,7 +256,7 @@ struct McHenryOfferView: View {
 
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!!  He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"")
                 .withMessageStyle()
@@ -283,14 +285,14 @@ struct ElderBrotherWuWarningView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             switch page {
             case 1:
                 Text("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
                     .withMessageStyle()
             case 2:
-                Text("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one's debts.")
+                Text("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.")
                     .withMessageStyle()
             default:
                 Text("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
@@ -309,7 +311,7 @@ struct ElderBrotherWuBusinessView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Do you have business with Elder Brother Wu, the moneylender?")
                 .withMessageStyle()
@@ -345,7 +347,7 @@ struct NewShipOfferView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Do you wish to trade in your \(game.shipDamage > 0 ? "damaged" : "fine") ship for one with 50 more capacity by paying an additional \(game.offerAmount.formatted()), Taipan?")
                 .withMessageStyle()
@@ -373,9 +375,9 @@ struct NewGunOfferView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
-            Text("Do you wish to buy a ship's gun for \(game.offerAmount.formatted()), Taipan?")
+            Text("Do you wish to buy a ship‘s gun for \(game.offerAmount.formatted()), Taipan?")
                 .withMessageStyle()
             Spacer()
             HStack {
@@ -401,7 +403,7 @@ struct OpiumSeizedView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Bad Joss!!")
                 .withMessageStyle()
@@ -418,7 +420,7 @@ struct WarehouseTheftView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Messenger reports large theft from warehouse, Taipan.")
                 .withMessageStyle()
@@ -433,7 +435,7 @@ struct PriceDropView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has dropped to \(game.price[game.goodPriceMerchandise!]!)!!")
                 .withMessageStyle()
@@ -448,9 +450,26 @@ struct PriceJumpView: View {
     
     var body: some View {
         VStack {
-            Text("Comprador's Report")
+            Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has risen to \(game.price[game.goodPriceMerchandise!]!)!!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct RobberyView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Bad Joss!!")
+                .withMessageStyle()
+            Text("You‘ve been beaten up and robbed of \(game.robberyLoss!.fancyFormatted()) in cash, Taipan!!")
                 .withMessageStyle()
             Spacer()
         }

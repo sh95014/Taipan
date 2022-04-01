@@ -45,6 +45,7 @@ class Game: ObservableObject {
     var dbgWarehouseTheft = false
     var dbgPriceDrop = false
     var dbgPriceJump = false
+    var dbgRobbery = true
     
     init() {
         currentCity = .hongkong
@@ -122,7 +123,7 @@ class Game: ObservableObject {
                 state = newState
             }
             else {
-                transitionTo(.newShipOffer)
+                transitionTo(newShipOrGunOffer() ?? .opiumSeized)
             }
         case .opiumSeized:
             if shipHold[.opium] != nil && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
@@ -165,7 +166,14 @@ class Game: ObservableObject {
             state = newState
             setTimer(3)
         case .robbery:
-            transitionTo(.trading)
+            if cash > 25000 && (Int.random(1, in: 20) || dbgRobbery) {
+                robbery()
+                state = newState
+                setTimer(5)
+            }
+            else {
+                transitionTo(.trading)
+            }
         default:
             state = newState
             break
@@ -213,6 +221,9 @@ class Game: ObservableObject {
         case (.priceJump, .tap): timer?.invalidate(); fallthrough
         case (.priceJump, .timer):
             transitionTo(.robbery)
+        case (.robbery, .tap): timer?.invalidate(); fallthrough
+        case (.robbery, .timer):
+            transitionTo(.trading)
         default:
             print("illegal event \(event) in state \(state)")
             break
@@ -516,7 +527,7 @@ class Game: ObservableObject {
         shipGuns += 1
     }
     
-    // MARK: - Authorities
+    // MARK: - Other Encounters
     
     var fine: Int?
     
@@ -525,5 +536,17 @@ class Game: ObservableObject {
         cash -= fine!
         cash = max(0, cash)
         shipHold[.opium] = nil
+    }
+    
+    var robberyLoss: Int?
+    
+    func robbery() {
+        // Link's implementation has this as:
+        //   float robbed = ((cash / 1.4) * ((float) rand() / RAND_MAX));
+        // but that could yield 0 if rand() is 0.
+        robberyLoss = Int(Double(cash) / 1.4 * Double.random(in: 0.1...1.0))
+        cash -= robberyLoss!
+        cash = max(0, cash)
+        dbgRobbery = false
     }
 }
