@@ -238,6 +238,12 @@ struct TradingView: View {
             case .elderBrotherWuBusiness:
                 ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
                                            isShowingRepayModal: $isShowingRepayModal)
+            case .elderBrotherWuBailout:
+                ElderBrotherWuBailoutView()
+            case .bailoutReaction:
+                BailoutReactionView()
+            case .bankruptcy:
+                BankruptcyView()
             case .newShipOffer:
                 NewShipOfferView()
             case .newGunOffer:
@@ -452,6 +458,64 @@ struct ElderBrotherWuBusinessView: View {
                 .withDisabledStyle(game.debt <= 0)
             }
         }
+    }
+}
+
+struct ElderBrotherWuBailoutView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Elder Brother is aware of your plight, Taipan.  He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
+                .withMessageStyle()
+            Spacer()
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    game.sendEvent(.yes)
+                } content: {
+                    Text("Yes")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
+    }
+}
+
+struct BailoutReactionView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Very well, Taipan.  Good joss!!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct BankruptcyView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Very well, Taipan, the game is over!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
     }
 }
 
