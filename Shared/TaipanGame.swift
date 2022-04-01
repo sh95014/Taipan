@@ -39,9 +39,11 @@ class Game: ObservableObject {
     @Published var cash: Int = 50000
     
     // used to override the random events
-    var makeNextOffer = false
-    var makeShipOffer = false
-    var makeGunOffer = false
+    var dbgMakeNextOffer = false
+    var dbgMakeShipOffer = false
+    var dbgMakeGunOffer = false
+    var dbgOpiumSeized = false
+    var dbgWarehouseTheft = false
     
     init() {
         currentCity = .hongkong
@@ -87,56 +89,99 @@ class Game: ObservableObject {
         }
     }
     
+    func transitionTo(_ newState: State) {
+        switch newState {
+        case .mcHenryOffer:
+            if currentCity == .hongkong && shipDamage > 0 {
+                setMcHenryOffer()
+                state = newState
+            }
+            else {
+                transitionTo(.elderBrotherWuWarning1)
+            }
+        case .elderBrotherWuWarning1:
+            if debt > 10000 && !elderBrotherWuWarningIssued {
+                setTimer(3)
+                state = newState
+            }
+            else {
+                transitionTo(.elderBrotherWuBusiness)
+            }
+        case .elderBrotherWuWarning2:
+            setTimer(3)
+            state = newState
+        case .elderBrotherWuWarning3:
+            elderBrotherWuWarningIssued = true
+            setTimer(5)
+            state = newState
+        case .elderBrotherWuBusiness:
+            if currentCity == .hongkong {
+                state = newState
+            }
+            else {
+                transitionTo(.newShipOffer)
+            }
+        case .opiumSeized:
+            if shipHold[.opium] != nil && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
+                seizeOpium()
+                state = newState
+                setTimer(5)
+            }
+            else {
+                transitionTo(.warehouseTheft)
+            }
+        case .warehouseTheft:
+            if warehouseUsedCapacity > 0 && (Int.random(1, in: 50) || dbgWarehouseTheft) {
+                warehouseTheft()
+                state = newState
+                setTimer(5)
+            }
+            else {
+                transitionTo(.liYuanMessage)
+            }
+        case .liYuanMessage:
+            transitionTo(.trading)
+        default:
+            state = newState
+            break
+        }
+    }
+    
     func sendEvent(_ event: Event) {
         switch (state, event) {
-            
         case (.arriving, .tap): timer?.invalidate(); fallthrough
         case (.arriving, .timer):
             arriveAt(destinationCity!)
-            if currentCity == .hongkong {
-                if shipDamage > 0 {
-                    setMcHenryOffer()
-                    state = .mcHenryOffer
-                }
-                else {
-                    fallthrough
-                }
-            }
-            else {
-                state = newShipOrGunOffer() ?? .trading
-            }
+            transitionTo(.mcHenryOffer)
         case (.mcHenryOffer, .no),
              (.mcHenryOffer, .repaired):
-            if debt > 10000 && !elderBrotherWuWarningIssued {
-                state = .elderBrotherWuWarning1
-                setTimer(3)
-            }
-            else {
-                state = .elderBrotherWuBusiness
-            }
+            transitionTo(.elderBrotherWuWarning1)
         case (.elderBrotherWuWarning1, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning1, .timer):
-            state = .elderBrotherWuWarning2
-            setTimer(3)
+            transitionTo(.elderBrotherWuWarning2)
         case (.elderBrotherWuWarning2, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning2, .timer):
-            state = .elderBrotherWuWarning3
-            setTimer(5)
+            transitionTo(.elderBrotherWuWarning3)
         case (.elderBrotherWuWarning3, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning3, .timer):
-            elderBrotherWuWarningIssued = true
-            state = .elderBrotherWuBusiness
+            transitionTo(.elderBrotherWuBusiness)
         case (.elderBrotherWuBusiness, .no):
-            state = newShipOrGunOffer() ?? .trading
+            transitionTo(newShipOrGunOffer() ?? .opiumSeized)
         case (.newShipOffer, .yes):
-            state = upgradeShip() ?? .trading
+            transitionTo(upgradeShip() ?? .opiumSeized)
         case (.newShipOffer, .no):
-            state = .trading
+            transitionTo(.opiumSeized)
         case (.newGunOffer, .yes):
             buyGun()
             fallthrough
         case (.newGunOffer, .no):
-            state = .trading
+            transitionTo(.opiumSeized)
+        case (.opiumSeized, .tap): timer?.invalidate(); fallthrough
+        case (.opiumSeized, .timer):
+            transitionTo(.warehouseTheft)
+        case (.warehouseTheft, .tap): timer?.invalidate(); fallthrough
+        case (.warehouseTheft, .timer):
+            transitionTo(.liYuanMessage)
         default:
             print("illegal event \(event) in state \(state)")
             break
@@ -189,6 +234,12 @@ class Game: ObservableObject {
     func transferToWarehouse(_ merchandise: Merchandise, _ amount: Int) {
         warehouse[merchandise] = (warehouse[merchandise] ?? 0) + amount
         shipHold[merchandise] = shipHold[merchandise]! - amount
+    }
+    
+    func warehouseTheft() {
+        for (merchandise, units) in warehouse {
+            warehouse[merchandise] = Int(Double(units) / 1.8 * Double.random(in: 0.0...1.0))
+        }
     }
 
     // MARK: - Market
@@ -378,18 +429,17 @@ class Game: ObservableObject {
     var offerAmount: Int = 0
     
     private func newShipOrGunOffer() -> State? {
-        if Int.random(1, in: 4, comment: "make offer?") || makeNextOffer {
-            makeNextOffer = false
-            if Int.random(1, in: 2, comment: "ship?") || makeShipOffer {
-                makeShipOffer = false
-                let months = (year - 1860) * 12 + month.index()
+        if Int.random(1, in: 4, comment: "make offer?") || dbgMakeNextOffer {
+            dbgMakeNextOffer = false
+            if Int.random(1, in: 2, comment: "ship?") || dbgMakeShipOffer {
+                dbgMakeShipOffer = false
                 offerAmount = 1000 + Int.random(in: 0...1000 * (months + 5) / 6) * (shipCapacity / 50)
                 if cash >= offerAmount {
                     return .newShipOffer
                 }
             }
             else {
-                makeGunOffer = false;
+                dbgMakeGunOffer = false;
                 return newGunOffer()
             }
         }
@@ -411,7 +461,7 @@ class Game: ObservableObject {
         shipCapacity += 50
         shipDamage = 0
         
-        if Int.random(1, in: 2, comment: "gun?") || makeGunOffer {
+        if Int.random(1, in: 2, comment: "gun?") || dbgMakeGunOffer {
             return newGunOffer()
         }
         return nil
@@ -420,5 +470,16 @@ class Game: ObservableObject {
     private func buyGun() {
         cash -= offerAmount
         shipGuns += 1
+    }
+    
+    // MARK: - Authorities
+    
+    var fine: Int?
+    
+    func seizeOpium() {
+        fine = Int(Double(cash) / 1.8 * Double.random(in: 0.0...1.0) + 1)
+        cash -= fine!
+        cash = max(0, cash)
+        shipHold[.opium] = nil
     }
 }

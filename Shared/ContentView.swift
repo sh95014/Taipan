@@ -232,6 +232,10 @@ struct TradingView: View {
                 NewShipOfferView()
             case .newGunOffer:
                 NewGunOfferView()
+            case .opiumSeized:
+                OpiumSeizedView()
+            case .warehouseTheft:
+                WarehouseTheftView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -388,54 +392,35 @@ struct NewGunOfferView: View {
     }
 }
 
-struct KeypadView: View {
-    @Binding var amount: Int
-    var limitHint: String?
+struct OpiumSeizedView: View {
+    @EnvironmentObject private var game: Game
     
     var body: some View {
         VStack {
-            HStack {
-                Text("\(amount)")
-                    .withTextFieldStyle(width: 100)
-                if let limitHint = limitHint {
-                    Text(limitHint)
-                        .padding(.leading, 20)
-                        .multilineTextAlignment(.center)
-                        .font(.captionFont)
-                        .opacity(0.7)
-                }
-            }
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Bad Joss!!")
+                .withMessageStyle()
+            Text("The local authorities have seized your Opium cargo and have also fined you \(game.fine!.fancyFormatted()), Taipan!")
+                .withMessageStyle()
             Spacer()
-                .frame(height: 20)
-            ForEach(0...2, id: \.self) { row in
-                HStack {
-                    ForEach(0...2, id: \.self) { column in
-                        let digit = row * 3 + column + 1
-                        KeypadButton {
-                            amount = amount * 10 + digit
-                        } content: {
-                            Text("\(digit)")
-                        }
-                        .padding(2)
-                    }
-                }
-            }
-            HStack {
-                KeypadButton {
-                    amount = amount * 10
-                } content: {
-                    Text("0")
-                }
-                .padding(2)
-                KeypadButton {
-                    amount = amount / 10
-                } content: {
-                    Image(systemName: "delete.backward")
-                }
-                .padding(2)
-            }
-            .padding(.bottom, 20)
         }
+        .withTappableStyle(game)
+    }
+}
+
+struct WarehouseTheftView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador's Report")
+                .withReportStyle()
+            Text("Messenger reports large theft from warehouse, Taipan.")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
     }
 }
 
@@ -845,7 +830,56 @@ struct RepairModalView: View {
     }
 }
 
-
+struct KeypadView: View {
+    @Binding var amount: Int
+    var limitHint: String?
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Text("\(amount)")
+                    .withTextFieldStyle(width: 100)
+                if let limitHint = limitHint {
+                    Text(limitHint)
+                        .padding(.leading, 20)
+                        .multilineTextAlignment(.center)
+                        .font(.captionFont)
+                        .opacity(0.7)
+                }
+            }
+            Spacer()
+                .frame(height: 20)
+            ForEach(0...2, id: \.self) { row in
+                HStack {
+                    ForEach(0...2, id: \.self) { column in
+                        let digit = row * 3 + column + 1
+                        KeypadButton {
+                            amount = amount * 10 + digit
+                        } content: {
+                            Text("\(digit)")
+                        }
+                        .padding(2)
+                    }
+                }
+            }
+            HStack {
+                KeypadButton {
+                    amount = amount * 10
+                } content: {
+                    Text("0")
+                }
+                .padding(2)
+                KeypadButton {
+                    amount = amount / 10
+                } content: {
+                    Image(systemName: "delete.backward")
+                }
+                .padding(2)
+            }
+            .padding(.bottom, 20)
+        }
+    }
+}
 
 struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
