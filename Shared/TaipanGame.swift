@@ -181,7 +181,7 @@ class Game: ObservableObject {
                 transitionTo(newShipOrGunOffer() ?? .opiumSeized)
             }
         case .opiumSeized:
-            if shipHold[.opium] != nil && shipHold[.opium]! > 0 && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
+            if hasOpiumOnShip && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
                 seizeOpium()
                 state = newState
                 setTimer(5)
@@ -256,76 +256,99 @@ class Game: ObservableObject {
         case (.arriving, .timer):
             arriveAt(destinationCity!)
             transitionTo(.liYuenExtortion)
+        
         case (.liYuenExtortion, .yes):
             transitionTo(payLiYuen() ? .mcHenryOffer : .notEnoughCash)
         case (.liYuenExtortion, .no):
             transitionTo(.mcHenryOffer)
+        
         case (.notEnoughCash, .tap): timer?.invalidate(); fallthrough
         case (.notEnoughCash, .timer):
             transitionTo(.borrowForLiYuen)
+        
         case (.borrowForLiYuen, .yes):
             borrowForLiYuen()
             transitionTo(.borrowedForLiYuen)
         case (.borrowForLiYuen, .no):
             transitionTo(.elderBrotherWuPirateWarning)
+        
         case (.borrowedForLiYuen, .tap): timer?.invalidate(); fallthrough
         case (.borrowedForLiYuen, .timer):
             transitionTo(.mcHenryOffer)
+        
         case (.elderBrotherWuPirateWarning, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuPirateWarning, .timer):
             transitionTo(.mcHenryOffer)
+        
         case (.mcHenryOffer, .no),
              (.mcHenryOffer, .repaired):
             transitionTo(.elderBrotherWuWarning1)
+        
         case (.elderBrotherWuWarning1, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning1, .timer):
             transitionTo(.elderBrotherWuWarning2)
+        
         case (.elderBrotherWuWarning2, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning2, .timer):
             transitionTo(.elderBrotherWuWarning3)
+        
         case (.elderBrotherWuWarning3, .tap): timer?.invalidate(); fallthrough
         case (.elderBrotherWuWarning3, .timer):
             transitionTo(.elderBrotherWuBusiness)
+        
         case (.elderBrotherWuBusiness, .no):
             transitionTo(.cutthroats)
+        
         case (.elderBrotherWuBailout, .yes):
             acceptBailout()
             transitionTo(.bailoutReaction)
+        
         case (.elderBrotherWuBailout, .no):
             transitionTo(.bankruptcy)
+        
         case (.bailoutReaction, .tap): timer?.invalidate(); fallthrough
         case (.bailoutReaction, .timer):
             transitionTo(.cutthroats)
+        
         case (.cutthroats, .tap): timer?.invalidate(); fallthrough
         case (.cutthroats, .timer):
             transitionTo(newShipOrGunOffer() ?? .opiumSeized)
+        
         case (.newShipOffer, .yes):
             transitionTo(upgradeShip() ?? .opiumSeized)
         case (.newShipOffer, .no):
             transitionTo(.opiumSeized)
+        
         case (.newGunOffer, .yes):
             buyGun()
             fallthrough
         case (.newGunOffer, .no):
             transitionTo(.opiumSeized)
+        
         case (.opiumSeized, .tap): timer?.invalidate(); fallthrough
         case (.opiumSeized, .timer):
             transitionTo(.warehouseTheft)
+        
         case (.warehouseTheft, .tap): timer?.invalidate(); fallthrough
         case (.warehouseTheft, .timer):
             transitionTo(.liYuenMessage)
+        
         case (.liYuenMessage, .tap): timer?.invalidate(); fallthrough
         case (.liYuenMessage, .timer):
             transitionTo(.goodPrices)
+        
         case (.priceDrop, .tap): timer?.invalidate(); fallthrough
         case (.priceDrop, .timer):
             transitionTo(.robbery)
+        
         case (.priceJump, .tap): timer?.invalidate(); fallthrough
         case (.priceJump, .timer):
             transitionTo(.robbery)
+        
         case (.robbery, .tap): timer?.invalidate(); fallthrough
         case (.robbery, .timer):
             transitionTo(.trading)
+        
         default:
             print("illegal event \(event) in state \(state)")
             break
@@ -334,7 +357,7 @@ class Game: ObservableObject {
     
     // MARK: - Ship
     
-    var shipDamage: Int = 0
+    var shipDamage: Int = 1
     var shipStatus: Int { 100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100) }
     var fancyShipStatus: String {
         let statusStrings = [ "Critical", "Poor", "Fair", "Good", "Prime", "Perfect" ]
@@ -356,8 +379,31 @@ class Game: ObservableObject {
     }
     
     func transferToShip(_ merchandise: Merchandise, _ amount: Int) {
+        guard let warehouseMerchandise = warehouse[merchandise],
+              warehouseMerchandise >= amount
+        else {
+            print("insufficient \(merchandise.rawValue) in warehouse to transfer \(amount)")
+            return
+        }
+        
         shipHold[merchandise] = (shipHold[merchandise] ?? 0) + amount
-        warehouse[merchandise] = warehouse[merchandise]! - amount
+        warehouse[merchandise] = warehouseMerchandise - amount
+    }
+    
+    func shipHasCargo() -> Bool {
+        for (_, units) in shipHold {
+            if units > 0 {
+                return true
+            }
+        }
+        return false
+    }
+    
+    var hasOpiumOnShip: Bool {
+        if let opium = shipHold[.opium] {
+            return opium > 0
+        }
+        return false
     }
     
     // MARK: - Warehouse
@@ -376,8 +422,15 @@ class Game: ObservableObject {
     var warehouseFreeCapacity: Int { warehouseCapacity - warehouseUsedCapacity }
     
     func transferToWarehouse(_ merchandise: Merchandise, _ amount: Int) {
+        guard let shipMerchandise = warehouse[merchandise],
+              shipMerchandise >= amount
+        else {
+            print("insufficient \(merchandise.rawValue) on ship to transfer \(amount)")
+            return
+        }
+        
         warehouse[merchandise] = (warehouse[merchandise] ?? 0) + amount
-        shipHold[merchandise] = shipHold[merchandise]! - amount
+        shipHold[merchandise] = shipMerchandise - amount
     }
     
     func warehouseTheft() {
@@ -409,27 +462,58 @@ class Game: ObservableObject {
     @Published var price: [Merchandise: Int] = [:]
     
     private func setPrices() {
+        guard let currentCity = currentCity,
+              let cityPriceMultiplier = priceMultiplier[currentCity]
+        else {
+            print("unable to set prices")
+            return
+        }
+        
         for merchandise in Merchandise.allCases {
-            price[merchandise] = priceMultiplier[currentCity!]![merchandise]! / 2 * Int.random(in: 1...3) * basePrice[merchandise]!
+            if let cityPriceMultiplerForMerchandise = cityPriceMultiplier[merchandise],
+               let basePriceForMerchandise = basePrice[merchandise] {
+                price[merchandise] = cityPriceMultiplerForMerchandise / 2 * Int.random(in: 1...3) * basePriceForMerchandise
+            }
+            else {
+                print("unable to set price for \(merchandise)")
+            }
         }
     }
     
     var goodPriceMerchandise: Merchandise?
     
     private func priceDrop() {
-        goodPriceMerchandise = Merchandise.allCases.randomElement()!
-        price[goodPriceMerchandise!]! /= 5
+        if let merchandise = Merchandise.allCases.randomElement(),
+           let originalPrice = price[merchandise] {
+            goodPriceMerchandise = merchandise
+            price[merchandise] = originalPrice / 5
+        }
+        else {
+            print("unable to compute price drop")
+        }
         dbgPriceDrop = false
     }
     
     private func priceJump() {
-        goodPriceMerchandise = Merchandise.allCases.randomElement()!
-        price[goodPriceMerchandise!]! *= Int.random(in: 5...9)
+        if let merchandise = Merchandise.allCases.randomElement(),
+           let originalPrice = price[merchandise] {
+            goodPriceMerchandise = merchandise
+            price[merchandise] = originalPrice * Int.random(in: 5...9)
+        }
+        else {
+            print("unable to compute price jump")
+        }
         dbgPriceJump = false
     }
     
     func canAfford(_ merchandise: Merchandise) -> Int {
-        cash / price[merchandise]!
+        if let unitPrice = price[merchandise] {
+            return cash / unitPrice
+        }
+        else {
+            print("unable to get unit price")
+            return 0
+        }
     }
     
     func canAffordAny() -> Bool {
@@ -442,25 +526,25 @@ class Game: ObservableObject {
     }
     
     func buy(_ merchandise: Merchandise, _ amount: Int) {
-        if cash >= price[merchandise]! * amount {
-            cash -= price[merchandise]! * amount
+        if let unitPrice = price[merchandise],
+           cash >= unitPrice * amount {
+            cash -= unitPrice * amount
             shipHold[merchandise] = (shipHold[merchandise] ?? 0) + amount
         }
-    }
-    
-    func canSell() -> Bool {
-        for (_, units) in shipHold {
-            if units > 0 {
-                return true
-            }
+        else {
+            print("unable to buy \(amount) of \(merchandise.rawValue)")
         }
-        return false
     }
     
     func sell(_ merchandise: Merchandise, _ amount: Int) {
-        if amount <= shipHold[merchandise] ?? 0 {
-            cash += price[merchandise]! * amount
-            shipHold[merchandise]! -= amount
+        if let unitPrice = price[merchandise],
+           let inventory = shipHold[merchandise],
+           amount <= inventory {
+            cash += unitPrice * amount
+            shipHold[merchandise] = inventory - amount
+        }
+        else {
+            print("unable to sell \(amount) of \(merchandise.rawValue)")
         }
     }
     
@@ -504,25 +588,35 @@ class Game: ObservableObject {
     @Published var year: Int = 1860
     private var months: Int { (year - 1860) * 12 + month.index() }
     
-    private func aMonthPassed() {
+    func departFor(_ city: City) {
+        // clean up
+        bailoutOffer = nil
+        bailoutRepay = nil
+        bodyguardsLost = nil
+        goodPriceMerchandise = nil
+        liYuenDemand = nil
+        mcHenryOffer = nil
+        mcHenryRate = nil
+        offerAmount = nil
+        opiumFine = nil
+        robberyLoss = nil
+        
+        currentCity = nil // "at sea"
+        destinationCity = city
+        
+        // a month passed
         if month == .december {
             year += 1
         }
         month = month.next()
-    }
-    
-    func departFor(_ city: City) {
-        currentCity = nil
-        destinationCity = city
-        aMonthPassed()
         debt = Int(Double(debt) * 1.1)
         bank = Int(Double(bank) * 1.005)
+        
         transitionTo(.arriving)
     }
     
     private func arriveAt(_ city: City) {
         currentCity = city
-        destinationCity = nil
         setPrices()
     }
     
@@ -551,12 +645,14 @@ class Game: ObservableObject {
     }
     
     private func payLiYuen() -> Bool {
-        if cash >= liYuenDemand! {
-            cash -= liYuenDemand!
+        if let liYuenDemand = liYuenDemand,
+            cash >= liYuenDemand {
+            cash -= liYuenDemand
             liYuenCounter = liYuenCounterJustPaid
             return true
         }
         else {
+            print("unable to pay off Li Yuen")
             return false
         }
     }
@@ -566,15 +662,21 @@ class Game: ObservableObject {
     var mcHenryOffer: Int?
     private var mcHenryRate: Int?
     private func setMcHenryOffer() {
-        mcHenryRate = Int(Double(60 * (months + 3) / 4) * Double.random(in: 0.0...1.0) + Double(25 * (months + 3) / 4 * shipCapacity / 50))
-        mcHenryOffer = mcHenryRate! * shipDamage + 1
+        let mcHenryRate = Int(Double(60 * (months + 3) / 4) * Double.random(in: 0.0...1.0) + Double(25 * (months + 3) / 4 * shipCapacity / 50))
+        mcHenryOffer = mcHenryRate * shipDamage + 1
+        self.mcHenryRate = mcHenryRate
     }
     
     func repair(_ amount: Int) {
-        shipDamage -= Int(Double(amount / mcHenryRate!) + 0.5)
-        shipDamage = max(shipDamage, 0)
-        cash -= amount
-        sendEvent(.repaired)
+        if let mcHenryRate = mcHenryRate {
+            shipDamage -= Int(Double(amount / mcHenryRate) + 0.5)
+            shipDamage = max(shipDamage, 0)
+            cash -= amount
+            sendEvent(.repaired)
+        }
+        else {
+            print("unable to repair")
+        }
     }
     
     // MARK: - Elder Brother Wu
@@ -591,9 +693,14 @@ class Game: ObservableObject {
     }
     
     func borrowForLiYuen() {
-        debt += liYuenDemand! - cash
-        cash = 0
-        liYuenCounter = liYuenCounterJustPaid
+        if let liYuenDemand = liYuenDemand {
+            debt += liYuenDemand - cash
+            cash = 0
+            liYuenCounter = liYuenCounterJustPaid
+        }
+        else {
+            print("unable to pay off Li Yuen")
+        }
     }
     
     func repay(_ amount: Int) {
@@ -613,8 +720,14 @@ class Game: ObservableObject {
     }
     
     func acceptBailout() {
-        cash += bailoutOffer!
-        debt += bailoutRepay!
+        if let bailoutOffer = bailoutOffer,
+           let bailoutRepay = bailoutRepay {
+            cash += bailoutOffer
+            debt += bailoutRepay
+        }
+        else {
+            print("unable to bailout")
+        }
     }
     
     // MARK: - Bank
@@ -636,14 +749,15 @@ class Game: ObservableObject {
     
     // MARK: - Special Offers
     
-    var offerAmount: Int = 0
+    var offerAmount: Int?
     
     private func newShipOrGunOffer() -> State? {
         if Int.random(1, in: 4, comment: "make offer?") || dbgMakeShipOffer || dbgMakeGunOffer {
             if Int.random(1, in: 2, comment: "ship?") || dbgMakeShipOffer {
                 dbgMakeShipOffer = false
-                offerAmount = 1000 + Int.random(in: 0...1000 * (months + 5) / 6) * (shipCapacity / 50)
+                let offerAmount = 1000 + Int.random(in: 0...1000 * (months + 5) / 6) * (shipCapacity / 50)
                 if cash >= offerAmount {
+                    self.offerAmount = offerAmount
                     return .newShipOffer
                 }
             }
@@ -657,8 +771,9 @@ class Game: ObservableObject {
     
     private func newGunOffer() -> State? {
         if shipGuns < 1000 {
-            offerAmount = 500 + Int.random(in: 0...1000 * (months + 5) / 6)
+            let offerAmount = 500 + Int.random(in: 0...1000 * (months + 5) / 6)
             if cash >= offerAmount && shipFreeCapacity > gunWeight {
+                self.offerAmount = offerAmount
                 return .newGunOffer
             }
         }
@@ -666,30 +781,41 @@ class Game: ObservableObject {
     }
     
     private func upgradeShip() -> State? {
-        cash -= offerAmount
-        shipCapacity += 50
-        shipDamage = 0
-        
-        if Int.random(1, in: 2, comment: "gun?") || dbgMakeGunOffer {
-            return newGunOffer()
+        if let offerAmount = offerAmount {
+            cash -= offerAmount
+            shipCapacity += 50
+            shipDamage = 0
+            
+            if Int.random(1, in: 2, comment: "gun?") || dbgMakeGunOffer {
+                return newGunOffer()
+            }
+        }
+        else {
+            print("unable to upgrade ship")
         }
         return nil
     }
     
     private func buyGun() {
-        cash -= offerAmount
-        shipGuns += 1
+        if let offerAmount = offerAmount {
+            cash -= offerAmount
+            shipGuns += 1
+        }
+        else {
+            print("unable to buy gun")
+        }
     }
     
     // MARK: - Other Encounters
     
-    var fine: Int?
+    var opiumFine: Int?
     
     func seizeOpium() {
-        fine = Int(Double(cash) / 1.8 * Double.random(in: 0.0...1.0) + 1)
-        cash -= fine!
-        cash = max(0, cash)
+        let fine = Int(Double(cash) / 1.8 * Double.random(in: 0.0...1.0) + 1)
+        cash = max(cash - fine, 0)
         shipHold[.opium] = nil
+        self.opiumFine = fine
+        dbgOpiumSeized = false
     }
     
     var robberyLoss: Int?
@@ -698,9 +824,9 @@ class Game: ObservableObject {
         // Link's implementation has this as:
         //   float robbed = ((cash / 1.4) * ((float) rand() / RAND_MAX));
         // but that could yield 0 if rand() is 0.
-        robberyLoss = Int(Double(cash) / 1.4 * Double.random(in: 0.1...1.0))
-        cash -= robberyLoss!
-        cash = max(0, cash)
+        let robberyLoss = Int(Double(cash) / 1.4 * Double.random(in: 0.1...1.0))
+        cash = max(cash - robberyLoss, 0)
+        self.robberyLoss = robberyLoss
         dbgRobbery = false
     }
     

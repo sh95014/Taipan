@@ -175,7 +175,7 @@ struct TradingView: View {
                             Text("Sell")
                                 .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
                         }
-                        .withDisabledStyle(!game.canSell())
+                        .withDisabledStyle(!game.shipHasCargo())
                         Spacer()
                         RoundRectButton {
                             isShowingBankModal = true
@@ -191,7 +191,7 @@ struct TradingView: View {
                             Text("Transfer\nCargo")
                                 .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
                         }
-                        .withDisabledStyle(game.currentCity != .hongkong || (!game.canSell() && game.warehouseUsedCapacity == 0))
+                        .withDisabledStyle(game.currentCity != .hongkong || (!game.shipHasCargo() && game.warehouseUsedCapacity == 0))
                         Spacer()
                         RoundRectButton {
                             isShowingDestinationModal = true
@@ -545,7 +545,7 @@ struct NewShipOfferView: View {
         VStack {
             Text("Comprador‘s Report")
                 .withReportStyle()
-            Text("Do you wish to trade in your \(game.shipDamage > 0 ? "damaged" : "fine") ship for one with 50 more capacity by paying an additional \(game.offerAmount.formatted()), Taipan?")
+            Text("Do you wish to trade in your \(game.shipDamage > 0 ? "damaged" : "fine") ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?")
                 .withMessageStyle()
             Spacer()
             HStack {
@@ -573,7 +573,7 @@ struct NewGunOfferView: View {
         VStack {
             Text("Comprador‘s Report")
                 .withReportStyle()
-            Text("Do you wish to buy a ship‘s gun for \(game.offerAmount.formatted()), Taipan?")
+            Text("Do you wish to buy a ship‘s gun for \(game.offerAmount!.formatted()), Taipan?")
                 .withMessageStyle()
             Spacer()
             HStack {
@@ -603,7 +603,7 @@ struct OpiumSeizedView: View {
                 .withReportStyle()
             Text("Bad Joss!!")
                 .withMessageStyle()
-            Text("The local authorities have seized your Opium cargo and have also fined you \(game.fine!.fancyFormatted()), Taipan!")
+            Text("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
                 .withMessageStyle()
             Spacer()
         }
