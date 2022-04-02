@@ -244,6 +244,8 @@ struct TradingView: View {
                 BailoutReactionView()
             case .bankruptcy:
                 BankruptcyView()
+            case .cutthroats:
+                CutthroatsView()
             case .newShipOffer:
                 NewShipOfferView()
             case .newGunOffer:
@@ -512,6 +514,23 @@ struct BankruptcyView: View {
             Text("Comprador‘s Report")
                 .withReportStyle()
             Text("Very well, Taipan, the game is over!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct CutthroatsView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Comprador‘s Report")
+                .withReportStyle()
+            Text("Bad joss!!")
+                .withMessageStyle()
+            Text("\(game.bodyguardsLost!.formatted()) of your bodyguards have been killed by cutthroats and you have been robbed of all of your cash, Taipan!!")
                 .withMessageStyle()
             Spacer()
         }

@@ -36,11 +36,12 @@ extension Int {
 
 class Game: ObservableObject {
     @Published var companyName: String?
-    @Published var cash: Int = 0
+    @Published var cash: Int = 50000
     
     // used to override the random events
     var dbgLiYuenDemand: Int? = nil
     var dbgBailoutOffer = false
+    var dbgCutthroats = false
     var dbgMakeShipOffer = false
     var dbgMakeGunOffer = false
     var dbgOpiumSeized = false
@@ -74,6 +75,7 @@ class Game: ObservableObject {
         case elderBrotherWuBailout
         case bailoutReaction
         case bankruptcy
+        case cutthroats
         case newShipOffer
         case newGunOffer
         case opiumSeized
@@ -106,6 +108,9 @@ class Game: ObservableObject {
     
     func transitionTo(_ newState: State) {
         switch newState {
+        case .arriving:
+            setTimer(3)
+            state = newState
         case .liYuenExtortion:
             if currentCity == .hongkong && cash > 0 && liYuenCounter == liYuenCounterWantsMoney {
                 liYuenExtortion()
@@ -158,7 +163,7 @@ class Game: ObservableObject {
                 }
             }
             else {
-                transitionTo(newShipOrGunOffer() ?? .opiumSeized)
+                transitionTo(.cutthroats)
             }
         case .elderBrotherWuBailout:
             elderBrotherWuBailout()
@@ -166,6 +171,15 @@ class Game: ObservableObject {
         case .bailoutReaction:
             setTimer(5)
             state = newState
+        case .cutthroats:
+            if debt > 20000 && cash > 0 && (Int.random(1, in: 5) || dbgCutthroats) {
+                cutthroats()
+                setTimer(5)
+                state = newState
+            }
+            else {
+                transitionTo(newShipOrGunOffer() ?? .opiumSeized)
+            }
         case .opiumSeized:
             if shipHold[.opium] != nil && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
                 seizeOpium()
@@ -273,7 +287,7 @@ class Game: ObservableObject {
         case (.elderBrotherWuWarning3, .timer):
             transitionTo(.elderBrotherWuBusiness)
         case (.elderBrotherWuBusiness, .no):
-            transitionTo(newShipOrGunOffer() ?? .opiumSeized)
+            transitionTo(.cutthroats)
         case (.elderBrotherWuBailout, .yes):
             acceptBailout()
             transitionTo(.bailoutReaction)
@@ -281,6 +295,9 @@ class Game: ObservableObject {
             transitionTo(.bankruptcy)
         case (.bailoutReaction, .tap): timer?.invalidate(); fallthrough
         case (.bailoutReaction, .timer):
+            transitionTo(.cutthroats)
+        case (.cutthroats, .tap): timer?.invalidate(); fallthrough
+        case (.cutthroats, .timer):
             transitionTo(newShipOrGunOffer() ?? .opiumSeized)
         case (.newShipOffer, .yes):
             transitionTo(upgradeShip() ?? .opiumSeized)
@@ -500,8 +517,7 @@ class Game: ObservableObject {
         aMonthPassed()
         debt = Int(Double(debt) * 1.1)
         bank = Int(Double(bank) * 1.005)
-        state = .arriving
-        setTimer(3)
+        transitionTo(.arriving)
     }
     
     private func arriveAt(_ city: City) {
@@ -686,5 +702,12 @@ class Game: ObservableObject {
         cash -= robberyLoss!
         cash = max(0, cash)
         dbgRobbery = false
+    }
+    
+    var bodyguardsLost: Int?
+    
+    func cutthroats() {
+        cash = 0
+        bodyguardsLost = Int.random(in: 1...3)
     }
 }
