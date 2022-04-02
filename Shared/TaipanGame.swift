@@ -35,7 +35,7 @@ extension Int {
 }
 
 class Game: ObservableObject {
-    @Published var companyName: String?
+    var companyName: String?
     @Published var cash: Int = 50000
     
     // used to override the random events
@@ -181,7 +181,7 @@ class Game: ObservableObject {
                 transitionTo(newShipOrGunOffer() ?? .opiumSeized)
             }
         case .opiumSeized:
-            if shipHold[.opium] != nil && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
+            if shipHold[.opium] != nil && shipHold[.opium]! > 0 && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
                 seizeOpium()
                 state = newState
                 setTimer(5)
@@ -334,7 +334,7 @@ class Game: ObservableObject {
     
     // MARK: - Ship
     
-    @Published var shipDamage: Int = 0
+    var shipDamage: Int = 0
     var shipStatus: Int { 100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100) }
     var fancyShipStatus: String {
         let statusStrings = [ "Critical", "Poor", "Fair", "Good", "Prime", "Perfect" ]
@@ -397,13 +397,13 @@ class Game: ObservableObject {
     }
     
     private let priceMultiplier: [City: [Merchandise: Int]] = [
-        .hongkong:  [ .opium:   11, .silk:  11, .arms: 12, .general: 10 ],
-        .shanghai:  [ .opium:   16, .silk:  14, .arms: 16, .general: 11 ],
-        .nagasaki:  [ .opium:   15, .silk:  15, .arms: 10, .general: 12 ],
-        .saigon:    [ .opium:   14, .silk:  16, .arms: 11, .general: 13 ],
-        .manila:    [ .opium:   12, .silk:  10, .arms: 13, .general: 14 ],
-        .singapore: [ .opium:   10, .silk:  13, .arms: 14, .general: 15 ],
-        .batavia:   [ .opium:   13, .silk:  12, .arms: 15, .general: 16 ],
+        .hongkong:  [ .opium: 11, .silk: 11, .arms: 12, .general: 10 ],
+        .shanghai:  [ .opium: 16, .silk: 14, .arms: 16, .general: 11 ],
+        .nagasaki:  [ .opium: 15, .silk: 15, .arms: 10, .general: 12 ],
+        .saigon:    [ .opium: 14, .silk: 16, .arms: 11, .general: 13 ],
+        .manila:    [ .opium: 12, .silk: 10, .arms: 13, .general: 14 ],
+        .singapore: [ .opium: 10, .silk: 13, .arms: 14, .general: 15 ],
+        .batavia:   [ .opium: 13, .silk: 12, .arms: 15, .general: 16 ],
     ]
     private let basePrice: [Merchandise: Int] = [ .opium: 1000, .silk: 100, .arms: 10, .general:  1 ]
     @Published var price: [Merchandise: Int] = [:]
@@ -414,7 +414,7 @@ class Game: ObservableObject {
         }
     }
     
-    @Published var goodPriceMerchandise: Merchandise?
+    var goodPriceMerchandise: Merchandise?
     
     private func priceDrop() {
         goodPriceMerchandise = Merchandise.allCases.randomElement()!
@@ -499,7 +499,7 @@ class Game: ObservableObject {
     }
     
     @Published var currentCity: City?
-    @Published var destinationCity: City?
+    var destinationCity: City?
     @Published var month: Month = .january
     @Published var year: Int = 1860
     private var months: Int { (year - 1860) * 12 + month.index() }
@@ -531,7 +531,7 @@ class Game: ObservableObject {
     private var liYuenCounter: Int = 0
     let liYuenCounterWantsMoney: Int = 0
     let liYuenCounterJustPaid: Int = 1
-    @Published var liYuenDemand: Int?
+    var liYuenDemand: Int?
     
     private func liYuenExtortion() {
         if let dbgLiYuenDemand = dbgLiYuenDemand {
