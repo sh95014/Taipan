@@ -107,6 +107,8 @@ class Game: ObservableObject {
     }
     
     func transitionTo(_ newState: State) {
+        print("transitioning to state \(newState)")
+        
         switch newState {
         case .arriving:
             setTimer(3)
@@ -251,6 +253,8 @@ class Game: ObservableObject {
     }
     
     func sendEvent(_ event: Event) {
+        print("received event \(event) in state \(state)")
+        
         switch (state, event) {
         case (.arriving, .tap): timer?.invalidate(); fallthrough
         case (.arriving, .timer):
@@ -357,11 +361,20 @@ class Game: ObservableObject {
     
     // MARK: - Ship
     
-    var shipDamage: Int = 1
+    var shipDamage: Int = 0
     var shipStatus: Int { 100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100) }
-    var fancyShipStatus: String {
+    enum ShipStatusStyle {
+        case colon
+        case parenthesis
+    }
+    func fancyShipStatus(_ style: ShipStatusStyle = .colon) -> String {
         let statusStrings = [ "Critical", "Poor", "Fair", "Good", "Prime", "Perfect" ]
-        return "\(statusStrings[shipStatus / 20]): \(shipStatus)"
+        switch style {
+        case .colon:
+            return "\(statusStrings[shipStatus / 20]): \(shipStatus)"
+        case .parenthesis:
+            return "\(statusStrings[shipStatus / 20]) (\(shipStatus))"
+        }
     }
     var shipInDanger: Bool { shipStatus < 40 }
     

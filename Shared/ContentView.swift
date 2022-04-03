@@ -46,7 +46,7 @@ struct TradingView: View {
                 VStack {
                     Text("Ship Status")
                         .font(.captionFont)
-                    Text(game.fancyShipStatus)
+                    Text(game.fancyShipStatus(.colon))
                         .foregroundColor(game.shipInDanger ? .warningColor : .defaultColor)
                 }
             }
@@ -545,8 +545,10 @@ struct NewShipOfferView: View {
         VStack {
             Text("Comprador‘s Report")
                 .withReportStyle()
-            Text("Do you wish to trade in your \(game.shipDamage > 0 ? "damaged" : "fine") ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?")
-                .withMessageStyle()
+            (Text("Do you wish to trade in your ")
+            + Text("\(game.shipDamage > 0 ? "damaged" : "fine")").underline()
+            + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
+                .frame(maxWidth: .infinity, alignment: .leading)
             Spacer()
             HStack {
                 RoundRectButton {
@@ -1145,6 +1147,81 @@ struct KeypadView: View {
     }
 }
 
+struct BattleView: View {
+    private let bottomRowMinHeight: CGFloat = 45
+
+    @EnvironmentObject private var game: Game
+    @State private var shipYOffset: CGFloat = 0
+    @State private var shipToSink = 2
+    
+    var body: some View {
+        VStack {
+            HStack {
+                VStack {
+                    Text("10 ships attacking, Taipan!")
+                        .withMessageStyle()
+                    Text("Your orders are to: Fight")
+                        .withMessageStyle()
+                }
+                Spacer()
+                Text("We have\n\(game.shipGuns.formatted()) guns")
+                    .multilineTextAlignment(.trailing)
+                    .padding(5)
+                    .border(Color.defaultColor)
+            }
+            Text("Aye, we‘ll fight ‘em, Taipan!")
+            
+            Spacer()
+            
+            LazyVGrid(columns: [
+                GridItem(),
+                GridItem(),
+                GridItem(),
+            ], spacing: 10) {
+                ForEach(1...9, id: \.self) { ship in
+                    Image("lorcha")
+                        .resizable()
+                        .scaledToFit()
+//                        .background(ship == 6 ? Color.defaultColor : Color.clear)
+//                        .foregroundColor(ship == 6 ? Color.backgroundColor : Color.defaultColor)
+                        .animation(.linear(duration: 0.5), value: shipYOffset)
+                        .offset(y: ship == shipToSink ? shipYOffset : 0)
+                        .clipped()
+                }
+            }
+            .padding(.horizontal, 8)
+            
+            Spacer()
+            
+            Text("Current seaworthiness: \(game.fancyShipStatus(.parenthesis))")
+            HStack {
+                RoundRectButton {
+                    shipYOffset = 100
+                } content: {
+                    Text("Fight")
+                        .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
+                }
+                .withDisabledStyle(game.shipGuns == 0)
+                Spacer()
+                RoundRectButton {
+                    shipYOffset = 0
+                    shipToSink = 1 + (shipToSink + 1) % 9
+                } content: {
+                    Text("Run")
+                        .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
+                }
+                Spacer()
+                RoundRectButton {
+                } content: {
+                    Text("Throw\nCargo")
+                        .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
+                }
+                .withDisabledStyle(!game.shipHasCargo())
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
     
@@ -1157,48 +1234,57 @@ struct ContentView: View {
     @State private var isShowingBankModal = false
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
+    @State private var isUnderAttack = false
     
     var body: some View {
-        ZStack {
-            TradingView(isShowingBuyModal: $isShowingBuyModal,
-                        isShowingSellModal: $isShowingSellModal,
-                        isShowingDestinationModal: $isShowingDestinationModal,
-                        isShowingBorrowModal: $isShowingBorrowModal,
-                        isShowingRepayModal: $isShowingRepayModal,
-                        isShowingBankModal: $isShowingBankModal,
-                        isShowingTransferModal: $isShowingTransferModal,
-                        isShowingRepairModal: $isShowingRepairModal)
-                .blur(radius: isShowingModal ? 3 : 0)
-                .disabled(isShowingModal)
-            
-            if isShowingBuyModal {
-                BuyModalView(isShowingBuyModal: $isShowingBuyModal)
+        if !isUnderAttack {
+            ZStack {
+                TradingView(isShowingBuyModal: $isShowingBuyModal,
+                            isShowingSellModal: $isShowingSellModal,
+                            isShowingDestinationModal: $isShowingDestinationModal,
+                            isShowingBorrowModal: $isShowingBorrowModal,
+                            isShowingRepayModal: $isShowingRepayModal,
+                            isShowingBankModal: $isShowingBankModal,
+                            isShowingTransferModal: $isShowingTransferModal,
+                            isShowingRepairModal: $isShowingRepairModal)
+                    .blur(radius: isShowingModal ? 3 : 0)
+                    .disabled(isShowingModal)
+                
+                if isShowingBuyModal {
+                    BuyModalView(isShowingBuyModal: $isShowingBuyModal)
+                }
+                else if isShowingSellModal {
+                    SellModalView(isShowingSellModal: $isShowingSellModal)
+                }
+                else if isShowingDestinationModal {
+                    DestinationModalView(isShowingDestinationModal: $isShowingDestinationModal)
+                }
+                else if isShowingBorrowModal {
+                    BorrowModalView(isShowingBorrowModal: $isShowingBorrowModal)
+                }
+                else if isShowingRepayModal {
+                    RepayModalView(isShowingRepayModal: $isShowingRepayModal)
+                }
+                else if isShowingBankModal {
+                    BankModalView(isShowingBankModal: $isShowingBankModal)
+                }
+                else if isShowingTransferModal {
+                    TransferModalView(isShowingTransferModal: $isShowingTransferModal)
+                }
+                else if isShowingRepairModal {
+                    RepairModalView(isShowingRepairModal: $isShowingRepairModal)
+                }
             }
-            else if isShowingSellModal {
-                SellModalView(isShowingSellModal: $isShowingSellModal)
-            }
-            else if isShowingDestinationModal {
-                DestinationModalView(isShowingDestinationModal: $isShowingDestinationModal)
-            }
-            else if isShowingBorrowModal {
-                BorrowModalView(isShowingBorrowModal: $isShowingBorrowModal)
-            }
-            else if isShowingRepayModal {
-                RepayModalView(isShowingRepayModal: $isShowingRepayModal)
-            }
-            else if isShowingBankModal {
-                BankModalView(isShowingBankModal: $isShowingBankModal)
-            }
-            else if isShowingTransferModal {
-                TransferModalView(isShowingTransferModal: $isShowingTransferModal)
-            }
-            else if isShowingRepairModal {
-                RepairModalView(isShowingRepairModal: $isShowingRepairModal)
-            }
+            .foregroundColor(.defaultColor)
+            .background(Color.backgroundColor)
+            .font(bodyFont)
         }
-        .foregroundColor(.defaultColor)
-        .background(Color.backgroundColor)
-        .font(bodyFont)
+        else {
+            BattleView()
+                .foregroundColor(.defaultColor)
+                .background(Color.backgroundColor)
+                .font(bodyFont)
+        }
     }
     
     var isShowingModal: Bool {
