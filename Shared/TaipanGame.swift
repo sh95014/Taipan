@@ -50,6 +50,7 @@ class Game: ObservableObject {
     var dbgPriceDrop = false
     var dbgPriceJump = false
     var dbgRobbery = false
+    var dbgHostileShips = false
     
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
@@ -86,6 +87,7 @@ class Game: ObservableObject {
         case priceJump
         case robbery
         case trading
+        case hostilesApproaching
     }
     
     enum Event: String {
@@ -246,6 +248,14 @@ class Game: ObservableObject {
             else {
                 transitionTo(.trading)
             }
+        case .hostilesApproaching:
+            if Int.random(1, in: pirateOdds) || dbgHostileShips {
+                hostileShips()
+                state = newState
+                setTimer(3)
+            } else {
+                transitionTo(.arriving)
+            }
         default:
             state = newState
             break
@@ -352,6 +362,10 @@ class Game: ObservableObject {
         case (.robbery, .tap): timer?.invalidate(); fallthrough
         case (.robbery, .timer):
             transitionTo(.trading)
+        
+        case (.hostilesApproaching, .tap): timer?.invalidate(); fallthrough
+        case (.hostilesApproaching, .timer):
+            transitionTo(.arriving)
         
         default:
             print("illegal event \(event) in state \(state)")
@@ -625,7 +639,7 @@ class Game: ObservableObject {
         debt = Int(Double(debt) * 1.1)
         bank = Int(Double(bank) * 1.005)
         
-        transitionTo(.arriving)
+        transitionTo(.hostilesApproaching)
     }
     
     private func arriveAt(_ city: City) {
@@ -817,6 +831,16 @@ class Game: ObservableObject {
         else {
             print("unable to buy gun")
         }
+    }
+
+    // MARK: - Pirates
+    
+    private var pirateOdds = 7
+    var hostileShipsCount: Int?
+    
+    func hostileShips() {
+        hostileShipsCount = min(Int.random(in: 1...shipCapacity / 10 + shipGuns), 9999)
+        dbgHostileShips = false
     }
     
     // MARK: - Other Encounters

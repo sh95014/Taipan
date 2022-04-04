@@ -262,6 +262,8 @@ struct TradingView: View {
                 PriceJumpView()
             case .robbery:
                 RobberyView()
+            case .hostilesApproaching:
+                HostilesApproachingView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -545,10 +547,16 @@ struct NewShipOfferView: View {
         VStack {
             Text("Comprador‘s Report")
                 .withReportStyle()
-            (Text("Do you wish to trade in your ")
-            + Text("\(game.shipDamage > 0 ? "damaged" : "fine")").underline()
-            + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
-                .frame(maxWidth: .infinity, alignment: .leading)
+            if game.shipDamage > 0 {
+                (Text("Do you wish to trade in your ")
+                + Text("damaged").underline()
+                + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
+                    .withMessageStyle()
+            }
+            else {
+                Text("Do you wish to trade in your fine ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?")
+                    .withMessageStyle()
+            }
             Spacer()
             HStack {
                 RoundRectButton {
@@ -683,6 +691,21 @@ struct RobberyView: View {
             Text("Bad Joss!!")
                 .withMessageStyle()
             Text("You‘ve been beaten up and robbed of \(game.robberyLoss!.fancyFormatted()) in cash, Taipan!!")
+                .withMessageStyle()
+            Spacer()
+        }
+        .withTappableStyle(game)
+    }
+}
+
+struct HostilesApproachingView: View {
+    @EnvironmentObject private var game: Game
+    
+    var body: some View {
+        VStack {
+            Text("Captain‘s Report")
+                .withReportStyle()
+            Text("\(game.hostileShipsCount!.formatted()) hostile ships approaching, Taipan!")
                 .withMessageStyle()
             Spacer()
         }
@@ -1190,6 +1213,8 @@ struct BattleView: View {
                 }
             }
             .padding(.horizontal, 8)
+            Image(systemName: "plus")
+                .padding(.top, 5)
             
             Spacer()
             
@@ -1280,10 +1305,13 @@ struct ContentView: View {
             .font(bodyFont)
         }
         else {
-            BattleView()
-                .foregroundColor(.defaultColor)
-                .background(Color.backgroundColor)
-                .font(bodyFont)
+            ZStack {
+                Color.backgroundColor
+                BattleView()
+            }
+            .foregroundColor(.defaultColor)
+            .background(Color.backgroundColor)
+            .font(bodyFont)
         }
     }
     
