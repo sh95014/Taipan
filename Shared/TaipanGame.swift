@@ -51,6 +51,7 @@ class Game: ObservableObject {
     var dbgPriceJump = false
     var dbgRobbery = false
     var dbgHostileShips = false
+    var dbgHostileShipCount: Int?
     
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
@@ -88,6 +89,7 @@ class Game: ObservableObject {
         case robbery
         case trading
         case hostilesApproaching
+        case seaBattle
     }
     
     enum Event: String {
@@ -103,7 +105,7 @@ class Game: ObservableObject {
     
     private func setTimer(_ interval: TimeInterval) {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [self] timer in
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [self] timer in
             sendEvent(.timer)
         }
     }
@@ -256,6 +258,9 @@ class Game: ObservableObject {
             } else {
                 transitionTo(.arriving)
             }
+        case .seaBattle:
+            seaBattle()
+            state = newState
         default:
             state = newState
             break
@@ -365,7 +370,12 @@ class Game: ObservableObject {
         
         case (.hostilesApproaching, .tap): timer?.invalidate(); fallthrough
         case (.hostilesApproaching, .timer):
+            transitionTo(.seaBattle)
+        
+        case (.seaBattle, .yes):
             transitionTo(.arriving)
+        case (.seaBattle, .tap):
+            seaBattleTap()
         
         default:
             print("illegal event \(event) in state \(state)")
@@ -837,10 +847,76 @@ class Game: ObservableObject {
     
     private var pirateOdds = 7
     var hostileShipsCount: Int?
+    func isUnderAttack() -> Bool {
+        [ .seaBattle ].contains(state)
+    }
     
     func hostileShips() {
-        hostileShipsCount = min(Int.random(in: 1...shipCapacity / 10 + shipGuns), 9999)
+        hostileShipsCount = dbgHostileShipCount ?? min(Int.random(in: 1...shipCapacity / 10 + shipGuns), 9999)
+        dbgHostileShipCount = nil
         dbgHostileShips = false
+    }
+    
+    enum BattleOrder: String {
+        case fight = "Fight"
+        case run = "Run"
+        case throwCargo = "Throw Cargo"
+    }
+    
+    var maxShipsOnScreen = 9
+    var shipsOnScreen: [Int]?
+    @Published var battleOrder: BattleOrder?
+    @Published var battleMessage: String?
+    private var battleTimer: Timer?
+    @Published var firingOnShip: Int?
+    
+    private func setBattleTimer(_ interval: TimeInterval, action: @escaping () -> Void) {
+        battleTimer?.invalidate()
+        battleTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            action()
+        }
+    }
+    
+    func seaBattle() {
+        shipsOnScreen = Array(repeating: 0, count: maxShipsOnScreen)
+        fillScreenWithShips()
+    }
+    
+    func seaBattleTap() {
+        battleTimer?.fire()
+    }
+    
+    func fillScreenWithShips() {
+        let shipCount = shipsOnScreen!.lazy.filter({ $0 > 0 }).count
+        var shipsToPlace = hostileShipsCount! - shipCount
+        if shipsToPlace > 0 {
+            for i in 0..<maxShipsOnScreen {
+                if shipsOnScreen![i] == 0 {
+                    // (int)((ec * ((float) rand() / RAND_MAX)) + 20);
+                    // 'ec' is a counter that starts at 20 and increments by 10 every month
+                    shipsOnScreen![i] = 20 + Int.random(in: 0...(20 + months * 10))
+                    shipsToPlace -= 1
+                }
+                if shipsToPlace == 0 {
+                    break
+                }
+            }
+        }
+    }
+    
+    func orderFight() {
+        battleOrder = .fight
+        battleMessage = "Aye, we‘ll fight ‘em, Taipan."
+        setBattleTimer(3, action: {
+            self.battleMessage = "We‘re firing on ‘em, Taipan!"
+            self.setBattleTimer(1, action: {
+                self.firingOnShip = 3
+            })
+        })
+    }
+    
+    func finishedFiring() {
+        self.firingOnShip = nil
     }
     
     // MARK: - Other Encounters

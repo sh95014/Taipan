@@ -770,14 +770,16 @@ struct BattleView: View {
     @EnvironmentObject private var game: Game
     @State private var shipYOffset: CGFloat = 0
     @State private var shipToSink = 2
+    @State private var firedOnShipForeground = Color.defaultColor
+    @State private var firedOnShipBackground = Color.backgroundColor
     
     var body: some View {
         VStack {
             HStack {
                 VStack {
-                    Text("10 ships attacking, Taipan!")
+                    Text("\(game.hostileShipsCount!.formatted()) ships attacking, Taipan!")
                         .withMessageStyle()
-                    Text("Your orders are to: Fight")
+                    Text("Your orders are to: \(game.battleOrder?.rawValue ?? "")")
                         .withMessageStyle()
                 }
                 Spacer()
@@ -786,7 +788,7 @@ struct BattleView: View {
                     .padding(5)
                     .border(Color.defaultColor)
             }
-            Text("Aye, we‘ll fight ‘em, Taipan!")
+            Text(game.battleMessage ?? " ")
             
             Spacer()
             
@@ -795,27 +797,46 @@ struct BattleView: View {
                 GridItem(),
                 GridItem(),
             ], spacing: 10) {
-                ForEach(1...9, id: \.self) { ship in
+                ForEach(0..<game.maxShipsOnScreen, id: \.self) { ship in
                     Image("lorcha")
                         .resizable()
                         .scaledToFit()
-//                        .background(ship == 6 ? Color.defaultColor : Color.clear)
-//                        .foregroundColor(ship == 6 ? Color.backgroundColor : Color.defaultColor)
-                        .animation(.linear(duration: 0.5), value: shipYOffset)
-                        .offset(y: ship == shipToSink ? shipYOffset : 0)
+                        .opacity(game.shipsOnScreen![ship] > 0 ? 1.0 : 0.0)
                         .clipped()
+                        .foregroundColor(ship != game.firingOnShip ? Color.defaultColor : firedOnShipForeground)
+                        .background(ship != game.firingOnShip ? Color.backgroundColor : firedOnShipBackground)
+                        .onChange(of: game.firingOnShip) { newValue in
+                            if newValue == ship {
+                                firedOnShipForeground = .backgroundColor
+                                firedOnShipBackground = .defaultColor
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    firedOnShipForeground = .defaultColor
+                                    firedOnShipBackground = .backgroundColor
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        firedOnShipForeground = .backgroundColor
+                                        firedOnShipBackground = .defaultColor
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            firedOnShipForeground = .defaultColor
+                                            firedOnShipBackground = .backgroundColor
+                                            game.finishedFiring()
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 }
             }
             .padding(.horizontal, 8)
             Image(systemName: "plus")
                 .padding(.top, 5)
+                .opacity(game.hostileShipsCount! > game.maxShipsOnScreen ? 1.0 : 0.0)
             
             Spacer()
             
             Text("Current seaworthiness: \(game.fancyShipStatus(.parenthesis))")
             HStack {
                 RoundRectButton {
-                    shipYOffset = 100
+                    game.orderFight()
                 } content: {
                     Text("Fight")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
@@ -823,8 +844,7 @@ struct BattleView: View {
                 .withDisabledStyle(game.shipGuns == 0)
                 Spacer()
                 RoundRectButton {
-                    shipYOffset = 0
-                    shipToSink = 1 + (shipToSink + 1) % 9
+                    game.sendEvent(.yes)
                 } content: {
                     Text("Run")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
@@ -838,6 +858,7 @@ struct BattleView: View {
                 .withDisabledStyle(!game.shipHasCargo())
             }
         }
+        .withTappableStyle(game)
     }
 }
 
@@ -853,10 +874,9 @@ struct ContentView: View {
     @State private var isShowingBankModal = false
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
-    @State private var isUnderAttack = false
     
     var body: some View {
-        if !isUnderAttack {
+        if !game.isUnderAttack() {
             ZStack {
                 TradingView(isShowingBuyModal: $isShowingBuyModal,
                             isShowingSellModal: $isShowingSellModal,
