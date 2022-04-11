@@ -892,13 +892,15 @@ class Game: ObservableObject {
         }
     }
     
-    func seaBattle() {
+    // start the battle
+    private func seaBattle() {
         hostilesOnScreen = Array(repeating: 0, count: maxHostilesOnScreen)
         fillScreenWithShips()
         executeOrder()
     }
     
-    func seaBattleTap() {
+    // user wants to skip the time delay
+    private func seaBattleTap() {
         battleTimer?.fire()
     }
     
@@ -912,7 +914,8 @@ class Game: ObservableObject {
         return count
     }
     
-    func fillScreenWithShips() {
+    // show as many of the attacking pirate ships as will fit
+    private func fillScreenWithShips() {
         var shipsToPlace = hostilesCount! - countOfHostilesOnScreen
         if shipsToPlace > 0 {
             for i in 0..<maxHostilesOnScreen {
@@ -930,19 +933,23 @@ class Game: ObservableObject {
         }
     }
     
+    // a particular pirate ship is considered visible if it's afloat or in the
+    // process of sinking
     func shipVisible(_ ship: Int) -> Bool {
         return hostilesOnScreen![ship] > 0 || (ship == targetedShip && (targetedShipSinking ?? false))
     }
     
+    // user ordered to fight
     func orderFight() {
         battleOrder = .fight
     }
     
-    func executeOrder() {
+    // execute the user's last order
+    private func executeOrder() {
         setBattleTimer(3) { [self] in
             switch battleOrder {
             case .fight:
-                fireCannons()
+                fireGuns()
             case .run:
                 break
             case .throwCargo:
@@ -953,17 +960,19 @@ class Game: ObservableObject {
         }
     }
     
-    func fireCannons() {
+    // fire each of our available guns
+    private func fireGuns() {
         shotsLeft = shipGuns
         battleMessage = "Aye, we‘ll fight ‘em, Taipan."
         fillScreenWithShips()
         sinkCount = 0
         setBattleTimer(3) { [self] in
-            fireCannon()
+            fireGun()
         }
     }
     
-    func fireCannon() {
+    // fire one gun
+    private func fireGun() {
         self.battleMessage = "We‘re firing on ‘em, Taipan!"
         self.setBattleTimer(1) { [self] in
             // randomly pick a target among ships on screen that haven't sunk yet
@@ -977,7 +986,8 @@ class Game: ObservableObject {
         }
     }
     
-    func cannonDidFire() {
+    // animation for gunfire has completed
+    func gunDidFire() {
         if let targetedShip = targetedShip {
             hostilesOnScreen![targetedShip] -= Int.random(in: 10...40)
             print("ship[\(targetedShip)] = \(hostilesOnScreen![targetedShip])")
@@ -992,6 +1002,7 @@ class Game: ObservableObject {
         }
     }
     
+    // animation for ship sinking has completed
     func targetedShipSunk() {
         print("??2 \(hostilesCount!) \(countOfHostilesOnScreen)")
         targetedShip = nil
@@ -1007,19 +1018,21 @@ class Game: ObservableObject {
         }
     }
     
-    func fireNextShot() {
+    private func fireNextShot() {
         setBattleTimer(0.5) { [self] in
             shotsLeft! -= 1
             if shotsLeft! > 0 && countOfHostilesOnScreen > 0 {
-                fireCannon()
+                fireGun()
             }
             else {
+                // all guns fired, summarize the round
                 if sinkCount! > 0 {
                     battleMessage = "Sunk \(sinkCount!.formatted()) of the buggers, Taipan!"
                 }
                 else {
                     battleMessage = "Hit ‘em, but didn‘t sink ‘em, Taipan!"
                 }
+                
                 let numerator = Int(Double(hostilesCount!) * 0.6 / Double(hostileType!.rawValue))
                 if Int.random(numerator, in: originalHostileShipsCount!) || dbgRanAway {
                     dbgRanAway = false
@@ -1048,7 +1061,8 @@ class Game: ObservableObject {
         }
     }
     
-    func endBattle() {
+    // clean up the variables used in the battle
+    private func endBattle() {
         hostileType = nil
         hostilesCount = nil
         originalHostileShipsCount = nil
