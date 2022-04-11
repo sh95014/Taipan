@@ -264,6 +264,8 @@ struct TradingView: View {
                 RobberyView()
             case .hostilesApproaching:
                 HostilesApproachingView()
+            case .battleSummary:
+                BattleSummaryView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -711,6 +713,35 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
+    
+    struct BattleSummaryView: View {
+        @EnvironmentObject private var game: Game
+        
+        var body: some View {
+            VStack {
+                Text("Captain‘s Report")
+                    .withReportStyle()
+                if let booty = game.booty {
+                    Text("We captured some booty.")
+                        .withMessageStyle()
+                    Text("It‘s worth \(booty.fancyFormatted()).")
+                        .withMessageStyle()
+                }
+                else if game.shipStatus <= 0 {
+                    Text("The buggers got us, Taipan!!!")
+                        .withMessageStyle()
+                    Text("It‘s all over, now!!!")
+                        .withMessageStyle()
+                }
+                else {
+                    Text("We made it!")
+                        .withMessageStyle()
+                }
+                Spacer()
+            }
+            .withTappableStyle(game)
+        }
+    }
 }
 
 struct KeypadView: View {
@@ -768,9 +799,11 @@ struct BattleView: View {
     private let bottomRowMinHeight: CGFloat = 45
 
     @EnvironmentObject private var game: Game
-    @State private var shipYOffset: CGFloat = 0
+    @State private var hostileYOffset: CGFloat = 0
     @State private var firedOnShipForeground = Color.defaultColor
     @State private var firedOnShipBackground = Color.backgroundColor
+    @State private var shipOffset: CGSize = CGSize.zero
+    @Binding var battleBackgroundColor: Color
     
     var body: some View {
         VStack {
@@ -807,38 +840,34 @@ struct BattleView: View {
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(ship != game.targetedShip ? Color.defaultColor : firedOnShipForeground)
-                        .background(ship != game.targetedShip ? Color.backgroundColor : firedOnShipBackground)
+                        .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
                         .onChange(of: game.targetedShip) { newValue in
                             if newValue == ship {
                                 // flash twice
-                                firedOnShipForeground = .backgroundColor
-                                firedOnShipBackground = .defaultColor
+                                reverseHostileShip()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    firedOnShipForeground = .defaultColor
-                                    firedOnShipBackground = .backgroundColor
+                                    normalHostileShip()
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        firedOnShipForeground = .backgroundColor
-                                        firedOnShipBackground = .defaultColor
+                                        reverseHostileShip()
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            firedOnShipForeground = .defaultColor
-                                            firedOnShipBackground = .backgroundColor
+                                            normalHostileShip()
                                             game.gunDidFire()
                                         }
                                     }
                                 }
                             }
                         }
-                        .offset(y: ship == game.targetedShip ? shipYOffset : 0)
+                        .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
                         .clipped()
                         .onChange(of: game.targetedShipSinking) { newValue in
                             if ship == game.targetedShip && (newValue ?? false) {
                                 let sinkDuration = Double.random(in: 0.3...2.0)
                                 withAnimation(.easeIn(duration: sinkDuration)) {
-                                    shipYOffset = 100
+                                    hostileYOffset = 100
                                 }
                                 DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
                                     game.targetedShipSunk()
-                                    shipYOffset = 0
+                                    hostileYOffset = 0
                                 }
                             }
                         }
@@ -878,6 +907,52 @@ struct BattleView: View {
             }
         }
         .withTappableStyle(game)
+        .offset(shipOffset)
+        .onChange(of: game.shipBeingHit) { newValue in
+            if newValue ?? false {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                    shipTakingFire()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                        shipTakingFire()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                            shipTakingFire()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                                shipTakingFire()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                                    shipTakingFire()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                                        shipTakingFire()
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                                            game.shipDidGetHit()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                shipOffset = CGSize.zero
+                battleBackgroundColor = .backgroundColor
+            }
+        }
+    }
+    
+    private func normalHostileShip() {
+        firedOnShipForeground = .defaultColor
+        firedOnShipBackground = .backgroundColor
+    }
+    
+    private func reverseHostileShip() {
+        firedOnShipForeground = .backgroundColor
+        firedOnShipBackground = .defaultColor
+    }
+    
+    private func shipTakingFire() {
+        shipOffset.width = Double.random(in: -30.0...30.0)
+        shipOffset.height = Double.random(in: -30.0...30.0)
+        battleBackgroundColor = Color(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1))
     }
 }
 
@@ -893,6 +968,7 @@ struct ContentView: View {
     @State private var isShowingBankModal = false
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
+    @State private var battleBackgroundColor = Color.backgroundColor
     
     var body: some View {
         if !game.isUnderAttack() {
@@ -939,11 +1015,11 @@ struct ContentView: View {
         }
         else {
             ZStack {
-                Color.backgroundColor
-                BattleView()
+                battleBackgroundColor
+                BattleView(battleBackgroundColor: $battleBackgroundColor)
             }
             .foregroundColor(.defaultColor)
-            .background(Color.backgroundColor)
+            .background(battleBackgroundColor)
             .font(bodyFont)
         }
     }

@@ -53,6 +53,7 @@ class Game: ObservableObject {
     var dbgHostileShips = true
     var dbgHostilesCount: Int?
     var dbgRanAway = false
+    var dbgHitGun = false
     
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
@@ -91,6 +92,7 @@ class Game: ObservableObject {
         case trading
         case hostilesApproaching
         case seaBattle
+        case battleSummary
     }
     
     enum Event: String {
@@ -263,6 +265,10 @@ class Game: ObservableObject {
         case .seaBattle:
             seaBattle()
             state = newState
+        case .battleSummary:
+            battleSummary()
+            state = newState
+            setTimer(3)
         default:
             state = newState
             break
@@ -376,9 +382,13 @@ class Game: ObservableObject {
             transitionTo(.seaBattle)
         
         case (.seaBattle, .battleEnded):
-            transitionTo(.arriving)
+            transitionTo(.battleSummary)
         case (.seaBattle, .tap):
             seaBattleTap()
+        
+        case (.battleSummary, .tap): timer?.invalidate(); fallthrough
+        case (.battleSummary, .timer):
+            transitionTo(.arriving)
         
         default:
             print("illegal event \(event) in state \(state)")
@@ -389,7 +399,7 @@ class Game: ObservableObject {
     // MARK: - Ship
     
     var shipDamage: Int = 0
-    var shipStatus: Int { 100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100) }
+    var shipStatus: Int { max(100 - Int((Double(shipDamage) / Double(shipCapacity)) * 100), 0) }
     enum ShipStatusStyle {
         case colon
         case parenthesis
@@ -946,16 +956,32 @@ class Game: ObservableObject {
     
     // execute the user's last order
     private func executeOrder() {
-        setBattleTimer(3) { [self] in
-            switch battleOrder {
-            case .fight:
-                fireGuns()
-            case .run:
-                break
-            case .throwCargo:
-                break
-            default:
-                battleMessage = "Taipan, what shall we do??"
+        if shipStatus == 0 {
+            sendEvent(.battleEnded)
+        }
+        else {
+            setBattleTimer(3) { [self] in
+                switch battleOrder {
+                case .fight:
+                    if shipGuns > 0 {
+                        fireGuns()
+                    }
+                    else {
+                        battleMessage = "We have no guns, Taipan!!"
+                        setBattleTimer(3) { [self] in
+                            hostileFile()
+                        }
+                    }
+                case .run:
+                    break
+                case .throwCargo:
+                    break
+                default:
+                    battleMessage = "Taipan, what shall we do??"
+                    setBattleTimer(3) { [self] in
+                        hostileFile()
+                    }
+                }
             }
         }
     }
@@ -993,7 +1019,6 @@ class Game: ObservableObject {
             print("ship[\(targetedShip)] = \(hostilesOnScreen![targetedShip])")
             if hostilesOnScreen![targetedShip] <= 0 {
                 targetedShipSinking = true
-                print("??? \(hostilesCount!) \(countOfHostilesOnScreen)")
             }
             else {
                 self.targetedShip = nil
@@ -1004,12 +1029,10 @@ class Game: ObservableObject {
     
     // animation for ship sinking has completed
     func targetedShipSunk() {
-        print("??2 \(hostilesCount!) \(countOfHostilesOnScreen)")
         targetedShip = nil
         targetedShipSinking = nil
         sinkCount! += 1
         hostilesCount! -= 1
-        print("??3 \(hostilesCount!) \(countOfHostilesOnScreen)")
         if hostilesCount! > 0 {
             fireNextShot()
         }
@@ -1050,14 +1073,70 @@ class Game: ObservableObject {
                             }
                         }
                         setBattleTimer(3) { [self] in
-                            executeOrder()
+                            hostileFile()
                         }
                     }
                 }
                 else {
+                    setBattleTimer(3) { [self] in
+                        hostileFile()
+                    }
+                }
+            }
+        }
+    }
+    
+    @Published var shipBeingHit: Bool?
+    
+    // pirates fire at us
+    private func hostileFile() {
+        battleMessage = "They‘re firing on us, Taipan!"
+        setBattleTimer(3) { [self] in
+            shipBeingHit = true
+        }
+    }
+    
+    // animation for ship hit completed
+    func shipDidGetHit() {
+        battleMessage = "We‘ve been hit, Taipan!!"
+        shipBeingHit = false
+        
+        // i = (num_ships > 15) ? 15 : num_ships; (unless the buggers hit a gun)
+        // damage = damage + ((ed * i * id) * ((float) rand() / RAND_MAX)) + (i / 2);
+        // 'ed' is a counter that starts at 0.5 and increases by 0.5 each month
+        
+        let id = Double(hostileType!.rawValue)
+        let damagePercentage = shipDamage * 100 / shipCapacity // 0..100
+        if shipGuns > 0 && (damagePercentage > 80 || Int.random(shipDamage, in: shipCapacity) || dbgHitGun) {
+            dbgHitGun = false
+            setBattleTimer(3) { [self] in
+                battleMessage = "The buggers hit a gun, Taipan!!"
+                shipGuns -= 1
+                shipDamage += Int(Double.random(in: 0.0...(Double(months) + 1) * 0.5 * id) + id / 2)
+                setBattleTimer(3) { [self] in
                     executeOrder()
                 }
             }
+        }
+        else {
+            let i = Double(max(hostilesCount!, 15))
+            shipDamage += Int(Double.random(in: 0.0...(Double(months) + 1) * 0.5 * i * id) + id / 2)
+            executeOrder()
+        }
+    }
+    
+    @Published var booty: Int?
+    
+    private func battleSummary() {
+        if hostilesCount == 0 {
+            booty = 250 + months * 250 * originalHostileShipsCount! + Int.random(in: 0...1000)
+            cash += booty!
+        }
+        else if shipStatus > 0 {
+            
+        }
+        else {
+            
         }
     }
     
@@ -1075,6 +1154,8 @@ class Game: ObservableObject {
         targetedShip = nil
         targetedShipSinking = nil
         sinkCount = nil
+        shipBeingHit = nil
+        booty = nil
     }
     
     // MARK: - Other Encounters
