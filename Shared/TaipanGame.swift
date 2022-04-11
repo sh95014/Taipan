@@ -50,8 +50,9 @@ class Game: ObservableObject {
     var dbgPriceDrop = false
     var dbgPriceJump = false
     var dbgRobbery = false
-    var dbgHostileShips = false
-    var dbgHostileShipCount: Int?
+    var dbgHostileShips = true
+    var dbgHostilesCount: Int?
+    var dbgRanAway = false
     
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
@@ -98,6 +99,7 @@ class Game: ObservableObject {
         case yes
         case no
         case repaired
+        case battleEnded
     }
     
     @Published var state: State = .trading
@@ -273,6 +275,7 @@ class Game: ObservableObject {
         switch (state, event) {
         case (.arriving, .tap): timer?.invalidate(); fallthrough
         case (.arriving, .timer):
+            endBattle()
             arriveAt(destinationCity!)
             transitionTo(.liYuenExtortion)
         
@@ -372,7 +375,7 @@ class Game: ObservableObject {
         case (.hostilesApproaching, .timer):
             transitionTo(.seaBattle)
         
-        case (.seaBattle, .yes):
+        case (.seaBattle, .battleEnded):
             transitionTo(.arriving)
         case (.seaBattle, .tap):
             seaBattleTap()
@@ -845,15 +848,24 @@ class Game: ObservableObject {
 
     // MARK: - Pirates
     
+    enum HostileType: Int {
+        case generic = 1
+        case liYuan = 2
+    }
+    
     private var pirateOdds = 7
-    var hostileShipsCount: Int?
+    private var hostileType: HostileType?
+    var hostilesCount: Int?
+    var originalHostileShipsCount: Int?
     func isUnderAttack() -> Bool {
         [ .seaBattle ].contains(state)
     }
     
     func hostileShips() {
-        hostileShipsCount = dbgHostileShipCount ?? min(Int.random(in: 1...shipCapacity / 10 + shipGuns), 9999)
-        dbgHostileShipCount = nil
+        hostileType = .generic
+        hostilesCount = dbgHostilesCount ?? min(Int.random(in: 1...shipCapacity / 10 + shipGuns), 9999)
+        originalHostileShipsCount = hostilesCount
+        dbgHostilesCount = nil
         dbgHostileShips = false
     }
     
@@ -863,14 +875,15 @@ class Game: ObservableObject {
         case throwCargo = "Throw Cargo"
     }
     
-    var maxShipsOnScreen = 9
-    var shipsOnScreen: [Int]?
+    var maxHostilesOnScreen = 9
+    var hostilesOnScreen: [Int]?
     @Published var battleOrder: BattleOrder?
     @Published var battleMessage: String?
     private var battleTimer: Timer?
     private var shotsLeft: Int?
     @Published var targetedShip: Int?
     @Published var targetedShipSinking: Bool?
+    private var sinkCount: Int?
     
     private func setBattleTimer(_ interval: TimeInterval, action: @escaping () -> Void) {
         battleTimer?.invalidate()
@@ -880,26 +893,35 @@ class Game: ObservableObject {
     }
     
     func seaBattle() {
-        shipsOnScreen = Array(repeating: 0, count: maxShipsOnScreen)
+        hostilesOnScreen = Array(repeating: 0, count: maxHostilesOnScreen)
         fillScreenWithShips()
+        executeOrder()
     }
     
     func seaBattleTap() {
         battleTimer?.fire()
     }
     
-    var hostileShipsOnScreen: Int { shipsOnScreen!.lazy.filter({ $0 > 0 }).count }
+    var countOfHostilesOnScreen: Int {
+        var count = hostilesOnScreen!.lazy.filter({ $0 > 0 }).count
+        if targetedShipSinking ?? false {
+            // while the ship is sinking, it's already <= 0 in hostilesOnScreen
+            // but should still count
+            count += 1
+        }
+        return count
+    }
     
     func fillScreenWithShips() {
-        var shipsToPlace = hostileShipsCount! - hostileShipsOnScreen
+        var shipsToPlace = hostilesCount! - countOfHostilesOnScreen
         if shipsToPlace > 0 {
-            for i in 0..<maxShipsOnScreen {
-                if shipsOnScreen![i] <= 0 {
+            for i in 0..<maxHostilesOnScreen {
+                if hostilesOnScreen![i] <= 0 {
                     // (int)((ec * ((float) rand() / RAND_MAX)) + 20);
                     // 'ec' is a counter that starts at 20 and increments by 10 every month
-                    shipsOnScreen![i] = 20 + Int.random(in: 0...(20 + months * 10))
+                    hostilesOnScreen![i] = 20 + Int.random(in: 0...(20 + months * 10))
                     shipsToPlace -= 1
-                    print("ship[\(i)] = \(shipsOnScreen![i])")
+                    print("ship[\(i)] = \(hostilesOnScreen![i])")
                 }
                 if shipsToPlace == 0 {
                     break
@@ -909,43 +931,59 @@ class Game: ObservableObject {
     }
     
     func shipVisible(_ ship: Int) -> Bool {
-        return shipsOnScreen![ship] > 0 || (ship == targetedShip && (targetedShipSinking ?? false))
+        return hostilesOnScreen![ship] > 0 || (ship == targetedShip && (targetedShipSinking ?? false))
     }
     
     func orderFight() {
         battleOrder = .fight
-        fireCannons()
+    }
+    
+    func executeOrder() {
+        setBattleTimer(3) { [self] in
+            switch battleOrder {
+            case .fight:
+                fireCannons()
+            case .run:
+                break
+            case .throwCargo:
+                break
+            default:
+                battleMessage = "Taipan, what shall we do??"
+            }
+        }
     }
     
     func fireCannons() {
         shotsLeft = shipGuns
         battleMessage = "Aye, we‘ll fight ‘em, Taipan."
         fillScreenWithShips()
-        setBattleTimer(3, action: {
-            self.fireCannon()
-        })
+        sinkCount = 0
+        setBattleTimer(3) { [self] in
+            fireCannon()
+        }
     }
     
     func fireCannon() {
         self.battleMessage = "We‘re firing on ‘em, Taipan!"
-        self.setBattleTimer(1, action: {
+        self.setBattleTimer(1) { [self] in
             // randomly pick a target among ships on screen that haven't sunk yet
             repeat {
-                let target = Int.random(in: 0..<self.maxShipsOnScreen)
-                if self.shipsOnScreen![target] > 0 {
-                    self.targetedShip = target
+                let target = Int.random(in: 0..<maxHostilesOnScreen)
+                if hostilesOnScreen![target] > 0 {
+                    targetedShip = target
                 }
-            } while self.targetedShip == nil
-            print("firing on \(self.targetedShip!)")
-        })
+            } while targetedShip == nil
+            print("firing on \(targetedShip!)")
+        }
     }
     
-    func finishedFiring() {
+    func cannonDidFire() {
         if let targetedShip = targetedShip {
-            shipsOnScreen![targetedShip] -= Int.random(in: 10...40)
-            print("ship[\(targetedShip)] = \(shipsOnScreen![targetedShip])")
-            if shipsOnScreen![targetedShip] <= 0 {
+            hostilesOnScreen![targetedShip] -= Int.random(in: 10...40)
+            print("ship[\(targetedShip)] = \(hostilesOnScreen![targetedShip])")
+            if hostilesOnScreen![targetedShip] <= 0 {
                 targetedShipSinking = true
+                print("??? \(hostilesCount!) \(countOfHostilesOnScreen)")
             }
             else {
                 self.targetedShip = nil
@@ -955,17 +993,74 @@ class Game: ObservableObject {
     }
     
     func targetedShipSunk() {
+        print("??2 \(hostilesCount!) \(countOfHostilesOnScreen)")
         targetedShip = nil
         targetedShipSinking = nil
-        hostileShipsCount! -= 1
-        fireNextShot()
+        sinkCount! += 1
+        hostilesCount! -= 1
+        print("??3 \(hostilesCount!) \(countOfHostilesOnScreen)")
+        if hostilesCount! > 0 {
+            fireNextShot()
+        }
+        else {
+            sendEvent(.battleEnded)
+        }
     }
     
     func fireNextShot() {
-        shotsLeft! -= 1
-        if shotsLeft! > 0 && hostileShipsOnScreen > 0 {
-            fireCannon()
+        setBattleTimer(0.5) { [self] in
+            shotsLeft! -= 1
+            if shotsLeft! > 0 && countOfHostilesOnScreen > 0 {
+                fireCannon()
+            }
+            else {
+                if sinkCount! > 0 {
+                    battleMessage = "Sunk \(sinkCount!.formatted()) of the buggers, Taipan!"
+                }
+                else {
+                    battleMessage = "Hit ‘em, but didn‘t sink ‘em, Taipan!"
+                }
+                let numerator = Int(Double(hostilesCount!) * 0.6 / Double(hostileType!.rawValue))
+                if Int.random(numerator, in: originalHostileShipsCount!) || dbgRanAway {
+                    dbgRanAway = false
+                    let ranAway = Int.random(in: 1...hostilesCount! / 3 / hostileType!.rawValue)
+                    setBattleTimer(3) { [self] in
+                        battleMessage = "\(ranAway.formatted()) ran away, Taipan!"
+                        hostilesCount! -= ranAway
+                        if hostilesCount! < maxHostilesOnScreen {
+                            var count = countOfHostilesOnScreen
+                            for i in stride(from: maxHostilesOnScreen - 1, through: 0, by: -1)  {
+                                if count > hostilesCount! && hostilesOnScreen![i] > 0 {
+                                    count -= 1
+                                    hostilesOnScreen![i] = 0
+                                }
+                            }
+                        }
+                        setBattleTimer(3) { [self] in
+                            executeOrder()
+                        }
+                    }
+                }
+                else {
+                    executeOrder()
+                }
+            }
         }
+    }
+    
+    func endBattle() {
+        hostileType = nil
+        hostilesCount = nil
+        originalHostileShipsCount = nil
+        hostilesOnScreen = nil
+        battleOrder = nil
+        battleMessage = nil
+        battleTimer?.invalidate()
+        battleTimer = nil
+        shotsLeft = nil
+        targetedShip = nil
+        targetedShipSinking = nil
+        sinkCount = nil
     }
     
     // MARK: - Other Encounters

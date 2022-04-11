@@ -704,7 +704,7 @@ struct TradingView: View {
             VStack {
                 Text("Captain‘s Report")
                     .withReportStyle()
-                Text("\(game.hostileShipsCount!.formatted()) hostile ships approaching, Taipan!")
+                Text("\(game.hostilesCount!.formatted()) hostile ships approaching, Taipan!")
                     .withMessageStyle()
                 Spacer()
             }
@@ -776,8 +776,14 @@ struct BattleView: View {
         VStack {
             HStack {
                 VStack {
-                    Text("\(game.hostileShipsCount!.formatted()) ships attacking, Taipan!")
-                        .withMessageStyle()
+                    if game.hostilesCount! == 1 {
+                        Text("1 ship attacking, Taipan!")
+                            .withMessageStyle()
+                    }
+                    else {
+                        Text("\(game.hostilesCount!.formatted()) ships attacking, Taipan!")
+                            .withMessageStyle()
+                    }
                     Text("Your orders are to: \(game.battleOrder?.rawValue ?? "")")
                         .withMessageStyle()
                 }
@@ -796,7 +802,7 @@ struct BattleView: View {
                 GridItem(),
                 GridItem(),
             ], spacing: 10) {
-                ForEach(0..<game.maxShipsOnScreen, id: \.self) { ship in
+                ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
                     Image("lorcha")
                         .resizable()
                         .scaledToFit()
@@ -816,7 +822,7 @@ struct BattleView: View {
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             firedOnShipForeground = .defaultColor
                                             firedOnShipBackground = .backgroundColor
-                                            game.finishedFiring()
+                                            game.cannonDidFire()
                                         }
                                     }
                                 }
@@ -842,7 +848,7 @@ struct BattleView: View {
             .padding(.horizontal, 8)
             Image(systemName: "plus")
                 .padding(.top, 5)
-                .opacity(game.hostileShipsCount! > game.maxShipsOnScreen ? 1.0 : 0.0)
+                .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
             
             Spacer()
             
@@ -854,10 +860,10 @@ struct BattleView: View {
                     Text("Fight")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
-                .withDisabledStyle(game.shipGuns == 0 || game.hostileShipsCount! == 0)
+                .withDisabledStyle(game.shipGuns == 0 || game.hostilesCount! == 0)
                 Spacer()
                 RoundRectButton {
-                    game.sendEvent(.yes)
+                    game.sendEvent(.battleEnded)
                 } content: {
                     Text("Run")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
