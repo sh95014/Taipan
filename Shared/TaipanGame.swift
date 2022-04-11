@@ -459,7 +459,7 @@ class Game: ObservableObject {
     var warehouseFreeCapacity: Int { warehouseCapacity - warehouseUsedCapacity }
     
     func transferToWarehouse(_ merchandise: Merchandise, _ amount: Int) {
-        guard let shipMerchandise = warehouse[merchandise],
+        guard let shipMerchandise = shipHold[merchandise],
               shipMerchandise >= amount
         else {
             print("insufficient \(merchandise.rawValue) on ship to transfer \(amount)")
@@ -868,7 +868,9 @@ class Game: ObservableObject {
     @Published var battleOrder: BattleOrder?
     @Published var battleMessage: String?
     private var battleTimer: Timer?
-    @Published var firingOnShip: Int?
+    private var shotsLeft: Int?
+    @Published var targetedShip: Int?
+    @Published var targetedShipSinking: Bool?
     
     private func setBattleTimer(_ interval: TimeInterval, action: @escaping () -> Void) {
         battleTimer?.invalidate()
@@ -886,16 +888,18 @@ class Game: ObservableObject {
         battleTimer?.fire()
     }
     
+    var hostileShipsOnScreen: Int { shipsOnScreen!.lazy.filter({ $0 > 0 }).count }
+    
     func fillScreenWithShips() {
-        let shipCount = shipsOnScreen!.lazy.filter({ $0 > 0 }).count
-        var shipsToPlace = hostileShipsCount! - shipCount
+        var shipsToPlace = hostileShipsCount! - hostileShipsOnScreen
         if shipsToPlace > 0 {
             for i in 0..<maxShipsOnScreen {
-                if shipsOnScreen![i] == 0 {
+                if shipsOnScreen![i] <= 0 {
                     // (int)((ec * ((float) rand() / RAND_MAX)) + 20);
                     // 'ec' is a counter that starts at 20 and increments by 10 every month
                     shipsOnScreen![i] = 20 + Int.random(in: 0...(20 + months * 10))
                     shipsToPlace -= 1
+                    print("ship[\(i)] = \(shipsOnScreen![i])")
                 }
                 if shipsToPlace == 0 {
                     break
@@ -904,19 +908,64 @@ class Game: ObservableObject {
         }
     }
     
+    func shipVisible(_ ship: Int) -> Bool {
+        return shipsOnScreen![ship] > 0 || (ship == targetedShip && (targetedShipSinking ?? false))
+    }
+    
     func orderFight() {
         battleOrder = .fight
+        fireCannons()
+    }
+    
+    func fireCannons() {
+        shotsLeft = shipGuns
         battleMessage = "Aye, we‘ll fight ‘em, Taipan."
+        fillScreenWithShips()
         setBattleTimer(3, action: {
-            self.battleMessage = "We‘re firing on ‘em, Taipan!"
-            self.setBattleTimer(1, action: {
-                self.firingOnShip = 3
-            })
+            self.fireCannon()
+        })
+    }
+    
+    func fireCannon() {
+        self.battleMessage = "We‘re firing on ‘em, Taipan!"
+        self.setBattleTimer(1, action: {
+            // randomly pick a target among ships on screen that haven't sunk yet
+            repeat {
+                let target = Int.random(in: 0..<self.maxShipsOnScreen)
+                if self.shipsOnScreen![target] > 0 {
+                    self.targetedShip = target
+                }
+            } while self.targetedShip == nil
+            print("firing on \(self.targetedShip!)")
         })
     }
     
     func finishedFiring() {
-        self.firingOnShip = nil
+        if let targetedShip = targetedShip {
+            shipsOnScreen![targetedShip] -= Int.random(in: 10...40)
+            print("ship[\(targetedShip)] = \(shipsOnScreen![targetedShip])")
+            if shipsOnScreen![targetedShip] <= 0 {
+                targetedShipSinking = true
+            }
+            else {
+                self.targetedShip = nil
+                fireNextShot()
+            }
+        }
+    }
+    
+    func targetedShipSunk() {
+        targetedShip = nil
+        targetedShipSinking = nil
+        hostileShipsCount! -= 1
+        fireNextShot()
+    }
+    
+    func fireNextShot() {
+        shotsLeft! -= 1
+        if shotsLeft! > 0 && hostileShipsOnScreen > 0 {
+            fireCannon()
+        }
     }
     
     // MARK: - Other Encounters

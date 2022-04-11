@@ -769,7 +769,6 @@ struct BattleView: View {
 
     @EnvironmentObject private var game: Game
     @State private var shipYOffset: CGFloat = 0
-    @State private var shipToSink = 2
     @State private var firedOnShipForeground = Color.defaultColor
     @State private var firedOnShipBackground = Color.backgroundColor
     
@@ -801,12 +800,11 @@ struct BattleView: View {
                     Image("lorcha")
                         .resizable()
                         .scaledToFit()
-                        .opacity(game.shipsOnScreen![ship] > 0 ? 1.0 : 0.0)
-                        .clipped()
-                        .foregroundColor(ship != game.firingOnShip ? Color.defaultColor : firedOnShipForeground)
-                        .background(ship != game.firingOnShip ? Color.backgroundColor : firedOnShipBackground)
-                        .onChange(of: game.firingOnShip) { newValue in
+                        .foregroundColor(ship != game.targetedShip ? Color.defaultColor : firedOnShipForeground)
+                        .background(ship != game.targetedShip ? Color.backgroundColor : firedOnShipBackground)
+                        .onChange(of: game.targetedShip) { newValue in
                             if newValue == ship {
+                                // flash twice
                                 firedOnShipForeground = .backgroundColor
                                 firedOnShipBackground = .defaultColor
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -824,6 +822,21 @@ struct BattleView: View {
                                 }
                             }
                         }
+                        .offset(y: ship == game.targetedShip ? shipYOffset : 0)
+                        .clipped()
+                        .onChange(of: game.targetedShipSinking) { newValue in
+                            if ship == game.targetedShip && (newValue ?? false) {
+                                let sinkDuration = Double.random(in: 0.3...2.0)
+                                withAnimation(.easeIn(duration: sinkDuration)) {
+                                    shipYOffset = 100
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
+                                    game.targetedShipSunk()
+                                    shipYOffset = 0
+                                }
+                            }
+                        }
+                        .opacity(game.shipVisible(ship) ? 1.0 : 0.0)
                 }
             }
             .padding(.horizontal, 8)
@@ -841,7 +854,7 @@ struct BattleView: View {
                     Text("Fight")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
-                .withDisabledStyle(game.shipGuns == 0)
+                .withDisabledStyle(game.shipGuns == 0 || game.hostileShipsCount! == 0)
                 Spacer()
                 RoundRectButton {
                     game.sendEvent(.yes)
