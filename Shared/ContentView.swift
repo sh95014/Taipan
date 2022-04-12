@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TradingView: View {
     @EnvironmentObject private var game: Game
+    @Environment(\.colorScheme) var colorScheme
     @Binding var isShowingBuyModal: Bool
     @Binding var isShowingSellModal: Bool
     @Binding var isShowingDestinationModal: Bool
@@ -47,11 +48,11 @@ struct TradingView: View {
                     Text("Ship Status")
                         .font(.captionFont)
                     Text(game.fancyShipStatus(.colon))
-                        .foregroundColor(game.shipInDanger ? .warningColor : .defaultColor)
+                        .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
                 }
             }
             
-            RoundRectVStack(.defaultColor) {
+            RoundRectVStack(.taipanColor(colorScheme)) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
                     .padding(.bottom, 2)
@@ -80,7 +81,7 @@ struct TradingView: View {
                 .padding(.horizontal, 50)
             }
             
-            RoundRectVStack(game.shipFreeCapacity >= 0 ? .defaultColor : .warningColor) {
+            RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor(colorScheme) : .warningColor) {
                 HStack {
                     if game.shipFreeCapacity >= 0 {
                         Text("Hold \(game.shipFreeCapacity)")
@@ -118,7 +119,7 @@ struct TradingView: View {
             }
             
             Divider()
-                .background(Color.defaultColor)
+                .background(Color.taipanColor(colorScheme))
             
             switch game.state {
             case .trading:
@@ -745,6 +746,7 @@ struct TradingView: View {
 }
 
 struct KeypadView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Binding var amount: Int
     var limitHint: String?
     
@@ -752,7 +754,7 @@ struct KeypadView: View {
         VStack {
             HStack {
                 Text("\(amount)")
-                    .withTextFieldStyle(width: 100)
+                    .withTextFieldStyle(width: 100, color: .taipanColor(colorScheme))
                 if let limitHint = limitHint {
                     Text(limitHint)
                         .padding(.leading, 20)
@@ -799,9 +801,10 @@ struct BattleView: View {
     private let bottomRowMinHeight: CGFloat = 45
 
     @EnvironmentObject private var game: Game
+    @Environment(\.colorScheme) var colorScheme
     @State private var hostileYOffset: CGFloat = 0
-    @State private var firedOnShipForeground = Color.defaultColor
-    @State private var firedOnShipBackground = Color.backgroundColor
+    @State private var firedOnShipForeground = Color.clear
+    @State private var firedOnShipBackground = Color.clear
     @State private var shipOffset: CGSize = CGSize.zero
     @Binding var battleBackgroundColor: Color
     
@@ -824,7 +827,7 @@ struct BattleView: View {
                 Text("We have\n\(game.shipGuns.formatted()) guns")
                     .multilineTextAlignment(.trailing)
                     .padding(5)
-                    .border(Color.defaultColor)
+                    .border(Color.taipanColor(colorScheme))
             }
             Text(game.battleMessage ?? " ")
             
@@ -839,7 +842,7 @@ struct BattleView: View {
                     Image("lorcha")
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(ship != game.targetedShip ? Color.defaultColor : firedOnShipForeground)
+                        .foregroundColor(ship != game.targetedShip ? .taipanColor(colorScheme) : firedOnShipForeground)
                         .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
                         .onChange(of: game.targetedShip) { newValue in
                             if newValue == ship {
@@ -881,7 +884,8 @@ struct BattleView: View {
             
             Spacer()
             
-            Text("Current seaworthiness: \(game.fancyShipStatus(.parenthesis))")
+            Text("Current seaworthiness: ") +
+            Text("\(game.fancyShipStatus(.parenthesis))").foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
             HStack {
                 RoundRectButton {
                     game.orderFight()
@@ -934,19 +938,22 @@ struct BattleView: View {
             }
             else {
                 shipOffset = CGSize.zero
-                battleBackgroundColor = .backgroundColor
+                battleBackgroundColor = .taipanBackgroundColor(colorScheme)
             }
+        }
+        .onAppear {
+            normalHostileShip()
         }
     }
     
     private func normalHostileShip() {
-        firedOnShipForeground = .defaultColor
-        firedOnShipBackground = .backgroundColor
+        firedOnShipForeground = .taipanColor(colorScheme)
+        firedOnShipBackground = .taipanBackgroundColor(colorScheme)
     }
     
     private func reverseHostileShip() {
-        firedOnShipForeground = .backgroundColor
-        firedOnShipBackground = .defaultColor
+        firedOnShipForeground = .taipanBackgroundColor(colorScheme)
+        firedOnShipBackground = .taipanColor(colorScheme)
     }
     
     private func shipTakingFire() {
@@ -960,6 +967,7 @@ struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
     
     @EnvironmentObject private var game: Game
+    @Environment(\.colorScheme) var colorScheme
     @State private var isShowingBuyModal = false
     @State private var isShowingSellModal = false
     @State private var isShowingDestinationModal = false
@@ -968,60 +976,75 @@ struct ContentView: View {
     @State private var isShowingBankModal = false
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
-    @State private var battleBackgroundColor = Color.backgroundColor
+    @State private var battleBackgroundColor = Color.clear
     
     var body: some View {
-        if !game.isUnderAttack() {
-            ZStack {
-                TradingView(isShowingBuyModal: $isShowingBuyModal,
-                            isShowingSellModal: $isShowingSellModal,
-                            isShowingDestinationModal: $isShowingDestinationModal,
-                            isShowingBorrowModal: $isShowingBorrowModal,
-                            isShowingRepayModal: $isShowingRepayModal,
-                            isShowingBankModal: $isShowingBankModal,
-                            isShowingTransferModal: $isShowingTransferModal,
-                            isShowingRepairModal: $isShowingRepairModal)
-                    .blur(radius: isShowingModal ? 3 : 0)
-                    .disabled(isShowingModal)
-                
-                if isShowingBuyModal {
-                    BuyModalView(isShowingBuyModal: $isShowingBuyModal)
-                }
-                else if isShowingSellModal {
-                    SellModalView(isShowingSellModal: $isShowingSellModal)
-                }
-                else if isShowingDestinationModal {
-                    DestinationModalView(isShowingDestinationModal: $isShowingDestinationModal)
-                }
-                else if isShowingBorrowModal {
-                    BorrowModalView(isShowingBorrowModal: $isShowingBorrowModal)
-                }
-                else if isShowingRepayModal {
-                    RepayModalView(isShowingRepayModal: $isShowingRepayModal)
-                }
-                else if isShowingBankModal {
-                    BankModalView(isShowingBankModal: $isShowingBankModal)
-                }
-                else if isShowingTransferModal {
-                    TransferModalView(isShowingTransferModal: $isShowingTransferModal)
-                }
-                else if isShowingRepairModal {
-                    RepairModalView(isShowingRepairModal: $isShowingRepairModal)
-                }
-            }
-            .foregroundColor(.defaultColor)
-            .background(Color.backgroundColor)
-            .font(bodyFont)
-        }
-        else {
+        GeometryReader { proxy in
             ZStack {
                 battleBackgroundColor
-                BattleView(battleBackgroundColor: $battleBackgroundColor)
+                ScrollView {
+                    if !game.isUnderAttack() {
+                        ZStack {
+                            TradingView(isShowingBuyModal: $isShowingBuyModal,
+                                        isShowingSellModal: $isShowingSellModal,
+                                        isShowingDestinationModal: $isShowingDestinationModal,
+                                        isShowingBorrowModal: $isShowingBorrowModal,
+                                        isShowingRepayModal: $isShowingRepayModal,
+                                        isShowingBankModal: $isShowingBankModal,
+                                        isShowingTransferModal: $isShowingTransferModal,
+                                        isShowingRepairModal: $isShowingRepairModal)
+                                .blur(radius: isShowingModal ? 3 : 0)
+                                .disabled(isShowingModal)
+                            
+                            if isShowingBuyModal {
+                                BuyModalView(isShowingBuyModal: $isShowingBuyModal)
+                            }
+                            else if isShowingSellModal {
+                                SellModalView(isShowingSellModal: $isShowingSellModal)
+                            }
+                            else if isShowingDestinationModal {
+                                DestinationModalView(isShowingDestinationModal: $isShowingDestinationModal)
+                            }
+                            else if isShowingBorrowModal {
+                                BorrowModalView(isShowingBorrowModal: $isShowingBorrowModal)
+                            }
+                            else if isShowingRepayModal {
+                                RepayModalView(isShowingRepayModal: $isShowingRepayModal)
+                            }
+                            else if isShowingBankModal {
+                                BankModalView(isShowingBankModal: $isShowingBankModal)
+                            }
+                            else if isShowingTransferModal {
+                                TransferModalView(isShowingTransferModal: $isShowingTransferModal)
+                            }
+                            else if isShowingRepairModal {
+                                RepairModalView(isShowingRepairModal: $isShowingRepairModal)
+                            }
+                        }
+                        .background(Color.taipanBackgroundColor(colorScheme))
+                        .frame(minHeight: proxy.size.height)
+                    }
+                    else {
+                        BattleView(battleBackgroundColor: $battleBackgroundColor)
+                            .background(battleBackgroundColor)
+                            .frame(minHeight: proxy.size.height)
+                    }
+                }
             }
-            .foregroundColor(.defaultColor)
-            .background(battleBackgroundColor)
+            .foregroundColor(.taipanColor(colorScheme))
             .font(bodyFont)
+            .statusBar(hidden: true)
+            .onAppear {
+                configureByColorScheme(colorScheme)
+            }
+            .onChange(of: colorScheme) { newValue in
+                configureByColorScheme(newValue)
+            }
         }
+    }
+    
+    func configureByColorScheme(_ colorScheme: ColorScheme) {
+        battleBackgroundColor = .taipanBackgroundColor(colorScheme)
     }
     
     var isShowingModal: Bool {
@@ -1031,6 +1054,7 @@ struct ContentView: View {
     
     struct BuyModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingBuyModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var amount = 0
@@ -1086,12 +1110,13 @@ struct ContentView: View {
                     .withCancelStyle()
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
     
     struct SellModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingSellModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var amount = 0
@@ -1147,12 +1172,13 @@ struct ContentView: View {
                     }
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
     
     struct DestinationModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingDestinationModal: Bool
         
         var body: some View {
@@ -1176,12 +1202,13 @@ struct ContentView: View {
                 }
                 .withCancelStyle()
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
     
     struct BorrowModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingBorrowModal: Bool
         @State private var amount = 0
         
@@ -1210,12 +1237,13 @@ struct ContentView: View {
                     .withDisabledStyle(amount == 0 || amount > game.maximumLoan)
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
     
     struct RepayModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingRepayModal: Bool
         @State private var amount = 0
         
@@ -1244,12 +1272,13 @@ struct ContentView: View {
                     .withDisabledStyle(amount == 0 || amount > game.cash)
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
     
     struct BankModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingBankModal: Bool
         @State private var amount = 0
         
@@ -1292,12 +1321,13 @@ struct ContentView: View {
                     }
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
     
     struct TransferModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingTransferModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var toWarehouse: Bool?
@@ -1395,12 +1425,13 @@ struct ContentView: View {
                     .withCancelStyle()
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
 
     struct RepairModalView: View {
         @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingRepairModal: Bool
         @State private var amount = 0
         
@@ -1431,7 +1462,7 @@ struct ContentView: View {
                     .withDisabledStyle(amount == 0 || amount > min(game.cash, game.mcHenryOffer!))
                 }
             }
-            .withModalStyle(.sheetColor)
+            .withModalStyle(.taipanSheetColor(colorScheme))
         }
     }
 }
@@ -1449,6 +1480,7 @@ struct ContentView_Previews: PreviewProvider {
 // MARK: - Custom Views
 
 struct FullWidthButton<Content: View>: View {
+    @Environment(\.colorScheme) var colorScheme
     let action: () -> Void
     let content: () -> Content
     
@@ -1466,16 +1498,17 @@ struct FullWidthButton<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding(10)
-        .foregroundColor(Color.backgroundColor)
+        .foregroundColor(.taipanBackgroundColor(colorScheme))
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [.defaultColor, .defaultColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
+                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor(colorScheme), .taipanColor(colorScheme).opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
     }
 }
 
 struct KeypadButton<Content: View>: View {
+    @Environment(\.colorScheme) var colorScheme
     let action: () -> Void
     let content: () -> Content
     let size: CGFloat = 40.0
@@ -1493,16 +1526,17 @@ struct KeypadButton<Content: View>: View {
                 .frame(width: size, height: size)
         }
         .frame(width: size, height: size)
-        .foregroundColor(Color.backgroundColor)
+        .foregroundColor(.taipanBackgroundColor(colorScheme))
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [.defaultColor, .defaultColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
+                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor(colorScheme), .taipanColor(colorScheme).opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
     }
 }
 
 struct RoundRectButton<Content: View>: View {
+    @Environment(\.colorScheme) var colorScheme
     let action: () -> Void
     let content: () -> Content
     
@@ -1518,10 +1552,10 @@ struct RoundRectButton<Content: View>: View {
             content()
         }
         .padding(5)
-        .foregroundColor(Color.backgroundColor)
+        .foregroundColor(.taipanBackgroundColor(colorScheme))
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [.defaultColor, .defaultColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
+                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor(colorScheme), .taipanColor(colorScheme).opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
     }
@@ -1556,10 +1590,26 @@ struct RoundRectVStack<Content: View>: View {
 // MARK: - Styling
 
 extension Color {
-    static let defaultColor = Color.orange
+    static let darkDefaultColor = Color.orange
+    static let darkBackgroundColor = Color.black
+    static let darkSheetColor = Color.init(white: 0.15)
     static let warningColor = Color.red
-    static let sheetColor = Color.init(white: 0.15)
-    static let backgroundColor = Color.black
+
+    static let lightDefaultColor = Color.init(red: 0.40, green: 0.26, blue: 0.13)
+    static let lightBackgroundColor = Color.white
+    static let lightSheetColor = Color.init(white: 0.75)
+
+    static func taipanColor(_ colorScheme: ColorScheme) -> Color {
+        (colorScheme == .dark) ? .darkDefaultColor : .lightDefaultColor
+    }
+    
+    static func taipanBackgroundColor(_ colorScheme: ColorScheme) -> Color {
+        (colorScheme == .dark) ? .darkBackgroundColor : .lightBackgroundColor
+    }
+    
+    static func taipanSheetColor(_ colorScheme: ColorScheme) -> Color {
+        (colorScheme == .dark) ? .darkSheetColor : .lightSheetColor
+    }
 }
 
 extension Font {
@@ -1587,15 +1637,15 @@ struct TrailingLabelStyle: LabelStyle {
 }
 
 extension Text {
-    func withTextFieldStyle(width: CGFloat) -> some View {
+    func withTextFieldStyle(width: CGFloat, color: Color) -> some View {
         self.frame(width: width, alignment: .trailing)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .strokeBorder(Color.defaultColor.opacity(0.5))
+                    .strokeBorder(color.opacity(0.5))
                     .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(Color.defaultColor.opacity(0.1))
+                        .fill(color.opacity(0.1))
                     )
             )
             .font(.titleFont)
@@ -1624,11 +1674,12 @@ extension View {
 
 extension VStack {
     func withModalStyle(_ backgroundColor: Color) -> some View {
-        self.padding(20)
+        self.padding(15)
             .cornerRadius(5)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
             .shadow(radius: 5)
+            .padding(15)
     }
     
     func withTappableStyle(_ game: Game) -> some View {

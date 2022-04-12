@@ -5,6 +5,8 @@
 //  Created by sh95014 on 3/27/22.
 //
 
+//  Game formulas largely based on Jay Link's port at https://github.com/cymonsgames/CymonsGames/tree/master/taipan
+
 import Foundation
 
 extension Int {
@@ -50,7 +52,7 @@ class Game: ObservableObject {
     var dbgPriceDrop = false
     var dbgPriceJump = false
     var dbgRobbery = false
-    var dbgHostileShips = true
+    var dbgHostileShips = false
     var dbgHostilesCount: Int?
     var dbgRanAway = false
     var dbgHitGun = false
@@ -58,6 +60,7 @@ class Game: ObservableObject {
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
         currentCity = .hongkong
+        year = startYear
         setPrices()
         transitionTo(.liYuenExtortion)
     }
@@ -410,7 +413,7 @@ class Game: ObservableObject {
         case .colon:
             return "\(statusStrings[shipStatus / 20]): \(shipStatus)"
         case .parenthesis:
-            return "\(statusStrings[shipStatus / 20]) (\(shipStatus))"
+            return "\(statusStrings[shipStatus / 20]) (\(shipStatus.formatted(.percent)))"
         }
     }
     var shipInDanger: Bool { shipStatus < 40 }
@@ -635,8 +638,9 @@ class Game: ObservableObject {
     @Published var currentCity: City?
     var destinationCity: City?
     @Published var month: Month = .january
-    @Published var year: Int = 1860
-    private var months: Int { (year - 1860) * 12 + month.index() }
+    private let startYear = 1860
+    @Published var year: Int
+    private var months: Int { (year - startYear) * 12 + month.index() }
     
     func departFor(_ city: City) {
         // clean up
@@ -873,7 +877,10 @@ class Game: ObservableObject {
     
     func hostileShips() {
         hostileType = .generic
-        hostilesCount = dbgHostilesCount ?? min(Int.random(in: 1...shipCapacity / 10 + shipGuns), 9999)
+        // Link's implementation has this as:
+        //   int num_ships = rand()%((capacity / 10) + guns) + 1;
+        // but let's enforce a floor of 2 pirate ships
+        hostilesCount = dbgHostilesCount ?? min(Int.random(in: 2...shipCapacity / 10 + shipGuns), 9999)
         originalHostileShipsCount = hostilesCount
         dbgHostilesCount = nil
         dbgHostileShips = false
@@ -930,9 +937,10 @@ class Game: ObservableObject {
         if shipsToPlace > 0 {
             for i in 0..<maxHostilesOnScreen {
                 if hostilesOnScreen![i] <= 0 {
+                    // Link's implementation:
                     // (int)((ec * ((float) rand() / RAND_MAX)) + 20);
-                    // 'ec' is a counter that starts at 20 and increments by 10 every month
-                    hostilesOnScreen![i] = 20 + Int.random(in: 0...(20 + months * 10))
+                    // 'ec' is a counter that starts at 20 and increments by 10 every year
+                    hostilesOnScreen![i] = 20 + Int.random(in: 0...(20 + (year - startYear) * 10))
                     shipsToPlace -= 1
                     print("ship[\(i)] = \(hostilesOnScreen![i])")
                 }
@@ -957,7 +965,9 @@ class Game: ObservableObject {
     // execute the user's last order
     private func executeOrder() {
         if shipStatus == 0 {
-            sendEvent(.battleEnded)
+            setBattleTimer(2) { [self] in
+                sendEvent(.battleEnded)
+            }
         }
         else {
             setBattleTimer(3) { [self] in
@@ -1037,7 +1047,9 @@ class Game: ObservableObject {
             fireNextShot()
         }
         else {
-            sendEvent(.battleEnded)
+            setBattleTimer(2) { [self] in
+                sendEvent(.battleEnded)
+            }
         }
     }
     
@@ -1101,10 +1113,13 @@ class Game: ObservableObject {
         battleMessage = "We‘ve been hit, Taipan!!"
         shipBeingHit = false
         
+        // Link's implementation:
         // i = (num_ships > 15) ? 15 : num_ships; (unless the buggers hit a gun)
         // damage = damage + ((ed * i * id) * ((float) rand() / RAND_MAX)) + (i / 2);
-        // 'ed' is a counter that starts at 0.5 and increases by 0.5 each month
+        // 'ed' is a counter that starts at 0.5 and increases by 0.5 each year
         
+        let ed = Double(year - startYear + 1) * 0.5
+        let i = Double(max(hostilesCount!, 15))
         let id = Double(hostileType!.rawValue)
         let damagePercentage = shipDamage * 100 / shipCapacity // 0..100
         if shipGuns > 0 && (damagePercentage > 80 || Int.random(shipDamage, in: shipCapacity) || dbgHitGun) {
@@ -1112,15 +1127,14 @@ class Game: ObservableObject {
             setBattleTimer(3) { [self] in
                 battleMessage = "The buggers hit a gun, Taipan!!"
                 shipGuns -= 1
-                shipDamage += Int(Double.random(in: 0.0...(Double(months) + 1) * 0.5 * id) + id / 2)
+                shipDamage += Int(Double.random(in: 0.0...(ed * id)) + i / 2)
                 setBattleTimer(3) { [self] in
                     executeOrder()
                 }
             }
         }
         else {
-            let i = Double(max(hostilesCount!, 15))
-            shipDamage += Int(Double.random(in: 0.0...(Double(months) + 1) * 0.5 * i * id) + id / 2)
+            shipDamage += Int(Double.random(in: 0.0...(ed * i * id)) + i / 2)
             executeOrder()
         }
     }
