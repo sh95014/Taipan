@@ -252,7 +252,7 @@ struct TradingView: View {
             case .notEnoughCash:
                 CompradorsReport("Taipan, you do not have enough cash!!")
             case .borrowForLiYuen:
-                CompradorsReport("Do you want Elder Brother Wu to make up the difference for you?")
+                CompradorsReportYesNo("Do you want Elder Brother Wu to make up the difference for you?")
             case .borrowedForLiYuen:
                 CompradorsReport("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.")
             case .elderBrotherWuPirateWarning:

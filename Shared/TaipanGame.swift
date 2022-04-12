@@ -151,8 +151,13 @@ class Game: ObservableObject {
                 transitionTo(.mcHenryOffer)
             }
         case .notEnoughCash:
-            setTimer(3)
-            state = newState
+            if !payLiYuen() {
+                setTimer(3)
+                state = newState
+            }
+            else {
+                transitionTo(.mcHenryOffer)
+            }
         case .borrowedForLiYuen:
             setTimer(5)
             state = newState
@@ -280,10 +285,12 @@ class Game: ObservableObject {
             }
         case .hostilesApproaching:
             if Int.random(1, in: pirateOdds) || dbgHostileShips {
+                dbgHostileShips = false
                 hostileShips(.generic)
                 state = newState
                 setTimer(3)
             } else if Int.random(1, in: 4 + 8 * liYuenCounter) || dbgLiYuenAttack {
+                dbgLiYuenAttack = false
                 transitionTo(.liYuenApproaching)
             }
             else {
@@ -304,8 +311,13 @@ class Game: ObservableObject {
             state = newState
             setTimer(3)
         case .liYuenLetUsBe:
-            state = newState
-            setTimer(3)
+            if liYuenCounter > 0 {
+                state = newState
+                setTimer(3)
+            }
+            else {
+                transitionTo(.liYuenAttacking)
+            }
         case .liYuenAttacking:
             state = newState
             setTimer(3)
@@ -371,7 +383,7 @@ class Game: ObservableObject {
             transitionTo(.liYuenExtortion)
         
         case (.liYuenExtortion, .yes):
-            transitionTo(payLiYuen() ? .mcHenryOffer : .notEnoughCash)
+            transitionTo(.notEnoughCash)
         case (.liYuenExtortion, .no):
             transitionTo(.mcHenryOffer)
         
@@ -487,7 +499,7 @@ class Game: ObservableObject {
         
         case (.liYuenApproaching, .tap): timer?.invalidate(); fallthrough
         case (.liYuenApproaching, .timer):
-            transitionTo(liYuenCounter > 0 ? .liYuenLetUsBe : .liYuenAttacking)
+            transitionTo(.liYuenLetUsBe)
         
         case (.liYuenLetUsBe, .tap): timer?.invalidate(); fallthrough
         case (.liYuenLetUsBe, .timer):
@@ -1026,7 +1038,6 @@ class Game: ObservableObject {
         }
         originalHostileShipsCount = hostilesCount
         dbgHostilesCount = nil
-        dbgHostileShips = false
     }
     
     enum BattleOrder: String {
