@@ -913,6 +913,8 @@ class Game: ObservableObject {
     private func seaBattle() {
         hostilesOnScreen = Array(repeating: 0, count: maxHostilesOnScreen)
         fillScreenWithShips()
+        escapeChance = 0
+        escapeChanceIncrement = 1
         executeOrder()
     }
     
@@ -962,9 +964,17 @@ class Game: ObservableObject {
         battleOrder = .fight
     }
     
+    // user ordered to run
+    func orderRun() {
+        battleOrder = .run
+    }
+    
     // execute the user's last order
     private func executeOrder() {
         if shipStatus == 0 {
+            sendEvent(.battleEnded)
+        }
+        else if hostilesCount == 0 {
             battleMessage = "We got ‘em all, Taipan!"
             setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
@@ -984,6 +994,7 @@ class Game: ObservableObject {
                         }
                     }
                 case .run:
+                    runAway()
                     break
                 case .throwCargo:
                     break
@@ -1003,6 +1014,8 @@ class Game: ObservableObject {
         battleMessage = "Aye, we‘ll fight ‘em, Taipan."
         fillScreenWithShips()
         sinkCount = 0
+        escapeChance = 3
+        escapeChanceIncrement = 1
         setBattleTimer(3) { [self] in
             fireGun()
         }
@@ -1077,15 +1090,7 @@ class Game: ObservableObject {
                     setBattleTimer(3) { [self] in
                         battleMessage = "\(ranAway.formatted()) ran away, Taipan!"
                         hostilesCount! -= ranAway
-                        if hostilesCount! < maxHostilesOnScreen {
-                            var count = countOfHostilesOnScreen
-                            for i in stride(from: maxHostilesOnScreen - 1, through: 0, by: -1)  {
-                                if count > hostilesCount! && hostilesOnScreen![i] > 0 {
-                                    count -= 1
-                                    hostilesOnScreen![i] = 0
-                                }
-                            }
-                        }
+                        refreshHostilesOnScreen()
                         setBattleTimer(3) { [self] in
                             hostileFile()
                         }
@@ -1095,6 +1100,18 @@ class Game: ObservableObject {
                     setBattleTimer(3) { [self] in
                         hostileFile()
                     }
+                }
+            }
+        }
+    }
+    
+    func refreshHostilesOnScreen() {
+        if hostilesCount! < maxHostilesOnScreen {
+            var count = countOfHostilesOnScreen
+            for i in stride(from: maxHostilesOnScreen - 1, through: 0, by: -1)  {
+                if count > hostilesCount! && hostilesOnScreen![i] > 0 {
+                    count -= 1
+                    hostilesOnScreen![i] = 0
                 }
             }
         }
@@ -1141,6 +1158,54 @@ class Game: ObservableObject {
         }
     }
     
+    var escapeChance: Int? // known as 'ok' in Link's code
+    var escapeChanceIncrement: Int? // 'ik' in Link's code
+    
+    private func runAway() {
+        // Brave Sir Robin ran away.
+        // (”No!“)
+        // Bravely ran away away.
+        // (”I didn‘t!“)
+        // When danger reared it's ugly head,
+        // He bravely turned his tail and fled.
+        // (”I never!“)
+        // Yes, brave Sir Robin turned about
+        // And gallantly he chickened out.
+        // (”You're lying!“)
+        // Swiftly taking to his feet,
+        // He beat a very brave retreat.
+        // Bravest of the brave, Sir Robin!
+        
+        battleMessage = "Aye, we‘ll run, Taipan."
+        setBattleTimer(3) { [self] in
+            escapeChance! += escapeChanceIncrement!
+            escapeChanceIncrement! += 1
+            if Int.random(in: 0..<escapeChance!) > Int.random(in: 0..<hostilesCount!) {
+                battleMessage = "We got away from ‘em, Taipan!"
+                setBattleTimer(3) { [self] in
+                    sendEvent(.battleEnded)
+                }
+            }
+            else {
+                battleMessage = "Couldn‘t lose ‘em."
+                setBattleTimer(3) { [self] in
+                    if hostilesCount! > 2 && Int.random(1, in: 5) {
+                        let lost = Int.random(in: 1..<hostilesCount! / 2)
+                        hostilesCount! -= lost
+                        battleMessage = "But we escaped from \(lost.formatted()) of ‘em!"
+                        refreshHostilesOnScreen()
+                        setBattleTimer(3) { [self] in
+                            hostileFile()
+                        }
+                    }
+                    else {
+                        hostileFile()
+                    }
+                }
+            }
+        }
+    }
+    
     @Published var booty: Int?
     
     private func battleSummary() {
@@ -1172,6 +1237,8 @@ class Game: ObservableObject {
         sinkCount = nil
         shipBeingHit = nil
         booty = nil
+        escapeChance = nil
+        escapeChanceIncrement = nil
     }
     
     // MARK: - Other Encounters

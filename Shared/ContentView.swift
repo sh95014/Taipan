@@ -28,18 +28,21 @@ struct TradingView: View {
             VStack {
                 Text("Location")
                     .font(.captionFont)
+                    .opacity(0.8)
                 Text(game.currentCity?.rawValue ?? "At sea")
             }
             Spacer()
             VStack {
                 Text("Debt")
                     .font(.captionFont)
+                    .opacity(0.8)
                 Text(game.debt.fancyFormatted())
             }
             Spacer()
             VStack {
                 Text("Ship Status")
                     .font(.captionFont)
+                    .opacity(0.8)
                 Text(game.fancyShipStatus(.colon))
                     .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
             }
@@ -105,6 +108,7 @@ struct TradingView: View {
             Group {
                 Text("Noble House, Hong Kong")
                     .font(.titleFont)
+                    .lineLimit(1)
                 Text(verbatim: "15 \(game.month.rawValue) \(game.year)")
                     .padding(.bottom, 5)
             }
@@ -136,9 +140,11 @@ struct TradingView: View {
                     VStack(alignment: .trailing) {
                         Text("In Use:")
                             .font(.captionFont)
+                            .opacity(0.8)
                         Text("\(game.warehouseUsedCapacity)")
                         Text("Vacant")
                             .font(.captionFont)
+                            .opacity(0.8)
                         Text("\(game.warehouseFreeCapacity)")
                     }
                 }
@@ -631,53 +637,52 @@ struct BattleView: View {
             
             Spacer()
             
-            GeometryReader { proxy in
-                LazyVGrid(columns: [
-                    GridItem(),
-                    GridItem(),
-                    GridItem(),
-                ], spacing: 10) {
-                    ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
-                        Image("lorcha")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(ship != game.targetedShip ? .taipanColor(colorScheme) : firedOnShipForeground)
-                            .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
-                            .onChange(of: game.targetedShip) { newValue in
-                                if newValue == ship {
-                                    // flash twice
-                                    reverseHostileShip()
+            LazyVGrid(columns: [
+                GridItem(),
+                GridItem(),
+                GridItem(),
+            ], spacing: 10) {
+                ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
+                    Image("lorcha")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(ship != game.targetedShip ? .taipanColor(colorScheme) : firedOnShipForeground)
+                        .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                        .onChange(of: game.targetedShip) { newValue in
+                            if newValue == ship {
+                                // flash twice
+                                reverseHostileShip()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    normalHostileShip()
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        normalHostileShip()
+                                        reverseHostileShip()
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            reverseHostileShip()
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                normalHostileShip()
-                                                game.gunDidFire()
-                                            }
+                                            normalHostileShip()
+                                            game.gunDidFire()
                                         }
                                     }
                                 }
                             }
-                            .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
-                            .clipped()
-                            .onChange(of: game.targetedShipSinking) { newValue in
-                                if ship == game.targetedShip && (newValue ?? false) {
-                                    let sinkDuration = Double.random(in: 0.3...2.0)
-                                    withAnimation(.easeIn(duration: sinkDuration)) {
-                                        hostileYOffset = proxy.size.height / Double(game.maxHostilesOnScreen / 3)
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
-                                        game.targetedShipSunk()
-                                        hostileYOffset = 0
-                                    }
+                        }
+                        .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                        .clipped()
+                        .onChange(of: game.targetedShipSinking) { newValue in
+                            if ship == game.targetedShip && (newValue ?? false) {
+                                let sinkDuration = Double.random(in: 0.3...2.0)
+                                withAnimation(.easeIn(duration: sinkDuration)) {
+                                    // the lorcha is 5.56“ x 4.31“, and the iPhone Pro Max is 428pt wide
+                                    hostileYOffset = 111
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
+                                    game.targetedShipSunk()
+                                    hostileYOffset = 0
                                 }
                             }
-                            .opacity(game.shipVisible(ship) ? 1.0 : 0.0)
-                    }
+                        }
+                        .opacity(game.shipVisible(ship) ? 1.0 : 0.0)
                 }
-                .padding(.horizontal, 8)
             }
+            .padding(.horizontal, 8)
             Image(systemName: "plus")
                 .padding(.top, 5)
                 .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
@@ -696,7 +701,7 @@ struct BattleView: View {
                 .withDisabledStyle(game.shipGuns == 0 || game.hostilesCount! == 0)
                 Spacer()
                 RoundRectButton {
-                    game.sendEvent(.battleEnded)
+                    game.orderRun()
                 } content: {
                     Text("Run")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
@@ -752,11 +757,15 @@ struct BattleView: View {
     }
     
     private func reverseHostileShip() {
+        // inverts the foreground and background colors to simulate hitting
+        // a hostile ship
         firedOnShipForeground = .taipanBackgroundColor(colorScheme)
         firedOnShipBackground = .taipanColor(colorScheme)
     }
     
     private func shipTakingFire() {
+        // offset the entire view and change the background color randomly to
+        // simulate getting hit
         shipOffset.width = Double.random(in: -30.0...30.0)
         shipOffset.height = Double.random(in: -30.0...30.0)
         battleBackgroundColor = Color(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1))
