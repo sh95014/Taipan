@@ -202,6 +202,9 @@ class Game: ObservableObject {
         case .bailoutReaction:
             setTimer(5)
             state = newState
+        case .bankruptcy:
+            setTimer(5)
+            state = newState
         case .cutthroats:
             if debt > 20000 && cash > 0 && (Int.random(1, in: 5) || dbgCutthroats) {
                 cutthroats()
@@ -398,6 +401,10 @@ class Game: ObservableObject {
         
         case (.elderBrotherWuBailout, .no):
             transitionTo(.bankruptcy)
+        
+        case (.bankruptcy, .tap): timer?.invalidate(); fallthrough
+        case (.bankruptcy, .timer):
+            transitionTo(.gameOver)
         
         case (.bailoutReaction, .tap): timer?.invalidate(); fallthrough
         case (.bailoutReaction, .timer):
