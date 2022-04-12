@@ -888,51 +888,53 @@ struct BattleView: View {
             
             Spacer()
             
-            LazyVGrid(columns: [
-                GridItem(),
-                GridItem(),
-                GridItem(),
-            ], spacing: 10) {
-                ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
-                    Image("lorcha")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(ship != game.targetedShip ? .taipanColor(colorScheme) : firedOnShipForeground)
-                        .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
-                        .onChange(of: game.targetedShip) { newValue in
-                            if newValue == ship {
-                                // flash twice
-                                reverseHostileShip()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    normalHostileShip()
+            GeometryReader { proxy in
+                LazyVGrid(columns: [
+                    GridItem(),
+                    GridItem(),
+                    GridItem(),
+                ], spacing: 10) {
+                    ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
+                        Image("lorcha")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(ship != game.targetedShip ? .taipanColor(colorScheme) : firedOnShipForeground)
+                            .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                            .onChange(of: game.targetedShip) { newValue in
+                                if newValue == ship {
+                                    // flash twice
+                                    reverseHostileShip()
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        reverseHostileShip()
+                                        normalHostileShip()
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            normalHostileShip()
-                                            game.gunDidFire()
+                                            reverseHostileShip()
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                normalHostileShip()
+                                                game.gunDidFire()
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
-                        .clipped()
-                        .onChange(of: game.targetedShipSinking) { newValue in
-                            if ship == game.targetedShip && (newValue ?? false) {
-                                let sinkDuration = Double.random(in: 0.3...2.0)
-                                withAnimation(.easeIn(duration: sinkDuration)) {
-                                    hostileYOffset = 100
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
-                                    game.targetedShipSunk()
-                                    hostileYOffset = 0
+                            .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                            .clipped()
+                            .onChange(of: game.targetedShipSinking) { newValue in
+                                if ship == game.targetedShip && (newValue ?? false) {
+                                    let sinkDuration = Double.random(in: 0.3...2.0)
+                                    withAnimation(.easeIn(duration: sinkDuration)) {
+                                        hostileYOffset = proxy.size.height / Double(game.maxHostilesOnScreen / 3)
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
+                                        game.targetedShipSunk()
+                                        hostileYOffset = 0
+                                    }
                                 }
                             }
-                        }
-                        .opacity(game.shipVisible(ship) ? 1.0 : 0.0)
+                            .opacity(game.shipVisible(ship) ? 1.0 : 0.0)
+                    }
                 }
+                .padding(.horizontal, 8)
             }
-            .padding(.horizontal, 8)
             Image(systemName: "plus")
                 .padding(.top, 5)
                 .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)

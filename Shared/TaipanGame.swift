@@ -965,7 +965,8 @@ class Game: ObservableObject {
     // execute the user's last order
     private func executeOrder() {
         if shipStatus == 0 {
-            setBattleTimer(2) { [self] in
+            battleMessage = "We got ‘em all, Taipan!"
+            setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
             }
         }
@@ -1047,7 +1048,8 @@ class Game: ObservableObject {
             fireNextShot()
         }
         else {
-            setBattleTimer(2) { [self] in
+            battleMessage = "We got ‘em all, Taipan!"
+            setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
             }
         }
