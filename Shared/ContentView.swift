@@ -240,54 +240,54 @@ struct TradingView: View {
                     .withDisabledStyle(game.currentCity != .hongkong || game.cash + game.bank < 1000000)
                 }
             case .arriving:
-                ArrivingView()
+                CaptainsReport("Arriving at \(game.destinationCity!.rawValue)...")
             case .liYuenExtortion:
-                LiYuenExtortionView()
+                CompradorsReportYesNo("Li Yuen asks \(game.liYuenDemand!.formatted()) in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?")
             case .notEnoughCash:
-                NotEnoughCashView()
+                CompradorsReport("Taipan, you do not have enough cash!!")
             case .borrowForLiYuen:
-                BorrowForLiYuenView()
+                CompradorsReport("Do you want Elder Brother Wu to make up the difference for you?")
             case .borrowedForLiYuen:
-                BorrowedForLiYuenView()
+                CompradorsReport("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.")
             case .elderBrotherWuPirateWarning:
-                ElderBrotherWuPirateWarningView()
+                CompradorsReport("Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.")
             case .mcHenryOffer:
                 McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
-                ElderBrotherWuWarningView(page: 1)
+                CompradorsReport("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
             case .elderBrotherWuWarning2:
-                ElderBrotherWuWarningView(page: 2)
+                CompradorsReport("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.")
             case .elderBrotherWuWarning3:
-                ElderBrotherWuWarningView(page: 3)
+                CompradorsReport("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
             case .elderBrotherWuBusiness:
                 ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
                                            isShowingRepayModal: $isShowingRepayModal)
             case .elderBrotherWuBailout:
-                ElderBrotherWuBailoutView()
+                CompradorsReportYesNo("Elder Brother is aware of your plight, Taipan.  He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
             case .bailoutReaction:
-                BailoutReactionView()
+                CompradorsReport("Very well, Taipan.  Good joss!!")
             case .bankruptcy:
-                BankruptcyView()
+                CompradorsReport("Very well, Taipan, the game is over!")
             case .cutthroats:
-                CutthroatsView()
+                CompradorsReportBadJoss("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
             case .newShipOffer:
                 NewShipOfferView()
             case .newGunOffer:
-                NewGunOfferView()
+                CompradorsReportYesNo("Do you wish to buy a ship‘s gun for \(game.offerAmount!.formatted()), Taipan?")
             case .opiumSeized:
-                OpiumSeizedView()
+                CompradorsReportBadJoss("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
             case .warehouseTheft:
-                WarehouseTheftView()
+                CompradorsReport("Messenger reports large theft from warehouse, Taipan.")
             case .liYuenMessage:
-                LiYuenMessageView()
+                CompradorsReport("Li Yuen has sent a Lieutenant, Taipan.  He says his admiral wishes to see you in Hong Kong, posthaste!")
             case .priceDrop:
-                PriceDropView()
+                CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has dropped to \(game.price[game.goodPriceMerchandise!]!)!!")
             case .priceJump:
-                PriceJumpView()
+                CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has risen to \(game.price[game.goodPriceMerchandise!]!)!!")
             case .robbery:
-                RobberyView()
+                CompradorsReportBadJoss("You‘ve been beaten up and robbed of \(game.robberyLoss!.fancyFormatted()) in cash, Taipan!!")
             case .hostilesApproaching:
-                HostilesApproachingView()
+                CaptainsReport("\(game.hostilesCount!.formatted()) hostile ships approaching, Taipan!")
             case .battleSummary:
                 BattleSummaryView()
             default:
@@ -315,28 +315,59 @@ struct TradingView: View {
         }
     }
     
-    struct ArrivingView: View {
+    struct CaptainsReport: View {
         @EnvironmentObject private var game: Game
+        var message: String
+        
+        init(_ message: String) {
+            self.message = message
+        }
         
         var body: some View {
             VStack {
                 Text("Captain‘s Report")
                     .withReportStyle()
-                Text("Arriving at \(game.destinationCity!.rawValue)...")
+                Text(message)
+                    .withMessageStyle()
                 Spacer()
             }
             .withTappableStyle(game)
         }
     }
     
-    struct LiYuenExtortionView: View {
+    struct CompradorsReport: View {
         @EnvironmentObject private var game: Game
+        var message: String
+        
+        init(_ message: String) {
+            self.message = message
+        }
         
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
                     .withReportStyle()
-                Text("Li Yuen asks \(game.liYuenDemand!.formatted()) in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?")
+                Text(message)
+                    .withMessageStyle()
+                Spacer()
+            }
+            .withTappableStyle(game)
+        }
+    }
+    
+    struct CompradorsReportYesNo: View {
+        @EnvironmentObject private var game: Game
+        var message: String
+        
+        init(_ message: String) {
+            self.message = message
+        }
+        
+        var body: some View {
+            VStack {
+                Text("Comprador‘s Report")
+                    .withReportStyle()
+                Text(message)
                     .withMessageStyle()
                 Spacer()
                 HStack {
@@ -356,84 +387,33 @@ struct TradingView: View {
             }
         }
     }
-
-    struct NotEnoughCashView: View {
+    
+    struct CompradorsReportBadJoss: View {
         @EnvironmentObject private var game: Game
+        var message: String
+        
+        init(_ message: String) {
+            self.message = message
+        }
         
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
                     .withReportStyle()
-                Text("Taipan, you do not have enough cash!!")
+                Text("Bad Joss!!")
+                    .withMessageStyle()
+                Text(message)
                     .withMessageStyle()
                 Spacer()
             }
             .withTappableStyle(game)
         }
     }
-
-    struct BorrowForLiYuenView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Do you want Elder Brother Wu to make up the difference for you?")
-                    .withMessageStyle()
-                Spacer()
-                HStack {
-                    RoundRectButton {
-                        game.sendEvent(.no)
-                    } content: {
-                        Text("No")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                    RoundRectButton {
-                        game.sendEvent(.yes)
-                    } content: {
-                        Text("Yes")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                }
-            }
-        }
-    }
-
-    struct BorrowedForLiYuenView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct ElderBrotherWuPirateWarningView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
+    
     struct McHenryOfferView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingRepairModal: Bool
-
+        
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -458,32 +438,7 @@ struct TradingView: View {
             }
         }
     }
-
-    struct ElderBrotherWuWarningView: View {
-        @EnvironmentObject private var game: Game
-        var page: Int
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                switch page {
-                case 1:
-                    Text("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
-                        .withMessageStyle()
-                case 2:
-                    Text("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.")
-                        .withMessageStyle()
-                default:
-                    Text("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
-                        .withMessageStyle()
-                }
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
+    
     struct ElderBrotherWuBusinessView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingBorrowModal: Bool
@@ -521,82 +476,7 @@ struct TradingView: View {
             }
         }
     }
-
-    struct ElderBrotherWuBailoutView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Elder Brother is aware of your plight, Taipan.  He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
-                    .withMessageStyle()
-                Spacer()
-                HStack {
-                    RoundRectButton {
-                        game.sendEvent(.no)
-                    } content: {
-                        Text("No")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                    RoundRectButton {
-                        game.sendEvent(.yes)
-                    } content: {
-                        Text("Yes")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                }
-            }
-        }
-    }
-
-    struct BailoutReactionView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Very well, Taipan.  Good joss!!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct BankruptcyView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Very well, Taipan, the game is over!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct CutthroatsView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Bad joss!!")
-                    .withMessageStyle()
-                Text("\(game.bodyguardsLost!.formatted()) of your bodyguards have been killed by cutthroats and you have been robbed of all of your cash, Taipan!!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
+    
     struct NewShipOfferView: View {
         @EnvironmentObject private var game: Game
         
@@ -630,143 +510,6 @@ struct TradingView: View {
                     }
                 }
             }
-        }
-    }
-
-    struct NewGunOfferView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Do you wish to buy a ship‘s gun for \(game.offerAmount!.formatted()), Taipan?")
-                    .withMessageStyle()
-                Spacer()
-                HStack {
-                    RoundRectButton {
-                        game.sendEvent(.no)
-                    } content: {
-                        Text("No")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                    RoundRectButton {
-                        game.sendEvent(.yes)
-                    } content: {
-                        Text("Yes")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                }
-            }
-        }
-    }
-
-    struct OpiumSeizedView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Bad Joss!!")
-                    .withMessageStyle()
-                Text("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct WarehouseTheftView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Messenger reports large theft from warehouse, Taipan.")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct LiYuenMessageView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Li Yuen has sent a Lieutenant, Taipan.  He says his admiral wishes to see you in Hong Kong, posthaste!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct PriceDropView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has dropped to \(game.price[game.goodPriceMerchandise!]!)!!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct PriceJumpView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has risen to \(game.price[game.goodPriceMerchandise!]!)!!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct RobberyView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Comprador‘s Report")
-                    .withReportStyle()
-                Text("Bad Joss!!")
-                    .withMessageStyle()
-                Text("You‘ve been beaten up and robbed of \(game.robberyLoss!.fancyFormatted()) in cash, Taipan!!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
-        }
-    }
-
-    struct HostilesApproachingView: View {
-        @EnvironmentObject private var game: Game
-        
-        var body: some View {
-            VStack {
-                Text("Captain‘s Report")
-                    .withReportStyle()
-                Text("\(game.hostilesCount!.formatted()) hostile ships approaching, Taipan!")
-                    .withMessageStyle()
-                Spacer()
-            }
-            .withTappableStyle(game)
         }
     }
     
