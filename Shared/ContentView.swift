@@ -296,6 +296,16 @@ struct TradingView: View {
                 CaptainsReport("\(game.hostilesCount!.formatted()) hostile ships approaching, Taipan!")
             case .battleSummary:
                 BattleSummaryView()
+            case .liYuenDroveThemOff:
+                CaptainsReport("Li Yuen‘s fleet drove them off!")
+            case .liYuenApproaching:
+                CaptainsReportLiYuen(nil)
+            case .liYuenLetUsBe:
+                CaptainsReportLiYuen("Good joss!! They let us be!!")
+            case .liYuenAttacking:
+                CaptainsReportLiYuen("\(game.hostilesCount!.formatted()) ships of Li Yuen‘s pirate fleet, Taipan!!")
+            case .liYuenBattleSummary:
+                BattleSummaryView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -335,6 +345,31 @@ struct TradingView: View {
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
+                Spacer()
+            }
+            .withTappableStyle(game)
+        }
+    }
+    
+    struct CaptainsReportLiYuen: View {
+        @EnvironmentObject private var game: Game
+        var message: String?
+        
+        init(_ message: String?) {
+            self.message = message
+        }
+        
+        var body: some View {
+            VStack {
+                Text("Captain‘s Report")
+                    .withReportStyle()
+                Text("Li Yuen‘s pirates, Taipan!!")
+                    .withMessageStyle()
+                if let message = message {
+                    Text(message)
+                        .withMessageStyle()
+                        .padding(.top, 10)
+                }
                 Spacer()
             }
             .withTappableStyle(game)
@@ -410,6 +445,7 @@ struct TradingView: View {
                     .withMessageStyle()
                 Text(message)
                     .withMessageStyle()
+                    .padding(.top, 10)
                 Spacer()
             }
             .withTappableStyle(game)
@@ -529,7 +565,7 @@ struct TradingView: View {
                 if let booty = game.booty {
                     Text("We captured some booty.")
                         .withMessageStyle()
-                    Text("It‘s worth \(booty.fancyFormatted()).")
+                    Text("It‘s worth \(booty.fancyFormatted())!")
                         .withMessageStyle()
                 }
                 else if game.shipStatus <= 0 {

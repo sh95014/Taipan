@@ -56,6 +56,8 @@ class Game: ObservableObject {
     var dbgHostilesCount: Int?
     var dbgRanAway = false
     var dbgHitGun = false
+    var dbgliYuenDroveThemOff = false
+    var dbgLiYuenAttack = false
     
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
@@ -96,6 +98,13 @@ class Game: ObservableObject {
         case hostilesApproaching
         case seaBattle
         case battleSummary
+        case liYuenDroveThemOff
+        case liYuenApproaching
+        case liYuenLetUsBe
+        case liYuenAttacking
+        case liYuenBattle
+        case liYuenBattleSummary
+        case storm
     }
     
     enum Event: String {
@@ -105,6 +114,7 @@ class Game: ObservableObject {
         case no
         case repaired
         case battleEnded
+        case liYuen
     }
     
     @Published var state: State = .trading
@@ -259,11 +269,14 @@ class Game: ObservableObject {
             }
         case .hostilesApproaching:
             if Int.random(1, in: pirateOdds) || dbgHostileShips {
-                hostileShips()
+                hostileShips(.generic)
                 state = newState
                 setTimer(3)
-            } else {
-                transitionTo(.arriving)
+            } else if Int.random(1, in: 4 + 8 * liYuenCounter) || dbgLiYuenAttack {
+                transitionTo(.liYuenApproaching)
+            }
+            else {
+                transitionTo(.storm)
             }
         case .seaBattle:
             seaBattle()
@@ -272,6 +285,28 @@ class Game: ObservableObject {
             battleSummary()
             state = newState
             setTimer(3)
+        case .liYuenDroveThemOff:
+            state = newState
+            setTimer(3)
+        case .liYuenApproaching:
+            hostileShips(.liYuen)
+            state = newState
+            setTimer(3)
+        case .liYuenLetUsBe:
+            state = newState
+            setTimer(3)
+        case .liYuenAttacking:
+            state = newState
+            setTimer(3)
+        case .liYuenBattle:
+            seaBattle()
+            state = newState
+        case .liYuenBattleSummary:
+            battleSummary()
+            state = newState
+            setTimer(3)
+        case .storm:
+            transitionTo(.arriving)
         default:
             state = newState
             break
@@ -386,12 +421,39 @@ class Game: ObservableObject {
         
         case (.seaBattle, .battleEnded):
             transitionTo(.battleSummary)
+        case (.seaBattle, .liYuen):
+            transitionTo(.liYuenDroveThemOff)
         case (.seaBattle, .tap):
             seaBattleTap()
         
         case (.battleSummary, .tap): timer?.invalidate(); fallthrough
         case (.battleSummary, .timer):
-            transitionTo(.arriving)
+            transitionTo(.storm)
+        
+        case (.liYuenDroveThemOff, .tap): timer?.invalidate(); fallthrough
+        case (.liYuenDroveThemOff, .timer):
+            transitionTo(.liYuenApproaching)
+        
+        case (.liYuenApproaching, .tap): timer?.invalidate(); fallthrough
+        case (.liYuenApproaching, .timer):
+            transitionTo(liYuenCounter > 0 ? .liYuenLetUsBe : .liYuenAttacking)
+        
+        case (.liYuenLetUsBe, .tap): timer?.invalidate(); fallthrough
+        case (.liYuenLetUsBe, .timer):
+            transitionTo(.storm)
+        
+        case (.liYuenAttacking, .tap): timer?.invalidate(); fallthrough
+        case (.liYuenAttacking, .timer):
+            transitionTo(.liYuenBattle)
+        
+        case (.liYuenBattle, .battleEnded):
+            transitionTo(.liYuenBattleSummary)
+        case (.liYuenBattle, .tap):
+            seaBattleTap()
+        
+        case (.liYuenBattleSummary, .tap): timer?.invalidate(); fallthrough
+        case (.liYuenBattleSummary, .timer):
+            transitionTo(.storm)
         
         default:
             print("illegal event \(event) in state \(state)")
@@ -864,7 +926,7 @@ class Game: ObservableObject {
     
     enum HostileType: Int {
         case generic = 1
-        case liYuan = 2
+        case liYuen = 2
     }
     
     private var pirateOdds = 7
@@ -872,15 +934,24 @@ class Game: ObservableObject {
     var hostilesCount: Int?
     var originalHostileShipsCount: Int?
     func isUnderAttack() -> Bool {
-        [ .seaBattle ].contains(state)
+        [ .seaBattle, .liYuenBattle ].contains(state)
     }
     
-    func hostileShips() {
-        hostileType = .generic
-        // Link's implementation has this as:
-        //   int num_ships = rand()%((capacity / 10) + guns) + 1;
-        // but let's enforce a floor of 2 pirate ships
-        hostilesCount = dbgHostilesCount ?? min(Int.random(in: 2...shipCapacity / 10 + shipGuns), 9999)
+    func hostileShips(_ hostileType: HostileType) {
+        // first clean up the previous battle, if any
+        endBattle()
+        
+        self.hostileType = hostileType
+        if hostileType == .generic {
+            // Link's implementation has this as:
+            //   int num_ships = rand()%((capacity / 10) + guns) + 1;
+            // but let's enforce a floor of 2 pirate ships
+            hostilesCount = dbgHostilesCount ?? min(Int.random(in: 2...shipCapacity / 10 + shipGuns), 9999)
+        }
+        else {
+            // int num_ships = rand()%((capacity / 5) + guns) + 5;
+            hostilesCount = dbgHostilesCount ?? 5 + Int.random(in: 0...shipCapacity / 5 + shipGuns)
+        }
         originalHostileShipsCount = hostilesCount
         dbgHostilesCount = nil
         dbgHostileShips = false
@@ -1138,7 +1209,7 @@ class Game: ObservableObject {
         // 'ed' is a counter that starts at 0.5 and increases by 0.5 each year
         
         let ed = Double(year - startYear + 1) * 0.5
-        let i = Double(max(hostilesCount!, 15))
+        let i = Double(min(hostilesCount!, 15))
         let id = Double(hostileType!.rawValue)
         let damagePercentage = shipDamage * 100 / shipCapacity // 0..100
         if shipGuns > 0 && (damagePercentage > 80 || Int.random(shipDamage, in: shipCapacity) || dbgHitGun) {
@@ -1154,7 +1225,14 @@ class Game: ObservableObject {
         }
         else {
             shipDamage += Int(Double.random(in: 0.0...(ed * i * id)) + i / 2)
-            executeOrder()
+            if hostileType == .generic && (Int.random(1, in: 20) || dbgliYuenDroveThemOff) {
+                setBattleTimer(3) { [self] in
+                    sendEvent(.liYuen)
+                }
+            }
+            else {
+                executeOrder()
+            }
         }
     }
     
