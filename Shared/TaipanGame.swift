@@ -318,6 +318,7 @@ class Game: ObservableObject {
             setTimer(3)
         case .storm:
             if Int.random(1, in: 10) || dbgStorm {
+                dbgStorm = false
                 state = newState
                 setTimer(3)
             }
@@ -325,18 +326,35 @@ class Game: ObservableObject {
                 transitionTo(.arriving)
             }
         case .storm2:
-            state = newState
-            setTimer(3)
+            if Int.random(1, in: 30) || dbgGoingDown {
+                state = newState
+                setTimer(3)
+            }
+            else {
+                transitionTo(.stormMadeIt)
+            }
         case .stormGoingDown:
-            state = newState
-            setTimer(3)
+            if Double.random(in: 0...Double(shipDamage / shipCapacity * 3)) > 1 || dbgGoingDown {
+                dbgGoingDown = false
+                state = newState
+                setTimer(3)
+            }
+            else {
+                transitionTo(.stormMadeIt)
+            }
         case .stormMadeIt:
             state = newState
             setTimer(3)
         case .stormBlownOffCourse:
-            blownOffCourse()
-            state = newState
-            setTimer(3)
+            if Int.random(1, in: 3) || dbgBlownOffCourse {
+                dbgBlownOffCourse = false
+                blownOffCourse()
+                state = newState
+                setTimer(3)
+            }
+            else {
+                transitionTo(.arriving)
+            }
         default:
             state = newState
             break
@@ -349,7 +367,6 @@ class Game: ObservableObject {
         switch (state, event) {
         case (.arriving, .tap): timer?.invalidate(); fallthrough
         case (.arriving, .timer):
-            endBattle()
             arriveAt(destinationCity!)
             transitionTo(.liYuenExtortion)
         
@@ -491,12 +508,12 @@ class Game: ObservableObject {
         
         case (.storm, .tap): timer?.invalidate(); fallthrough
         case (.storm, .timer):
-            transitionTo((dbgGoingDown || Int.random(1, in: 30)) ? .storm2 : .stormMadeIt)
+            endBattle()
+            transitionTo(.storm2)
         
         case (.storm2, .tap): timer?.invalidate(); fallthrough
         case (.storm2, .timer):
-            transitionTo((dbgGoingDown || Double.random(in: 0...Double(shipDamage / shipCapacity * 3)) > 1) ? .stormGoingDown : .stormMadeIt)
-            dbgGoingDown = false
+            transitionTo(.stormGoingDown)
         
         case (.stormGoingDown, .tap): timer?.invalidate(); fallthrough
         case (.stormGoingDown, .timer):
@@ -504,7 +521,7 @@ class Game: ObservableObject {
         
         case (.stormMadeIt, .tap): timer?.invalidate(); fallthrough
         case (.stormMadeIt, .timer):
-            transitionTo((dbgBlownOffCourse || Int.random(1, in: 3)) ? .stormBlownOffCourse : .arriving)
+            transitionTo(.stormBlownOffCourse)
         
         case (.stormBlownOffCourse, .tap): timer?.invalidate(); fallthrough
         case (.stormBlownOffCourse, .timer):
