@@ -58,6 +58,9 @@ class Game: ObservableObject {
     var dbgHitGun = false
     var dbgliYuenDroveThemOff = false
     var dbgLiYuenAttack = false
+    var dbgStorm = false
+    var dbgGoingDown = false
+    var dbgBlownOffCourse = false
     
     init() {
         // we're already in Hong Kong, so skip the "Arriving..." pane
@@ -105,6 +108,11 @@ class Game: ObservableObject {
         case liYuenBattle
         case liYuenBattleSummary
         case storm
+        case storm2
+        case stormGoingDown
+        case stormMadeIt
+        case stormBlownOffCourse
+        case gameOver
     }
     
     enum Event: String {
@@ -306,7 +314,26 @@ class Game: ObservableObject {
             state = newState
             setTimer(3)
         case .storm:
-            transitionTo(.arriving)
+            if Int.random(1, in: 10) || dbgStorm {
+                state = newState
+                setTimer(3)
+            }
+            else {
+                transitionTo(.arriving)
+            }
+        case .storm2:
+            state = newState
+            setTimer(3)
+        case .stormGoingDown:
+            state = newState
+            setTimer(3)
+        case .stormMadeIt:
+            state = newState
+            setTimer(3)
+        case .stormBlownOffCourse:
+            blownOffCourse()
+            state = newState
+            setTimer(3)
         default:
             state = newState
             break
@@ -454,6 +481,27 @@ class Game: ObservableObject {
         case (.liYuenBattleSummary, .tap): timer?.invalidate(); fallthrough
         case (.liYuenBattleSummary, .timer):
             transitionTo(.storm)
+        
+        case (.storm, .tap): timer?.invalidate(); fallthrough
+        case (.storm, .timer):
+            transitionTo((dbgGoingDown || Int.random(1, in: 30)) ? .storm2 : .stormMadeIt)
+        
+        case (.storm2, .tap): timer?.invalidate(); fallthrough
+        case (.storm2, .timer):
+            transitionTo((dbgGoingDown || Double.random(in: 0...Double(shipDamage / shipCapacity * 3)) > 1) ? .stormGoingDown : .stormMadeIt)
+            dbgGoingDown = false
+        
+        case (.stormGoingDown, .tap): timer?.invalidate(); fallthrough
+        case (.stormGoingDown, .timer):
+            transitionTo(.gameOver)
+        
+        case (.stormMadeIt, .tap): timer?.invalidate(); fallthrough
+        case (.stormMadeIt, .timer):
+            transitionTo((dbgBlownOffCourse || Int.random(1, in: 3)) ? .stormBlownOffCourse : .arriving)
+        
+        case (.stormBlownOffCourse, .tap): timer?.invalidate(); fallthrough
+        case (.stormBlownOffCourse, .timer):
+            transitionTo(.arriving)
         
         default:
             print("illegal event \(event) in state \(state)")
@@ -1348,5 +1396,13 @@ class Game: ObservableObject {
     func cutthroats() {
         cash = 0
         bodyguardsLost = Int.random(in: 1...3)
+    }
+    
+    func blownOffCourse() {
+        var newDestination: City
+        repeat {
+            newDestination = City.allCases.randomElement()!
+        } while newDestination == destinationCity
+        destinationCity = newDestination
     }
 }

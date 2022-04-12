@@ -306,6 +306,16 @@ struct TradingView: View {
                 CaptainsReportLiYuen("\(game.hostilesCount!.formatted()) ships of Li Yuen‘s pirate fleet, Taipan!!")
             case .liYuenBattleSummary:
                 BattleSummaryView()
+            case .storm:
+                CaptainsReportStorm()
+            case .storm2:
+                CaptainsReportStorm()
+            case .stormGoingDown:
+                CaptainsReportStorm()
+            case .stormMadeIt:
+                CaptainsReportStorm()
+            case .stormBlownOffCourse:
+                CaptainsReport("We've been blown off course to \(game.destinationCity!.rawValue).")
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -368,6 +378,39 @@ struct TradingView: View {
                 if let message = message {
                     Text(message)
                         .withMessageStyle()
+                        .padding(.top, 10)
+                }
+                Spacer()
+            }
+            .withTappableStyle(game)
+        }
+    }
+    
+    struct CaptainsReportStorm: View {
+        @EnvironmentObject private var game: Game
+        
+        var body: some View {
+            VStack {
+                Text("Captain‘s Report")
+                    .withReportStyle()
+                Text("Storm, Taipan!!")
+                    .withMessageStyle()
+                if [ .storm2, .stormGoingDown ].contains(game.state) {
+                    Text("I think we‘re going down!!")
+                        .withMessageStyle()
+                        .padding(.leading, 20)
+                        .padding(.top, 10)
+                }
+                else if game.state == .stormMadeIt {
+                    Text("We made it!!")
+                        .withMessageStyle()
+                        .padding(.leading, 20)
+                        .padding(.top, 10)
+                }
+                if game.state == .stormGoingDown {
+                    Text("We‘re going down, Taipan!!!!")
+                        .withMessageStyle()
+                        .padding(.leading, 40)
                         .padding(.top, 10)
                 }
                 Spacer()
