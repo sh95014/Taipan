@@ -10,6 +10,7 @@ import SwiftUI
 struct TradingView: View {
     @EnvironmentObject private var game: Game
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.sizeCategory) var sizeCategory
     @Binding var isShowingBuyModal: Bool
     @Binding var isShowingSellModal: Bool
     @Binding var isShowingDestinationModal: Bool
@@ -22,6 +23,83 @@ struct TradingView: View {
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
     
+    var locationDebtStatus: some View {
+        Group {
+            VStack {
+                Text("Location")
+                    .font(.captionFont)
+                Text(game.currentCity?.rawValue ?? "At sea")
+            }
+            Spacer()
+            VStack {
+                Text("Debt")
+                    .font(.captionFont)
+                Text(game.debt.fancyFormatted())
+            }
+            Spacer()
+            VStack {
+                Text("Ship Status")
+                    .font(.captionFont)
+                Text(game.fancyShipStatus(.colon))
+                    .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
+            }
+        }
+    }
+    
+    var actions: some View {
+        Group {
+            RoundRectButton {
+                isShowingBuyModal = true
+            } content: {
+                Text("Buy")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: sizeCategory > .large ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(!game.canAffordAny())
+            Spacer()
+            RoundRectButton {
+                isShowingSellModal = true
+            } content: {
+                Text("Sell")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: sizeCategory > .large ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(!game.shipHasCargo())
+            Spacer()
+            RoundRectButton {
+                isShowingBankModal = true
+            } content: {
+                Text(sizeCategory > .large ? "Visit Bank" : "Visit\nBank")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: sizeCategory > .large ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(game.currentCity != .hongkong || (game.cash <= 0 && game.bank <= 0))
+            Spacer()
+            RoundRectButton {
+                isShowingTransferModal = true
+            } content: {
+                Text(sizeCategory > .large ? "Transfer Cargo" : "Transfer\nCargo")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: sizeCategory > .large ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(game.currentCity != .hongkong || (!game.shipHasCargo() && game.warehouseUsedCapacity == 0))
+            Spacer()
+            RoundRectButton {
+                isShowingDestinationModal = true
+            } content: {
+                Text(sizeCategory > .large ? "Quit Trading" : "Quit\nTrading")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: sizeCategory > .large ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(game.shipFreeCapacity < 0)
+        }
+    }
+    
     var body: some View {
         VStack {
             Group {
@@ -31,27 +109,13 @@ struct TradingView: View {
                     .padding(.bottom, 5)
             }
             
-            HStack {
-                VStack {
-                    Text("Location")
-                        .font(.captionFont)
-                    Text(game.currentCity?.rawValue ?? "At sea")
-                }
-                Spacer()
-                VStack {
-                    Text("Debt")
-                        .font(.captionFont)
-                    Text(game.debt.fancyFormatted())
-                }
-                Spacer()
-                VStack {
-                    Text("Ship Status")
-                        .font(.captionFont)
-                    Text(game.fancyShipStatus(.colon))
-                        .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
-                }
+            if sizeCategory > .large {
+                VStack { locationDebtStatus }
             }
-            
+            else {
+                HStack { locationDebtStatus }
+            }
+
             RoundRectVStack(.taipanColor(colorScheme)) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
@@ -78,7 +142,7 @@ struct TradingView: View {
                         Text("\(game.warehouseFreeCapacity)")
                     }
                 }
-                .padding(.horizontal, 50)
+                .padding(.horizontal, merchandisePadding())
             }
             
             RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor(colorScheme) : .warningColor) {
@@ -109,7 +173,7 @@ struct TradingView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 50)
+                .padding(.horizontal, merchandisePadding())
             }
             
             HStack {
@@ -161,46 +225,11 @@ struct TradingView: View {
                     Text("Shall I")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    HStack {
-                        RoundRectButton {
-                            isShowingBuyModal = true
-                        } content: {
-                            Text("Buy")
-                                .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
-                        }
-                        .withDisabledStyle(!game.canAffordAny())
-                        Spacer()
-                        RoundRectButton {
-                            isShowingSellModal = true
-                        } content: {
-                            Text("Sell")
-                                .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
-                        }
-                        .withDisabledStyle(!game.shipHasCargo())
-                        Spacer()
-                        RoundRectButton {
-                            isShowingBankModal = true
-                        } content: {
-                            Text("Visit\nBank")
-                                .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
-                        }
-                        .withDisabledStyle(game.currentCity != .hongkong || (game.cash <= 0 && game.bank <= 0))
-                        Spacer()
-                        RoundRectButton {
-                            isShowingTransferModal = true
-                        } content: {
-                            Text("Transfer\nCargo")
-                                .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
-                        }
-                        .withDisabledStyle(game.currentCity != .hongkong || (!game.shipHasCargo() && game.warehouseUsedCapacity == 0))
-                        Spacer()
-                        RoundRectButton {
-                            isShowingDestinationModal = true
-                        } content: {
-                            Text("Quit\nTrading")
-                                .frame(minWidth: bottomRowMinWidth, minHeight: bottomRowMinHeight)
-                        }
-                        .withDisabledStyle(game.shipFreeCapacity < 0)
+                    if sizeCategory > .large {
+                        VStack { actions }
+                    }
+                    else {
+                        HStack { actions }
                     }
                     
                     FullWidthButton {
@@ -211,13 +240,7 @@ struct TradingView: View {
                     .withDisabledStyle(game.currentCity != .hongkong || game.cash + game.bank < 1000000)
                 }
             case .arriving:
-                VStack {
-                    Text("Captain‘s Report")
-                        .withReportStyle()
-                    Text("Arriving at \(game.destinationCity!.rawValue)...")
-                    Spacer()
-                }
-                .withTappableStyle(game)
+                ArrivingView()
             case .liYuenExtortion:
                 LiYuenExtortionView()
             case .notEnoughCash:
@@ -273,7 +296,39 @@ struct TradingView: View {
         }
         .padding(.horizontal, 8)
     }
-
+    
+    func merchandisePadding() -> CGFloat {
+        switch sizeCategory {
+        case .extraSmall: fallthrough
+        case .small: fallthrough
+        case .medium: fallthrough
+        case .large: return 50
+        case .extraLarge: return 40
+        case .extraExtraLarge: return 30
+        case .extraExtraExtraLarge: return 20
+        case .accessibilityMedium: fallthrough
+        case .accessibilityLarge: fallthrough
+        case .accessibilityExtraLarge: fallthrough
+        case .accessibilityExtraExtraLarge: fallthrough
+        case .accessibilityExtraExtraExtraLarge: fallthrough
+        @unknown default: return 10
+        }
+    }
+    
+    struct ArrivingView: View {
+        @EnvironmentObject private var game: Game
+        
+        var body: some View {
+            VStack {
+                Text("Captain‘s Report")
+                    .withReportStyle()
+                Text("Arriving at \(game.destinationCity!.rawValue)...")
+                Spacer()
+            }
+            .withTappableStyle(game)
+        }
+    }
+    
     struct LiYuenExtortionView: View {
         @EnvironmentObject private var game: Game
         
