@@ -37,7 +37,7 @@ extension Int {
 }
 
 class Game: ObservableObject {
-    var companyName: String?
+    var firmName: String?
     @Published var cash: Int?
     var netWorth: Int { cash! + bank - debt }
     var score: Int { netWorth / 100 / (months != 0 ? months : 1) }
@@ -66,10 +66,11 @@ class Game: ObservableObject {
     
     init() {
         initializeGame()
-        transitionTo(.debtOrGuns)
+        transitionTo(.name)
     }
     
     func initializeGame() {
+        firmName = nil
         cash = 0
         bank = 0
         debt = 0
@@ -86,6 +87,7 @@ class Game: ObservableObject {
     // MARK: - State Machine
     
     enum State: String {
+        case name
         case debtOrGuns
         case arriving
         case liYuenExtortion
@@ -131,6 +133,7 @@ class Game: ObservableObject {
     }
     
     enum Event: String {
+        case done
         case debt
         case guns
         case tap
@@ -142,7 +145,7 @@ class Game: ObservableObject {
         case liYuen
     }
     
-    @Published var state: State = .debtOrGuns
+    @Published var state: State = .name
     private var timer: Timer?
     
     private func setTimer(_ interval: TimeInterval) {
@@ -397,6 +400,9 @@ class Game: ObservableObject {
         print("received event \(event) in state \(state)")
         
         switch (state, event) {
+        case (.name, .done):
+            transitionTo(.debtOrGuns)
+            
         case (.debtOrGuns, .debt):
             cash = 400
             debt = 5000
@@ -585,7 +591,7 @@ class Game: ObservableObject {
         case (.finalStats, .no):
             exit(0)
         case (.finalStats, .yes):
-            transitionTo(.debtOrGuns)
+            transitionTo(.name)
             initializeGame()
             break
         

@@ -7,10 +7,53 @@
 
 import SwiftUI
 
-struct DebtOrGunsView: View {
+struct NameView: View {
     @EnvironmentObject private var game: Game
     @Environment(\.colorScheme) var colorScheme
+    @State private var firmName: String = ""
+    @FocusState private var focused: Bool
+    
+    var body: some View {
+        Spacer()
+        RoundRectVStack(.taipanColor(colorScheme)) {
+            HStack {
+                Text("Taipan,")
+                    .padding(.leading, 40)
+                Spacer()
+            }
+            HStack {
+                Text("What will you name your")
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 30)
+                Spacer()
+            }
+            HStack {
+                Text("Firm:")
+                TextField(
+                    "",
+                    text: $firmName,
+                    onCommit: {
+                        game.firmName = firmName
+                        game.sendEvent(.done)
+                    })
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($focused)
+            }
+            .padding(.horizontal, 20)
+            .task {
+                focused = true
+            }
+        }
+        .onTapGesture {
+            focused = true
+        }
+        Spacer()
+    }
+}
 
+struct DebtOrGunsView: View {
+    @EnvironmentObject private var game: Game
+    
     var body: some View {
         Spacer()
         HStack {
@@ -138,7 +181,7 @@ struct TradingView: View {
     var body: some View {
         VStack {
             Group {
-                Text("Noble House, Hong Kong")
+                Text("\(game.firmName!)")
                     .font(.titleFont)
                     .lineLimit(1)
                 Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
@@ -926,6 +969,10 @@ struct FinalStatsView: View {
         let score = game.score
         
         Group {
+            Text("\(game.firmName!)")
+                .font(.titleFont)
+                .lineLimit(1)
+                .padding(.bottom, 10)
             Text("Your final status:")
                 .withReportStyle()
             Text("Net Cash: \(game.netWorth.fancyFormatted())")
@@ -1068,6 +1115,11 @@ struct ContentView: View {
                         }
                         .background(battleBackgroundColor)
                         .frame(minHeight: proxy.size.height)
+                    }
+                    else if game.state == .name {
+                        VStack { NameView() }
+                            .padding(2)
+                            .frame(minHeight: proxy.size.height)
                     }
                     else if game.state == .debtOrGuns {
                         VStack { DebtOrGunsView() }
