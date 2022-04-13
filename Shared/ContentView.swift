@@ -9,13 +9,12 @@ import SwiftUI
 
 struct NameView: View {
     @EnvironmentObject private var game: Game
-    @Environment(\.colorScheme) var colorScheme
     @State private var firmName: String = ""
     @FocusState private var focused: Bool
     
     var body: some View {
         Spacer()
-        RoundRectVStack(.taipanColor(colorScheme)) {
+        RoundRectVStack(.taipanColor) {
             HStack {
                 Text("Taipan,")
                     .padding(.leading, 40)
@@ -37,11 +36,11 @@ struct NameView: View {
                         game.sendEvent(.done)
                     })
                     .padding(5)
-                    .foregroundColor(Color.taipanColor(colorScheme))
-                    .background(Color.taipanBackgroundColor(colorScheme))
+                    .foregroundColor(Color.taipanColor)
+                    .background(Color.taipanBackgroundColor)
                     .overlay(
                         RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.taipanColor(colorScheme).opacity(0.3), lineWidth: 1)
+                            .stroke(Color.taipanColor.opacity(0.3), lineWidth: 1)
                     )
                     .padding(3)
                     .focused($focused)
@@ -94,7 +93,6 @@ struct DebtOrGunsView: View {
 
 struct TradingView: View {
     @EnvironmentObject private var game: Game
-    @Environment(\.colorScheme) var colorScheme
     @Environment(\.sizeCategory) var sizeCategory
     @Binding var isShowingBuyModal: Bool
     @Binding var isShowingSellModal: Bool
@@ -129,7 +127,7 @@ struct TradingView: View {
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.fancyShipStatus(.colon))
-                    .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
+                    .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
             }
         }
     }
@@ -205,7 +203,7 @@ struct TradingView: View {
                 HStack { locationDebtStatus }
             }
             
-            RoundRectVStack(.taipanColor(colorScheme)) {
+            RoundRectVStack(.taipanColor) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
                     .padding(.bottom, 2)
@@ -236,7 +234,7 @@ struct TradingView: View {
                 .padding(.horizontal, merchandisePadding())
             }
             
-            RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor(colorScheme) : .warningColor) {
+            RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor : .warningColor) {
                 HStack {
                     if game.shipFreeCapacity >= 0 {
                         Text("Hold \(game.shipFreeCapacity)")
@@ -274,7 +272,7 @@ struct TradingView: View {
             }
             
             Divider()
-                .background(Color.taipanColor(colorScheme))
+                .background(Color.taipanColor)
             
             switch game.state {
             case .trading:
@@ -716,7 +714,6 @@ struct TradingView: View {
     
     struct RetirementView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Environment(\.sizeCategory) var sizeCategory
 
         var body: some View {
@@ -731,8 +728,8 @@ struct TradingView: View {
                         .padding(.top, 5)
                 }
                 .padding(sizeCategory > .extraLarge ? 10 : 20)
-                .foregroundColor(.taipanBackgroundColor(colorScheme))
-                .background(Color.taipanColor(colorScheme))
+                .foregroundColor(.taipanBackgroundColor)
+                .background(Color.taipanColor)
                 .padding(sizeCategory > .extraLarge ? 5 : 10)
                 Spacer()
             }
@@ -744,7 +741,6 @@ struct TradingView: View {
 }
 
 struct KeypadView: View {
-    @Environment(\.colorScheme) var colorScheme
     @Binding var amount: Int
     var limitHint: String?
     
@@ -752,7 +748,7 @@ struct KeypadView: View {
         VStack {
             HStack {
                 Text("\(amount)")
-                    .withTextFieldStyle(width: 100, color: .taipanColor(colorScheme))
+                    .withTextFieldStyle(width: 100, color: .taipanColor)
                 if let limitHint = limitHint {
                     Text(limitHint)
                         .padding(.leading, 20)
@@ -799,7 +795,6 @@ struct BattleView: View {
     private let bottomRowMinHeight: CGFloat = 45
 
     @EnvironmentObject private var game: Game
-    @Environment(\.colorScheme) var colorScheme
     @State private var hostileYOffset: CGFloat = 0
     @State private var firedOnShipForeground = Color.clear
     @State private var firedOnShipBackground = Color.clear
@@ -826,7 +821,7 @@ struct BattleView: View {
                 Text("We have\n\(game.shipGuns!.formatted()) guns")
                     .multilineTextAlignment(.trailing)
                     .padding(5)
-                    .border(Color.taipanColor(colorScheme))
+                    .border(Color.taipanColor)
             }
             Text(game.battleMessage ?? " ")
             
@@ -841,7 +836,7 @@ struct BattleView: View {
                     Image("lorcha")
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(ship != game.targetedShip ? .taipanColor(colorScheme) : firedOnShipForeground)
+                        .foregroundColor(ship != game.targetedShip ? .taipanColor : firedOnShipForeground)
                         .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
                         .onChange(of: game.targetedShip) { newValue in
                             if newValue == ship {
@@ -885,7 +880,7 @@ struct BattleView: View {
             Spacer()
             
             Text("Current seaworthiness: ") +
-            Text("\(game.fancyShipStatus(.parenthesis))").foregroundColor(game.shipInDanger ? .warningColor : .taipanColor(colorScheme))
+            Text("\(game.fancyShipStatus(.parenthesis))").foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
             HStack {
                 RoundRectButton {
                     game.orderFight()
@@ -941,7 +936,7 @@ struct BattleView: View {
             }
             else {
                 shipOffset = CGSize.zero
-                battleBackgroundColor = .taipanBackgroundColor(colorScheme)
+                battleBackgroundColor = .taipanBackgroundColor
             }
         }
         .onAppear {
@@ -951,15 +946,15 @@ struct BattleView: View {
     }
     
     private func normalHostileShip() {
-        firedOnShipForeground = .taipanColor(colorScheme)
-        firedOnShipBackground = .taipanBackgroundColor(colorScheme)
+        firedOnShipForeground = .taipanColor
+        firedOnShipBackground = .taipanBackgroundColor
     }
     
     private func reverseHostileShip() {
         // inverts the foreground and background colors to simulate hitting
         // a hostile ship
-        firedOnShipForeground = .taipanBackgroundColor(colorScheme)
-        firedOnShipBackground = .taipanColor(colorScheme)
+        firedOnShipForeground = .taipanBackgroundColor
+        firedOnShipBackground = .taipanColor
     }
     
     private func shipTakingFire() {
@@ -973,7 +968,6 @@ struct BattleView: View {
 
 struct FinalStatsView: View {
     @EnvironmentObject private var game: Game
-    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         let score = game.score
@@ -1001,8 +995,8 @@ struct FinalStatsView: View {
             Text("Your score is \(score).")
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 3)
-                .foregroundColor(.taipanBackgroundColor(colorScheme))
-                .background(Color.taipanColor(colorScheme))
+                .foregroundColor(.taipanBackgroundColor)
+                .background(Color.taipanColor)
             
             if score < 0 {
                 Text("The crew has requested that you stay on shore for their safety!!")
@@ -1019,11 +1013,11 @@ struct FinalStatsView: View {
         Text("Your Rating:")
             .withMessageStyle()
             .padding(.top, 10)
-        RoundRectVStack(.taipanColor(colorScheme)) {
+        RoundRectVStack(.taipanColor) {
             HStack {
                 Text("Ma Tsu")
-                    .foregroundColor(score >= 50000 ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
-                    .background(score >= 50000 ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                    .foregroundColor(score >= 50000 ? .taipanBackgroundColor : Color.taipanColor)
+                    .background(score >= 50000 ? Color.taipanColor : .taipanBackgroundColor)
                 Spacer()
                 Text("50,000 and over")
             }
@@ -1031,8 +1025,8 @@ struct FinalStatsView: View {
             .padding(.vertical, 2)
             HStack {
                 Text("Master Taipan")
-                    .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
-                    .background((score >= 8000 && score < 50000) ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                    .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor : Color.taipanColor)
+                    .background((score >= 8000 && score < 50000) ? Color.taipanColor : .taipanBackgroundColor)
                 Spacer()
                 Text("8,000 to 49,999")
             }
@@ -1040,8 +1034,8 @@ struct FinalStatsView: View {
             .padding(.vertical, 2)
             HStack {
                 Text("Taipan")
-                    .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
-                    .background((score >= 1000 && score < 8000) ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                    .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor : Color.taipanColor)
+                    .background((score >= 1000 && score < 8000) ? Color.taipanColor : .taipanBackgroundColor)
                 Spacer()
                 Text("1,000 to 7,999")
             }
@@ -1049,8 +1043,8 @@ struct FinalStatsView: View {
             .padding(.vertical, 2)
             HStack {
                 Text("Compradore")
-                    .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
-                    .background((score >= 500 && score < 1000) ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                    .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor : Color.taipanColor)
+                    .background((score >= 500 && score < 1000) ? Color.taipanColor : .taipanBackgroundColor)
                 Spacer()
                 Text("500 to 999")
             }
@@ -1058,8 +1052,8 @@ struct FinalStatsView: View {
             .padding(.vertical, 2)
             HStack {
                 Text("Galleyhand")
-                    .foregroundColor(score < 500 ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
-                    .background(score < 500 ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                    .foregroundColor(score < 500 ? .taipanBackgroundColor : Color.taipanColor)
+                    .background(score < 500 ? Color.taipanColor : .taipanBackgroundColor)
                 Spacer()
                 Text("less than 500")
             }
@@ -1096,7 +1090,6 @@ struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
     
     @EnvironmentObject private var game: Game
-    @Environment(\.colorScheme) var colorScheme
     @State private var isShowingBuyModal = false
     @State private var isShowingSellModal = false
     @State private var isShowingDestinationModal = false
@@ -1181,25 +1174,18 @@ struct ContentView: View {
                                 RepairModalView(isShowingRepairModal: $isShowingRepairModal)
                             }
                         }
-                        .background(Color.taipanBackgroundColor(colorScheme))
+                        .background(Color.taipanBackgroundColor)
                         .frame(minHeight: proxy.size.height)
                     }
                 }
             }
-            .foregroundColor(.taipanColor(colorScheme))
+            .foregroundColor(.taipanColor)
             .font(bodyFont)
             .statusBar(hidden: true)
             .onAppear {
-                configureByColorScheme(colorScheme)
-            }
-            .onChange(of: colorScheme) { newValue in
-                configureByColorScheme(newValue)
+                battleBackgroundColor = .taipanBackgroundColor
             }
         }
-    }
-    
-    func configureByColorScheme(_ colorScheme: ColorScheme) {
-        battleBackgroundColor = .taipanBackgroundColor(colorScheme)
     }
     
     var isShowingModal: Bool {
@@ -1209,7 +1195,6 @@ struct ContentView: View {
     
     struct BuyModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingBuyModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var amount = 0
@@ -1265,13 +1250,12 @@ struct ContentView: View {
                     .withCancelStyle()
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
     
     struct SellModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingSellModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var amount = 0
@@ -1356,13 +1340,12 @@ struct ContentView: View {
                     }
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
     
     struct DestinationModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingDestinationModal: Bool
         
         var body: some View {
@@ -1386,13 +1369,12 @@ struct ContentView: View {
                 }
                 .withCancelStyle()
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
     
     struct BorrowModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingBorrowModal: Bool
         @State private var amount = 0
         
@@ -1421,13 +1403,12 @@ struct ContentView: View {
                     .withDisabledStyle(amount == 0 || amount > game.maximumLoan)
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
     
     struct RepayModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingRepayModal: Bool
         @State private var amount = 0
         
@@ -1456,13 +1437,12 @@ struct ContentView: View {
                     .withDisabledStyle(amount == 0 || amount > game.cash!)
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
     
     struct BankModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingBankModal: Bool
         @State private var amount = 0
         
@@ -1505,13 +1485,12 @@ struct ContentView: View {
                     }
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
     
     struct TransferModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingTransferModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var toWarehouse: Bool?
@@ -1609,13 +1588,12 @@ struct ContentView: View {
                     .withCancelStyle()
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
 
     struct RepairModalView: View {
         @EnvironmentObject private var game: Game
-        @Environment(\.colorScheme) var colorScheme
         @Binding var isShowingRepairModal: Bool
         @State private var amount = 0
         
@@ -1646,7 +1624,7 @@ struct ContentView: View {
                     .withDisabledStyle(amount == 0 || amount > min(game.cash!, game.mcHenryOffer!))
                 }
             }
-            .withModalStyle(.taipanSheetColor(colorScheme))
+            .withModalStyle(.taipanSheetColor)
         }
     }
 }
@@ -1664,7 +1642,6 @@ struct ContentView_Previews: PreviewProvider {
 // MARK: - Custom Views
 
 struct FullWidthButton<Content: View>: View {
-    @Environment(\.colorScheme) var colorScheme
     let action: () -> Void
     let content: () -> Content
     
@@ -1682,17 +1659,16 @@ struct FullWidthButton<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
         .padding(10)
-        .foregroundColor(.taipanBackgroundColor(colorScheme))
+        .foregroundColor(.taipanBackgroundColor)
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor(colorScheme), .taipanColor(colorScheme).opacity(0.6)]), startPoint: .top, endPoint: .bottom)
+                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor, .taipanColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
     }
 }
 
 struct KeypadButton<Content: View>: View {
-    @Environment(\.colorScheme) var colorScheme
     let action: () -> Void
     let content: () -> Content
     let size: CGFloat = 40.0
@@ -1710,17 +1686,16 @@ struct KeypadButton<Content: View>: View {
                 .frame(width: size, height: size)
         }
         .frame(width: size, height: size)
-        .foregroundColor(.taipanBackgroundColor(colorScheme))
+        .foregroundColor(.taipanBackgroundColor)
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor(colorScheme), .taipanColor(colorScheme).opacity(0.6)]), startPoint: .top, endPoint: .bottom)
+                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor, .taipanColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
     }
 }
 
 struct RoundRectButton<Content: View>: View {
-    @Environment(\.colorScheme) var colorScheme
     let action: () -> Void
     let content: () -> Content
     
@@ -1736,10 +1711,10 @@ struct RoundRectButton<Content: View>: View {
             content()
         }
         .padding(5)
-        .foregroundColor(.taipanBackgroundColor(colorScheme))
+        .foregroundColor(.taipanBackgroundColor)
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor(colorScheme), .taipanColor(colorScheme).opacity(0.6)]), startPoint: .top, endPoint: .bottom)
+                .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor, .taipanColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
     }
@@ -1774,26 +1749,10 @@ struct RoundRectVStack<Content: View>: View {
 // MARK: - Styling
 
 extension Color {
-    static let darkDefaultColor = Color.orange
-    static let darkBackgroundColor = Color.black
-    static let darkSheetColor = Color.init(white: 0.15)
     static let warningColor = Color.red
-
-    static let lightDefaultColor = Color.init(red: 0.40, green: 0.26, blue: 0.13)
-    static let lightBackgroundColor = Color.init(red: 1.00, green: 1.00, blue: 0.93)
-    static let lightSheetColor = Color.init(white: 0.75)
-
-    static func taipanColor(_ colorScheme: ColorScheme) -> Color {
-        (colorScheme == .dark) ? .darkDefaultColor : .lightDefaultColor
-    }
-    
-    static func taipanBackgroundColor(_ colorScheme: ColorScheme) -> Color {
-        (colorScheme == .dark) ? .darkBackgroundColor : .lightBackgroundColor
-    }
-    
-    static func taipanSheetColor(_ colorScheme: ColorScheme) -> Color {
-        (colorScheme == .dark) ? .darkSheetColor : .lightSheetColor
-    }
+    static let taipanColor = Color("ForegroundColor")
+    static let taipanBackgroundColor = Color("BackgroundColor")
+    static let taipanSheetColor = Color("SheetColor")
 }
 
 extension Font {
