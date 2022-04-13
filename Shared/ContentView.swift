@@ -764,25 +764,37 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
-
 }
 
 struct KeypadView: View {
     @Binding var amount: Int
     var limitHint: String?
+    var bigNumbers: Bool?
     
     var body: some View {
         VStack {
-            HStack {
+            if bigNumbers ?? false {
                 Text("\(amount)")
-                    .withTextFieldStyle(width: 100, color: .taipanColor)
+                    .withTextFieldStyle(width: 250, color: .taipanColor)
                 if let limitHint = limitHint {
                     Text(limitHint)
                         .padding(.leading, 20)
                         .multilineTextAlignment(.center)
                         .font(.captionFont)
                         .opacity(0.7)
+                }
+            }
+            else {
+                HStack {
+                    Text("\(amount)")
+                        .withTextFieldStyle(width: 100, color: .taipanColor)
+                    if let limitHint = limitHint {
+                        Text(limitHint)
+                            .padding(.leading, 20)
+                            .multilineTextAlignment(.center)
+                            .font(.captionFont)
+                            .opacity(0.7)
+                    }
                 }
             }
             Spacer()
@@ -792,7 +804,7 @@ struct KeypadView: View {
                     ForEach(0...2, id: \.self) { column in
                         let digit = row * 3 + column + 1
                         KeypadButton {
-                            amount = amount * 10 + digit
+                            amount = (amount % 1000000000000) * 10 + digit
                         } content: {
                             Text("\(digit)")
                         }
@@ -802,7 +814,7 @@ struct KeypadView: View {
             }
             HStack {
                 KeypadButton {
-                    amount = amount * 10
+                    amount = (amount % 1000000000000) * 10
                 } content: {
                     Text("0")
                 }
@@ -1413,7 +1425,8 @@ struct ContentView: View {
                 Text("How much do you wish to borrow?")
                 KeypadView(
                     amount: $amount,
-                    limitHint: "He will loan up to\n\(game.maximumLoan.formatted())"
+                    limitHint: "He will loan up to \(game.maximumLoan.formatted())",
+                    bigNumbers: true
                 )
                 HStack {
                     RoundRectButton {
@@ -1478,7 +1491,8 @@ struct ContentView: View {
         
         var body: some View {
             VStack {
-                KeypadView(amount: $amount)
+                KeypadView(amount: $amount,
+                           bigNumbers: true)
                 HStack(alignment: .bottom) {
                     RoundRectButton {
                         isShowingBankModal = false
