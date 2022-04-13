@@ -54,7 +54,7 @@ class Game: ObservableObject {
     var dbgPriceDrop = false
     var dbgPriceJump = false
     var dbgRobbery = false
-    var dbgHostileShips = true
+    var dbgHostileShips = false
     var dbgHostilesCount: Int?
     var dbgRanAway = false
     var dbgHitGun = false

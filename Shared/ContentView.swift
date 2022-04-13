@@ -36,12 +36,22 @@ struct NameView: View {
                         game.firmName = firmName
                         game.sendEvent(.done)
                     })
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(5)
+                    .foregroundColor(Color.taipanColor(colorScheme))
+                    .background(Color.taipanBackgroundColor(colorScheme))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(Color.taipanColor(colorScheme).opacity(0.3), lineWidth: 1)
+                    )
+                    .padding(3)
                     .focused($focused)
             }
             .padding(.horizontal, 20)
-            .task {
-                focused = true
+            .onAppear {
+                // HACK: doesn't work if setting focused = true without the delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    focused = true
+                }
             }
         }
         .onTapGesture {
