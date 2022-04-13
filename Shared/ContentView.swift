@@ -51,8 +51,13 @@ struct NameView: View {
                             "",
                             text: $firmName,
                             onCommit: {
-                                game.firmName = firmName
-                                game.sendEvent(.done)
+                                if firmName.count > 0 {
+                                    game.firmName = firmName
+                                    game.sendEvent(.done)
+                                }
+                                else {
+                                    focused = true
+                                }
                             })
                             .padding(5)
                             .foregroundColor(Color.taipanColor)
@@ -1288,13 +1293,14 @@ struct ContentView: View {
             let discard = game.isUnderAttack()
             
             VStack {
-                if let selectedMerchandise = selectedMerchandise,
-                   let amountOnShip = game.shipHold[selectedMerchandise] {
+                let merchandise = selectedMerchandise ?? game.onlyMerchandiseOnShip()
+                if let merchandise = merchandise,
+                   let amountOnShip = game.shipHold[merchandise] {
                     if discard {
                         Text("How much, Taipan?")
                     }
                     else {
-                        Text("How much \(selectedMerchandise.rawValue) shall I sell, Taipan:")
+                        Text("How much \(merchandise.rawValue) shall I sell, Taipan:")
                     }
                     KeypadView(
                         amount: $amount,
@@ -1314,10 +1320,10 @@ struct ContentView: View {
                         .withCancelStyle()
                         RoundRectButton {
                             if discard {
-                                game.discard(selectedMerchandise, amount)
+                                game.discard(merchandise, amount)
                             }
                             else {
-                                game.sell(selectedMerchandise, amount)
+                                game.sell(merchandise, amount)
                             }
                             isShowingSellModal = false
                         } content: {

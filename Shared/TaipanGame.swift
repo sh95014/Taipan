@@ -659,6 +659,16 @@ class Game: ObservableObject {
         return false
     }
     
+    func onlyMerchandiseOnShip() -> Merchandise? {
+        let actualHoldings = shipHold.filter { key, value in
+            value > 0
+        }
+        if actualHoldings.count == 1 {
+            return actualHoldings.first!.key
+        }
+        return nil
+    }
+    
     // MARK: - Warehouse
     
     @Published var warehouse: [Merchandise: Int] = [:]
