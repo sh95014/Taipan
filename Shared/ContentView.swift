@@ -13,51 +13,74 @@ struct NameView: View {
     @FocusState private var focused: Bool
     
     var body: some View {
-        Spacer()
-        RoundRectVStack(.taipanColor) {
-            HStack {
-                Text("Taipan,")
-                    .padding(.leading, 40)
+        ZStack {
+            VStack {
+                Text("T   A   I   P   A   N   !")
+                    .font(.custom("Georgia", size: 30))
+                    .padding(.top, 10)
+                Divider()
+                    .background(Color.taipanColor)
+                Text("A game based on the China\ntrade of the 1800's")
+                    .multilineTextAlignment(.center)
+                    .padding(.bottom, 5)
+                Text("Created by: Art Canfil")
                 Spacer()
             }
-            HStack {
-                Text("What will you name your")
+            VStack {
+                Image("lorcha")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.taipanColor.opacity(0.2))
+                    .padding(.horizontal, 80)
+                Spacer()
+                RoundRectVStack(.taipanColor) {
+                    HStack {
+                        Text("Taipan,")
+                            .padding(.leading, 40)
+                        Spacer()
+                    }
+                    HStack {
+                        Text("What will you name your")
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 30)
+                        Spacer()
+                    }
+                    HStack {
+                        Text("Firm:")
+                        TextField(
+                            "",
+                            text: $firmName,
+                            onCommit: {
+                                game.firmName = firmName
+                                game.sendEvent(.done)
+                            })
+                            .padding(5)
+                            .foregroundColor(Color.taipanColor)
+                            .background(
+                                RoundedRectangle(cornerRadius: 5)
+                                    .strokeBorder(Color.taipanColor.opacity(0.5))
+                                    .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        .fill(Color.taipanColor.opacity(0.1))
+                                    )
+                            )
+                            .padding(3)
+                            .focused($focused)
+                    }
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 30)
+                    .onAppear {
+                        // HACK: doesn't work if setting focused = true without the delay
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            focused = true
+                        }
+                    }
+                } // RoundRectVStack
                 Spacer()
-            }
-            HStack {
-                Text("Firm:")
-                TextField(
-                    "",
-                    text: $firmName,
-                    onCommit: {
-                        game.firmName = firmName
-                        game.sendEvent(.done)
-                    })
-                    .padding(5)
-                    .foregroundColor(Color.taipanColor)
-                    .background(Color.taipanBackgroundColor)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 5)
-                            .stroke(Color.taipanColor.opacity(0.3), lineWidth: 1)
-                    )
-                    .padding(3)
-                    .focused($focused)
-            }
-            .padding(.horizontal, 20)
-            .onAppear {
-                // HACK: doesn't work if setting focused = true without the delay
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    focused = true
-                }
-            }
-        }
+            } // VStack
+        } // ZStack
         .onTapGesture {
             focused = true
         }
-        Spacer()
-    }
+    } // body
 }
 
 struct DebtOrGunsView: View {
@@ -354,11 +377,11 @@ struct TradingView: View {
             case .elderBrotherWuBailout:
                 CompradorsReportYesNo("Elder Brother is aware of your plight, Taipan.  He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
             case .bailoutReaction:
-                CompradorsReport("Very well, Taipan.  Good joss!!")
+                CompradorsReport("Very well, Taipan. Good joss!!")
             case .bankruptcy:
                 CompradorsReport("Very well, Taipan, the game is over!")
             case .cutthroats:
-                CompradorsReportBadJoss("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
+                CompradorsReportBadJoss("\(game.bodyguardsLost!.formatted()) of your bodyguards have been killed by cutthroats and you have been robbed of all of your cash, Taipan!!")
             case .newShipOffer:
                 NewShipOfferView()
             case .newGunOffer:
@@ -1190,7 +1213,8 @@ struct ContentView: View {
     
     var isShowingModal: Bool {
         isShowingBuyModal || isShowingSellModal || isShowingDestinationModal ||
-        isShowingBorrowModal || isShowingRepairModal
+        isShowingBorrowModal || isShowingRepayModal || isShowingBankModal ||
+        isShowingTransferModal || isShowingRepairModal
     }
     
     struct BuyModalView: View {
