@@ -1101,6 +1101,7 @@ struct ContentView: View {
         GeometryReader { proxy in
             ZStack {
                 battleBackgroundColor
+                    .ignoresSafeArea()
                 ScrollView {
                     if game.isUnderAttack() {
                         ZStack {

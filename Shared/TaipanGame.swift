@@ -78,7 +78,7 @@ class Game: ObservableObject {
         shipHold = [:]
         shipCapacity = 60
         shipGuns = 0
-        shipDamage = 40
+        shipDamage = 0
         year = startYear
         month = .january
         currentCity = .hongkong
