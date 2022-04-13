@@ -239,7 +239,7 @@ struct TradingView: View {
                     }
                     
                     FullWidthButton {
-                        game.transitionTo(.gameOver)
+                        game.transitionTo(.retirement)
                     } content: {
                         Text("Retire")
                     }
@@ -316,6 +316,8 @@ struct TradingView: View {
                 CaptainsReportStorm()
             case .stormBlownOffCourse:
                 CaptainsReport("We've been blown off course to \(game.destinationCity!.rawValue).")
+            case .retirement:
+                RetirementView()
             default:
                 Text("unhandled state \(game.state.rawValue)")
             }
@@ -626,6 +628,34 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
+    
+    struct RetirementView: View {
+        @EnvironmentObject private var game: Game
+        @Environment(\.colorScheme) var colorScheme
+        @Environment(\.sizeCategory) var sizeCategory
+
+        var body: some View {
+            VStack {
+                Text("Comprador‘s Report")
+                    .withReportStyle()
+                VStack {
+                    Text("You‘re a")
+                        .kerning(sizeCategory > .extraLarge ? 7 : 10)
+                    Text("MILLIONAIRE!")
+                        .kerning(sizeCategory > .extraLarge ? 7 : 10)
+                        .padding(.top, 5)
+                }
+                .padding(sizeCategory > .extraLarge ? 10 : 20)
+                .foregroundColor(.taipanBackgroundColor(colorScheme))
+                .background(Color.taipanColor(colorScheme))
+                .padding(sizeCategory > .extraLarge ? 5 : 10)
+                Spacer()
+            }
+            .withTappableStyle(game)
+        }
+    }
+    
+
 }
 
 struct KeypadView: View {
@@ -856,6 +886,123 @@ struct BattleView: View {
     }
 }
 
+struct FinalStatsView: View {
+    @EnvironmentObject private var game: Game
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        let score = game.score
+        
+        Group {
+            Text("Your final status:")
+                .withReportStyle()
+            Text("Net Cash: \(game.netWorth.fancyFormatted())")
+                .withReportStyle()
+            Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns.formatted()) guns")
+                .withReportStyle()
+
+            let years = game.months / 12
+            let months = game.months % 12
+            Text("You traded for \(years) " +
+                 ((years == 1) ? "year" : "years") +
+                 " \(months) " +
+                 ((months == 1) ? "month" : "months"))
+                .withReportStyle()
+
+            Text("Your score is \(score).")
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 3)
+                .foregroundColor(.taipanBackgroundColor(colorScheme))
+                .background(Color.taipanColor(colorScheme))
+            
+            if score < 0 {
+                Text("The crew has requested that you stay on shore for their safety!!")
+                    .withReportStyle()
+                    .padding(.top, 10)
+            }
+            else if score < 100 {
+                Text("Have you considered a land based job?")
+                    .withReportStyle()
+                    .padding(.top, 10)
+            }
+        }
+        
+        Text("Your Rating:")
+            .withMessageStyle()
+            .padding(.top, 10)
+        RoundRectVStack(.taipanColor(colorScheme)) {
+            HStack {
+                Text("Ma Tsu")
+                    .foregroundColor(score >= 50000 ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
+                    .background(score >= 50000 ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                Spacer()
+                Text("50,000 and over")
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            HStack {
+                Text("Master Taipan")
+                    .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
+                    .background((score >= 8000 && score < 50000) ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                Spacer()
+                Text("8,000 to 49,999")
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            HStack {
+                Text("Taipan")
+                    .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
+                    .background((score >= 1000 && score < 8000) ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                Spacer()
+                Text("1,000 to 7,999")
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            HStack {
+                Text("Compradore")
+                    .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
+                    .background((score >= 500 && score < 1000) ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                Spacer()
+                Text("500 to 999")
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            HStack {
+                Text("Galleyhand")
+                    .foregroundColor(score < 500 ? .taipanBackgroundColor(colorScheme) : Color.taipanColor(colorScheme))
+                    .background(score < 500 ? Color.taipanColor(colorScheme) : .taipanBackgroundColor(colorScheme))
+                Spacer()
+                Text("less than 500")
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+        }
+        .padding(.horizontal, 2)
+        
+        Spacer()
+        
+        Group {
+            Text("Play again?")
+                .withMessageStyle()
+            
+            HStack {
+                RoundRectButton {
+                    game.sendEvent(.no)
+                } content: {
+                    Text("No")
+                        .frame(minWidth:100, minHeight:30)
+                }
+                RoundRectButton {
+                    game.sendEvent(.yes)
+                } content: {
+                    Text("Yes")
+                        .frame(minWidth:100, minHeight:30)
+                }
+            }
+        }
+    }
+}
+
 struct ContentView: View {
     private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
     
@@ -876,7 +1023,25 @@ struct ContentView: View {
             ZStack {
                 battleBackgroundColor
                 ScrollView {
-                    if !game.isUnderAttack() {
+                    if game.isUnderAttack() {
+                        ZStack {
+                            BattleView(battleBackgroundColor: $battleBackgroundColor,
+                                       isShowingSellModal: $isShowingSellModal)
+                                .blur(radius: isShowingModal ? 3 : 0)
+                                .disabled(isShowingModal)
+                            
+                            if isShowingSellModal {
+                                SellModalView(isShowingSellModal: $isShowingSellModal)
+                            }
+                        }
+                        .background(battleBackgroundColor)
+                        .frame(minHeight: proxy.size.height)
+                    }
+                    else if game.state == .finalStats {
+                        FinalStatsView()
+                            .padding(2)
+                    }
+                    else {
                         ZStack {
                             TradingView(isShowingBuyModal: $isShowingBuyModal,
                                         isShowingSellModal: $isShowingSellModal,
@@ -916,20 +1081,6 @@ struct ContentView: View {
                             }
                         }
                         .background(Color.taipanBackgroundColor(colorScheme))
-                        .frame(minHeight: proxy.size.height)
-                    }
-                    else {
-                        ZStack {
-                            BattleView(battleBackgroundColor: $battleBackgroundColor,
-                                       isShowingSellModal: $isShowingSellModal)
-                                .blur(radius: isShowingModal ? 3 : 0)
-                                .disabled(isShowingModal)
-                            
-                            if isShowingSellModal {
-                                SellModalView(isShowingSellModal: $isShowingSellModal)
-                            }
-                        }
-                        .background(battleBackgroundColor)
                         .frame(minHeight: proxy.size.height)
                     }
                 }

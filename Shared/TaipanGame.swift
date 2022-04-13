@@ -39,6 +39,8 @@ extension Int {
 class Game: ObservableObject {
     var companyName: String?
     @Published var cash: Int = 50000
+    var netWorth: Int { cash + bank - debt }
+    var score: Int { netWorth / 100 / (months != 0 ? months : 1) }
     
     // used to override the random events
     var dbgLiYuenDemand: Int? = nil
@@ -112,7 +114,8 @@ class Game: ObservableObject {
         case stormGoingDown
         case stormMadeIt
         case stormBlownOffCourse
-        case gameOver
+        case retirement
+        case finalStats
     }
     
     enum Event: String {
@@ -367,6 +370,9 @@ class Game: ObservableObject {
             else {
                 transitionTo(.arriving)
             }
+        case .retirement:
+            state = newState
+            setTimer(5)
         default:
             state = newState
             break
@@ -433,7 +439,7 @@ class Game: ObservableObject {
         
         case (.bankruptcy, .tap): timer?.invalidate(); fallthrough
         case (.bankruptcy, .timer):
-            transitionTo(.gameOver)
+            transitionTo(.finalStats)
         
         case (.bailoutReaction, .tap): timer?.invalidate(); fallthrough
         case (.bailoutReaction, .timer):
@@ -529,7 +535,7 @@ class Game: ObservableObject {
         
         case (.stormGoingDown, .tap): timer?.invalidate(); fallthrough
         case (.stormGoingDown, .timer):
-            transitionTo(.gameOver)
+            transitionTo(.finalStats)
         
         case (.stormMadeIt, .tap): timer?.invalidate(); fallthrough
         case (.stormMadeIt, .timer):
@@ -538,6 +544,15 @@ class Game: ObservableObject {
         case (.stormBlownOffCourse, .tap): timer?.invalidate(); fallthrough
         case (.stormBlownOffCourse, .timer):
             transitionTo(.arriving)
+        
+        case (.retirement, .tap): timer?.invalidate(); fallthrough
+        case (.retirement, .timer):
+            transitionTo(.finalStats)
+        
+        case (.finalStats, .no):
+            exit(0)
+        case (.finalStats, .yes):
+            break
         
         default:
             print("illegal event \(event) in state \(state)")
@@ -786,7 +801,7 @@ class Game: ObservableObject {
     @Published var month: Month = .january
     private let startYear = 1860
     @Published var year: Int
-    private var months: Int { (year - startYear) * 12 + month.index() }
+    var months: Int { (year - startYear) * 12 + month.index() }
     
     func departFor(_ city: City) {
         // clean up
