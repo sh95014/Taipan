@@ -1123,6 +1123,14 @@ class Game: ObservableObject {
         battleOrder = .run
     }
     
+    // user ordered to throw cargo
+    func orderThrowCargo() {
+        battleOrder = .throwCargo
+        
+        // stop the clock, give the user time to pick what cargo to throw
+        battleTimer?.invalidate()
+    }
+    
     // execute the user's last order
     private func executeOrder() {
         if shipStatus == 0 {
@@ -1148,9 +1156,11 @@ class Game: ObservableObject {
                         }
                     }
                 case .run:
+                    battleMessage = "Aye, we‘ll run, Taipan."
                     runAway()
                     break
                 case .throwCargo:
+                    runAway()
                     break
                 default:
                     battleMessage = "Taipan, what shall we do??"
@@ -1286,6 +1296,13 @@ class Game: ObservableObject {
         battleMessage = "We‘ve been hit, Taipan!!"
         shipBeingHit = false
         
+        // we don't have an easy way of triggering the pop-up from here,
+        // and constantly throwing cargo seems weird, so we clear the
+        // order and let the user decide again
+        if battleOrder == .throwCargo {
+            battleOrder = nil
+        }
+        
         // Link's implementation:
         // i = (num_ships > 15) ? 15 : num_ships; (unless the buggers hit a gun)
         // damage = damage + ((ed * i * id) * ((float) rand() / RAND_MAX)) + (i / 2);
@@ -1337,10 +1354,11 @@ class Game: ObservableObject {
         // He beat a very brave retreat.
         // Bravest of the brave, Sir Robin!
         
-        battleMessage = "Aye, we‘ll run, Taipan."
         setBattleTimer(3) { [self] in
             escapeChance! += escapeChanceIncrement!
             escapeChanceIncrement! += 1
+            print("escapeChance = \(escapeChance!)")
+            print("escapeChanceIncrement = \(escapeChanceIncrement!)")
             if Int.random(in: 0..<escapeChance!) > Int.random(in: 0..<hostilesCount!) {
                 battleMessage = "We got away from ‘em, Taipan!"
                 setBattleTimer(3) { [self] in
@@ -1364,6 +1382,28 @@ class Game: ObservableObject {
                     }
                 }
             }
+        }
+    }
+    
+    func discard(_ merchandise: Merchandise, _ amount: Int) {
+        if let inventory = shipHold[merchandise],
+           amount <= inventory {
+            shipHold[merchandise] = inventory - amount
+            escapeChance! += amount / 10
+            print("escapeChance = \(escapeChance!)")
+            battleMessage = "Let‘s hope we lose ‘em, Taipan!"
+            executeOrder()
+        }
+        else {
+            print("unable to throw away \(amount) of \(merchandise.rawValue)")
+        }
+    }
+    
+    // user cancelled "throw cargo" command
+    func discardCancelled() {
+        battleOrder = nil
+        setBattleTimer(3) { [self] in
+            executeOrder()
         }
     }
     

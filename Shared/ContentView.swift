@@ -239,7 +239,7 @@ struct TradingView: View {
                     }
                     
                     FullWidthButton {
-                        
+                        game.transitionTo(.gameOver)
                     } content: {
                         Text("Retire")
                     }
@@ -287,9 +287,9 @@ struct TradingView: View {
             case .liYuenMessage:
                 CompradorsReport("Li Yuen has sent a Lieutenant, Taipan.  He says his admiral wishes to see you in Hong Kong, posthaste!")
             case .priceDrop:
-                CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has dropped to \(game.price[game.goodPriceMerchandise!]!)!!")
+                CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has dropped to \(game.price[game.goodPriceMerchandise!]!.formatted())!!")
             case .priceJump:
-                CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has risen to \(game.price[game.goodPriceMerchandise!]!)!!")
+                CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.rawValue) has risen to \(game.price[game.goodPriceMerchandise!]!.formatted())!!")
             case .robbery:
                 CompradorsReportBadJoss("You‘ve been beaten up and robbed of \(game.robberyLoss!.fancyFormatted()) in cash, Taipan!!")
             case .hostilesApproaching:
@@ -690,6 +690,7 @@ struct BattleView: View {
     @State private var firedOnShipBackground = Color.clear
     @State private var shipOffset: CGSize = CGSize.zero
     @Binding var battleBackgroundColor: Color
+    @Binding var isShowingSellModal: Bool
     
     var body: some View {
         VStack {
@@ -785,13 +786,16 @@ struct BattleView: View {
                     Text("Run")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
+                .withDisabledStyle(game.hostilesCount! == 0)
                 Spacer()
                 RoundRectButton {
+                    game.orderThrowCargo()
+                    isShowingSellModal = true
                 } content: {
                     Text("Throw\nCargo")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
-                .withDisabledStyle(!game.shipHasCargo())
+                .withDisabledStyle(!game.shipHasCargo() || game.hostilesCount! == 0)
             }
         }
         .withTappableStyle(game)
@@ -828,6 +832,7 @@ struct BattleView: View {
         .onAppear {
             normalHostileShip()
         }
+        .padding(2)
     }
     
     private func normalHostileShip() {
@@ -883,6 +888,7 @@ struct ContentView: View {
                                         isShowingRepairModal: $isShowingRepairModal)
                                 .blur(radius: isShowingModal ? 3 : 0)
                                 .disabled(isShowingModal)
+                                .padding(2)
                             
                             if isShowingBuyModal {
                                 BuyModalView(isShowingBuyModal: $isShowingBuyModal)
@@ -913,9 +919,18 @@ struct ContentView: View {
                         .frame(minHeight: proxy.size.height)
                     }
                     else {
-                        BattleView(battleBackgroundColor: $battleBackgroundColor)
-                            .background(battleBackgroundColor)
-                            .frame(minHeight: proxy.size.height)
+                        ZStack {
+                            BattleView(battleBackgroundColor: $battleBackgroundColor,
+                                       isShowingSellModal: $isShowingSellModal)
+                                .blur(radius: isShowingModal ? 3 : 0)
+                                .disabled(isShowingModal)
+                            
+                            if isShowingSellModal {
+                                SellModalView(isShowingSellModal: $isShowingSellModal)
+                            }
+                        }
+                        .background(battleBackgroundColor)
+                        .frame(minHeight: proxy.size.height)
                     }
                 }
             }
@@ -1010,10 +1025,17 @@ struct ContentView: View {
         @State private var amount = 0
         
         var body: some View {
+            let discard = game.isUnderAttack()
+            
             VStack {
                 if let selectedMerchandise = selectedMerchandise,
                    let amountOnShip = game.shipHold[selectedMerchandise] {
-                    Text("How much \(selectedMerchandise.rawValue) shall I sell, Taipan:")
+                    if discard {
+                        Text("How much, Taipan?")
+                    }
+                    else {
+                        Text("How much \(selectedMerchandise.rawValue) shall I sell, Taipan:")
+                    }
                     KeypadView(
                         amount: $amount,
                         limitHint: "You have\n\(amountOnShip.formatted())"
@@ -1022,23 +1044,42 @@ struct ContentView: View {
                         RoundRectButton {
                             isShowingSellModal = false
                             self.selectedMerchandise = nil
+                            if discard {
+                                game.discardCancelled()
+                            }
                         } content: {
                             Text("Cancel")
                                 .frame(minWidth: 80)
                         }
                         .withCancelStyle()
                         RoundRectButton {
-                            game.sell(selectedMerchandise, amount)
+                            if discard {
+                                game.discard(selectedMerchandise, amount)
+                            }
+                            else {
+                                game.sell(selectedMerchandise, amount)
+                            }
                             isShowingSellModal = false
                         } content: {
-                            Text("Sell")
-                                .frame(minWidth: 80)
+                            if discard {
+                                Text("Throw")
+                                    .frame(minWidth: 80)
+                            }
+                            else {
+                                Text("Sell")
+                                    .frame(minWidth: 80)
+                            }
                         }
                         .withDisabledStyle(amount == 0 || amount > amountOnShip)
                     }
                 }
                 else {
-                    Text("What do you wish me to sell, Taipan?")
+                    if discard {
+                        Text("What shall I throw overboard, Taipan?")
+                    }
+                    else {
+                        Text("What do you wish me to sell, Taipan?")
+                    }
                     ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
                         FullWidthButton {
                             selectedMerchandise = item
@@ -1055,6 +1096,9 @@ struct ContentView: View {
                     FullWidthButton {
                         isShowingSellModal = false
                         self.selectedMerchandise = nil
+                        if discard {
+                            game.discardCancelled()
+                        }
                     } content: {
                         Text("Cancel")
                     }
@@ -1484,7 +1528,7 @@ extension Color {
     static let warningColor = Color.red
 
     static let lightDefaultColor = Color.init(red: 0.40, green: 0.26, blue: 0.13)
-    static let lightBackgroundColor = Color.white
+    static let lightBackgroundColor = Color.init(red: 1.00, green: 1.00, blue: 0.93)
     static let lightSheetColor = Color.init(white: 0.75)
 
     static func taipanColor(_ colorScheme: ColorScheme) -> Color {
