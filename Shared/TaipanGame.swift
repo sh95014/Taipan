@@ -54,7 +54,7 @@ class Game: ObservableObject {
     var dbgPriceDrop = false
     var dbgPriceJump = false
     var dbgRobbery = false
-    var dbgHostileShips = false
+    var dbgHostileShips = true
     var dbgHostilesCount: Int?
     var dbgRanAway = false
     var dbgHitGun = false
@@ -78,7 +78,7 @@ class Game: ObservableObject {
         shipHold = [:]
         shipCapacity = 60
         shipGuns = 0
-        shipDamage = 0
+        shipDamage = 40
         year = startYear
         month = .january
         currentCity = .hongkong
@@ -406,7 +406,6 @@ class Game: ObservableObject {
         case (.debtOrGuns, .debt):
             cash = 400
             debt = 5000
-            shipCapacity = 60
             shipGuns = 0
             liYuenCounter = 0
             pirateOdds = 10
@@ -415,7 +414,6 @@ class Game: ObservableObject {
         case (.debtOrGuns, .guns):
             cash = 0
             debt = 0
-            shipCapacity = 60
             shipGuns = 5
             liYuenCounter = 1
             pirateOdds = 7
@@ -536,7 +534,7 @@ class Game: ObservableObject {
         
         case (.battleSummary, .tap): timer?.invalidate(); fallthrough
         case (.battleSummary, .timer):
-            transitionTo(.storm)
+            transitionTo(shipStatus > 0 ? .storm : .finalStats)
         
         case (.liYuenDroveThemOff, .tap): timer?.invalidate(); fallthrough
         case (.liYuenDroveThemOff, .timer):
@@ -1469,12 +1467,6 @@ class Game: ObservableObject {
         if hostilesCount == 0 {
             booty = 250 + months * 250 * originalHostileShipsCount! + Int.random(in: 0...1000)
             cash! += booty!
-        }
-        else if shipStatus > 0 {
-            
-        }
-        else {
-            
         }
     }
     
