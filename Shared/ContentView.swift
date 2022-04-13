@@ -7,6 +7,38 @@
 
 import SwiftUI
 
+struct DebtOrGunsView: View {
+    @EnvironmentObject private var game: Game
+    @Environment(\.colorScheme) var colorScheme
+
+    var body: some View {
+        Spacer()
+        HStack {
+            Text("Do you want to start . . .")
+            Spacer()
+        }
+        FullWidthButton {
+            game.sendEvent(.debt)
+        } content: {
+            Text("1) With cash (and a debt)")
+        }
+        .padding(.vertical, 10)
+        Text("» or «")
+        FullWidthButton {
+            game.sendEvent(.guns)
+        } content: {
+            VStack {
+                Text("2) With five guns and no cash")
+                Text("(But no debt!)")
+                    .font(.captionFont)
+            }
+        }
+        .padding(.vertical, 10)
+        Text("?")
+        Spacer()
+    }
+}
+
 struct TradingView: View {
     @EnvironmentObject private var game: Game
     @Environment(\.colorScheme) var colorScheme
@@ -79,7 +111,7 @@ struct TradingView: View {
                            maxWidth: sizeCategory > .large ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
             }
-            .withDisabledStyle(game.currentCity != .hongkong || (game.cash <= 0 && game.bank <= 0))
+            .withDisabledStyle(game.currentCity != .hongkong || (game.cash! <= 0 && game.bank <= 0))
             Spacer()
             RoundRectButton {
                 isShowingTransferModal = true
@@ -109,7 +141,7 @@ struct TradingView: View {
                 Text("Noble House, Hong Kong")
                     .font(.titleFont)
                     .lineLimit(1)
-                Text(verbatim: "15 \(game.month.rawValue) \(game.year)")
+                Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
                     .padding(.bottom, 5)
             }
             
@@ -119,7 +151,7 @@ struct TradingView: View {
             else {
                 HStack { locationDebtStatus }
             }
-
+            
             RoundRectVStack(.taipanColor(colorScheme)) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
@@ -161,7 +193,7 @@ struct TradingView: View {
                             .foregroundColor(.warningColor)
                     }
                     Spacer()
-                    Text("Guns \(game.shipGuns)")
+                    Text("Guns \(game.shipGuns!.formatted())")
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 2)
@@ -183,7 +215,7 @@ struct TradingView: View {
             }
             
             HStack {
-                Text("Cash: \(game.cash.fancyFormatted())")
+                Text("Cash: \(game.cash!.fancyFormatted())")
                 Spacer()
                 Text("Bank: \(game.bank.fancyFormatted())")
             }
@@ -243,7 +275,7 @@ struct TradingView: View {
                     } content: {
                         Text("Retire")
                     }
-                    .withDisabledStyle(game.currentCity != .hongkong || game.cash + game.bank < 1000000)
+                    .withDisabledStyle(game.currentCity != .hongkong || game.cash! + game.bank < 1000000)
                 }
             case .arriving:
                 CaptainsReport("Arriving at \(game.destinationCity!.rawValue)...")
@@ -551,7 +583,7 @@ struct TradingView: View {
                         Text("Borrow")
                             .frame(minWidth:100, minHeight:30)
                     }
-                    .withDisabledStyle(game.cash <= 0)
+                    .withDisabledStyle(game.cash! <= 0)
                     RoundRectButton {
                         isShowingRepayModal = true
                     } content: {
@@ -738,7 +770,7 @@ struct BattleView: View {
                         .withMessageStyle()
                 }
                 Spacer()
-                Text("We have\n\(game.shipGuns.formatted()) guns")
+                Text("We have\n\(game.shipGuns!.formatted()) guns")
                     .multilineTextAlignment(.trailing)
                     .padding(5)
                     .border(Color.taipanColor(colorScheme))
@@ -808,7 +840,7 @@ struct BattleView: View {
                     Text("Fight")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
-                .withDisabledStyle(game.shipGuns == 0 || game.hostilesCount! == 0)
+                .withDisabledStyle(game.shipGuns! == 0 || game.hostilesCount! == 0)
                 Spacer()
                 RoundRectButton {
                     game.orderRun()
@@ -898,7 +930,7 @@ struct FinalStatsView: View {
                 .withReportStyle()
             Text("Net Cash: \(game.netWorth.fancyFormatted())")
                 .withReportStyle()
-            Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns.formatted()) guns")
+            Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns!.formatted()) guns")
                 .withReportStyle()
 
             let years = game.months / 12
@@ -1037,9 +1069,15 @@ struct ContentView: View {
                         .background(battleBackgroundColor)
                         .frame(minHeight: proxy.size.height)
                     }
-                    else if game.state == .finalStats {
-                        FinalStatsView()
+                    else if game.state == .debtOrGuns {
+                        VStack { DebtOrGunsView() }
                             .padding(2)
+                            .frame(minHeight: proxy.size.height)
+                    }
+                    else if game.state == .finalStats {
+                        VStack { FinalStatsView() }
+                            .padding(2)
+                            .frame(minHeight: proxy.size.height)
                     }
                     else {
                         ZStack {
@@ -1335,7 +1373,7 @@ struct ContentView: View {
                 Text("How much do you wish to repay him?")
                 KeypadView(
                     amount: $amount,
-                    limitHint: "You have\n\(game.cash.formatted())"
+                    limitHint: "You have\n\(game.cash!.formatted())"
                 )
                 HStack {
                     RoundRectButton {
@@ -1352,7 +1390,7 @@ struct ContentView: View {
                         Text("Repay")
                             .frame(minWidth: 80)
                     }
-                    .withDisabledStyle(amount == 0 || amount > game.cash)
+                    .withDisabledStyle(amount == 0 || amount > game.cash!)
                 }
             }
             .withModalStyle(.taipanSheetColor(colorScheme))
@@ -1377,7 +1415,7 @@ struct ContentView: View {
                     }
                     .withCancelStyle()
                     VStack {
-                        Text("You have\n\(game.cash.formatted())\nin cash")
+                        Text("You have\n\(game.cash!.formatted())\nin cash")
                             .font(.captionFont)
                             .multilineTextAlignment(.center)
                         RoundRectButton {
@@ -1387,7 +1425,7 @@ struct ContentView: View {
                             Text("Deposit")
                                 .frame(minWidth: 80)
                         }
-                        .withDisabledStyle(amount == 0 || amount > game.cash)
+                        .withDisabledStyle(amount == 0 || amount > game.cash!)
                     }
                     VStack {
                         Text("You have\n\(game.bank.formatted())\nin the bank")
@@ -1524,7 +1562,7 @@ struct ContentView: View {
                 Text("Och, 'tis a pity to be \(shipDamagePercent.formatted(.percent)) damaged.\nWe can fix yer whole ship for \(game.mcHenryOffer!.formatted()), or make partial repairs if you wish.\nHow much will ye spend?")
                 KeypadView(
                     amount: $amount,
-                    limitHint: "You have\n\(game.cash.formatted())"
+                    limitHint: "You have\n\(game.cash!.formatted())"
                 )
                 HStack {
                     RoundRectButton {
@@ -1542,7 +1580,7 @@ struct ContentView: View {
                         Text("Repair")
                             .frame(minWidth: 80)
                     }
-                    .withDisabledStyle(amount == 0 || amount > min(game.cash, game.mcHenryOffer!))
+                    .withDisabledStyle(amount == 0 || amount > min(game.cash!, game.mcHenryOffer!))
                 }
             }
             .withModalStyle(.taipanSheetColor(colorScheme))
