@@ -1111,7 +1111,8 @@ class Game: ObservableObject {
     }
     
     var maxHostilesOnScreen = 9
-    var hostilesOnScreen: [Int]?
+    var hostilesOnScreen: [(hitPoints: Int, damage: Int)]?
+    var nextDamage: Int = 0
     @Published var battleOrder: BattleOrder?
     @Published var battleMessage: String?
     private var battleTimer: Timer?
@@ -1129,7 +1130,8 @@ class Game: ObservableObject {
     
     // start the battle
     private func seaBattle() {
-        hostilesOnScreen = Array(repeating: 0, count: maxHostilesOnScreen)
+        hostilesOnScreen = Array(repeating: (0, 0), count: maxHostilesOnScreen)
+        nextDamage = Int.random(in: 0...3)
         fillScreenWithShips()
         escapeChance = 0
         escapeChanceIncrement = 1
@@ -1142,7 +1144,7 @@ class Game: ObservableObject {
     }
     
     var countOfHostilesOnScreen: Int {
-        var count = hostilesOnScreen!.lazy.filter({ $0 > 0 }).count
+        var count = hostilesOnScreen!.lazy.filter({ $0.hitPoints > 0 }).count
         if targetedShipSinking ?? false {
             // while the ship is sinking, it's already <= 0 in hostilesOnScreen
             // but should still count
@@ -1156,11 +1158,12 @@ class Game: ObservableObject {
         var shipsToPlace = hostilesCount! - countOfHostilesOnScreen
         if shipsToPlace > 0 {
             for i in 0..<maxHostilesOnScreen {
-                if hostilesOnScreen![i] <= 0 {
+                if hostilesOnScreen![i].hitPoints <= 0 {
                     // Link's implementation:
                     // (int)((ec * ((float) rand() / RAND_MAX)) + 20);
                     // 'ec' is a counter that starts at 20 and increments by 10 every year
-                    hostilesOnScreen![i] = 20 + Int.random(in: 0...(20 + (year! - startYear) * 10))
+                    hostilesOnScreen![i].hitPoints = 20 + Int.random(in: 0...(20 + (year! - startYear) * 10))
+                    hostilesOnScreen![i].damage = 0
                     shipsToPlace -= 1
                     print("ship[\(i)] = \(hostilesOnScreen![i])")
                 }
@@ -1173,8 +1176,12 @@ class Game: ObservableObject {
     
     // a particular pirate ship is considered visible if it's afloat or in the
     // process of sinking
-    func shipVisible(_ ship: Int) -> Bool {
-        return hostilesOnScreen![ship] > 0 || (ship == targetedShip && (targetedShipSinking ?? false))
+    func hostileShipVisible(_ ship: Int) -> Bool {
+        return hostilesOnScreen![ship].hitPoints > 0 || (ship == targetedShip && (targetedShipSinking ?? false))
+    }
+    
+    func hostileShipDamage(_ ship: Int) -> Int {
+        return hostilesOnScreen![ship].damage
     }
     
     // user ordered to fight
@@ -1256,7 +1263,7 @@ class Game: ObservableObject {
             // randomly pick a target among ships on screen that haven't sunk yet
             repeat {
                 let target = Int.random(in: 0..<maxHostilesOnScreen)
-                if hostilesOnScreen![target] > 0 {
+                if hostilesOnScreen![target].hitPoints > 0 {
                     targetedShip = target
                 }
             } while targetedShip == nil
@@ -1267,9 +1274,12 @@ class Game: ObservableObject {
     // animation for gunfire has completed
     func gunDidFire() {
         if let targetedShip = targetedShip {
-            hostilesOnScreen![targetedShip] -= Int.random(in: 10...40)
+            hostilesOnScreen![targetedShip].hitPoints -= Int.random(in: 10...40)
+            // show some random visual damage, unrelated to the hit points
+            hostilesOnScreen![targetedShip].damage |= 1 << nextDamage
+            nextDamage = (nextDamage + Int.random(in: 1...3)) % 4
             print("ship[\(targetedShip)] = \(hostilesOnScreen![targetedShip])")
-            if hostilesOnScreen![targetedShip] <= 0 {
+            if hostilesOnScreen![targetedShip].hitPoints <= 0 {
                 targetedShipSinking = true
             }
             else {
@@ -1337,9 +1347,9 @@ class Game: ObservableObject {
         if hostilesCount! < maxHostilesOnScreen {
             var count = countOfHostilesOnScreen
             for i in stride(from: maxHostilesOnScreen - 1, through: 0, by: -1)  {
-                if count > hostilesCount! && hostilesOnScreen![i] > 0 {
+                if count > hostilesCount! && hostilesOnScreen![i].hitPoints > 0 {
                     count -= 1
-                    hostilesOnScreen![i] = 0
+                    hostilesOnScreen![i].hitPoints = 0
                 }
             }
         }

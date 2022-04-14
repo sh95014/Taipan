@@ -875,43 +875,11 @@ struct BattleView: View {
                 GridItem(),
             ], spacing: 10) {
                 ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
-                    Image("lorcha")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(ship != game.targetedShip ? .taipanColor : firedOnShipForeground)
-                        .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
-                        .onChange(of: game.targetedShip) { newValue in
-                            if newValue == ship {
-                                // flash twice
-                                reverseHostileShip()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    normalHostileShip()
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                        reverseHostileShip()
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            normalHostileShip()
-                                            game.gunDidFire()
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
-                        .clipped()
-                        .onChange(of: game.targetedShipSinking) { newValue in
-                            if ship == game.targetedShip && (newValue ?? false) {
-                                let sinkDuration = Double.random(in: 0.3...2.0)
-                                withAnimation(.easeIn(duration: sinkDuration)) {
-                                    // the lorcha is 5.56“ x 4.31“, and the iPhone Pro Max is 428pt wide
-                                    hostileYOffset = 111
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
-                                    game.targetedShipSunk()
-                                    hostileYOffset = 0
-                                }
-                            }
-                        }
-                        .opacity(game.shipVisible(ship) ? 1.0 : 0.0)
+                    HostileShipView(ship: ship,
+                                    firedOnShipForeground: $firedOnShipForeground,
+                                    firedOnShipBackground: $firedOnShipBackground,
+                                    battleBackgroundColor: $battleBackgroundColor,
+                                    hostileYOffset: $hostileYOffset)
                 }
             }
             .padding(.horizontal, 8)
@@ -981,22 +949,99 @@ struct BattleView: View {
                 battleBackgroundColor = .taipanBackgroundColor
             }
         }
-        .onAppear {
-            normalHostileShip()
-        }
         .padding(2)
     }
     
-    private func normalHostileShip() {
-        firedOnShipForeground = .taipanColor
-        firedOnShipBackground = .taipanBackgroundColor
-    }
-    
-    private func reverseHostileShip() {
-        // inverts the foreground and background colors to simulate hitting
-        // a hostile ship
-        firedOnShipForeground = .taipanBackgroundColor
-        firedOnShipBackground = .taipanColor
+    struct HostileShipView: View {
+        @EnvironmentObject private var game: Game
+        var ship: Int
+        @Binding var firedOnShipForeground: Color
+        @Binding var firedOnShipBackground: Color
+        @Binding var battleBackgroundColor: Color
+        @Binding var hostileYOffset: CGFloat
+        
+        var body: some View {
+            Image("lorcha")
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(ship != game.targetedShip ? .taipanColor : firedOnShipForeground)
+                .background(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                .clipped()
+                .opacity(game.hostileShipVisible(ship) ? 1.0 : 0.0)
+                .overlay(
+                    ZStack {
+                        Image("damage1")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                            .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                            .opacity(((game.hostileShipDamage(ship) & 0b0001) != 0) ? 1.0 : 0.0)
+                        Image("damage2")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                            .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                            .opacity(((game.hostileShipDamage(ship) & 0b0010) != 0) ? 1.0 : 0.0)
+                        Image("damage3")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                            .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                            .opacity(((game.hostileShipDamage(ship) & 0b0100) != 0) ? 1.0 : 0.0)
+                        Image("damage4")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(ship != game.targetedShip ? battleBackgroundColor : firedOnShipBackground)
+                            .offset(y: ship == game.targetedShip ? hostileYOffset : 0)
+                            .opacity(((game.hostileShipDamage(ship) & 0b1000) != 0) ? 1.0 : 0.0)
+                    }
+                )
+                .onChange(of: game.targetedShip) { newValue in
+                    if newValue == ship {
+                        // flash twice
+                        reverseHostileShip()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            normalHostileShip()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                reverseHostileShip()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    normalHostileShip()
+                                    game.gunDidFire()
+                                }
+                            }
+                        }
+                    }
+                }
+                .onChange(of: game.targetedShipSinking) { newValue in
+                    if ship == game.targetedShip && (newValue ?? false) {
+                        let sinkDuration = Double.random(in: 0.3...2.0)
+                        withAnimation(.easeIn(duration: sinkDuration)) {
+                            // the lorcha is 5.56“ x 4.31“, and the iPhone Pro Max is 428pt wide
+                            hostileYOffset = 111
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
+                            game.targetedShipSunk()
+                            hostileYOffset = 0
+                        }
+                    }
+                }
+                .onAppear {
+                    normalHostileShip()
+                }
+        }
+        
+        private func normalHostileShip() {
+            firedOnShipForeground = .taipanColor
+            firedOnShipBackground = .taipanBackgroundColor
+        }
+        
+        private func reverseHostileShip() {
+            // inverts the foreground and background colors to simulate hitting
+            // a hostile ship
+            firedOnShipForeground = .taipanBackgroundColor
+            firedOnShipBackground = .taipanColor
+        }
     }
     
     private func shipTakingFire() {
