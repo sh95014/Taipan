@@ -790,6 +790,7 @@ struct KeypadView: View {
                         .withTextFieldStyle(width: 100, color: .taipanColor)
                     if let limitHint = limitHint {
                         Text(limitHint)
+                            .fixedSize(horizontal: false, vertical: true)
                             .padding(.leading, 20)
                             .multilineTextAlignment(.center)
                             .font(.captionFont)
@@ -807,6 +808,7 @@ struct KeypadView: View {
                             amount = (amount % 1000000000000) * 10 + digit
                         } content: {
                             Text("\(digit)")
+                                .font(.keypadDigitFont)
                         }
                         .padding(2)
                     }
@@ -1248,6 +1250,23 @@ struct ContentView: View {
                         amount: $amount,
                         limitHint: "You can\nafford \(game.canAfford(selectedMerchandise).formatted())"
                     )
+                    FullWidthButton {
+                        amount = game.canAfford(selectedMerchandise)
+                    } content: {
+                        VStack {
+                            Text("All I can afford (\(game.canAfford(selectedMerchandise)))")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    FullWidthButton {
+                        amount = game.shipFreeCapacity
+                    } content: {
+                        VStack {
+                            Text("Enough to fill ship (\(game.shipFreeCapacity))")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .withDisabledStyle(game.shipFreeCapacity > game.canAfford(selectedMerchandise))
                     HStack {
                         RoundRectButton {
                             isShowingBuyModal = false
@@ -1266,6 +1285,7 @@ struct ContentView: View {
                         }
                         .withDisabledStyle(amount == 0 || amount > game.canAfford(selectedMerchandise))
                     }
+                    .padding(.top, 10)
                 }
                 else {
                     Text("What do you wish me to buy, Taipan?")
@@ -1318,6 +1338,24 @@ struct ContentView: View {
                         amount: $amount,
                         limitHint: "You have\n\(amountOnShip.formatted())"
                     )
+                    FullWidthButton {
+                        amount = amountOnShip
+                    } content: {
+                        VStack {
+                            Text("All of it (\(amountOnShip))")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    if game.shipFreeCapacity < 0 {
+                        FullWidthButton {
+                            amount = -game.shipFreeCapacity
+                        } content: {
+                            VStack {
+                                Text("Overload (\(-game.shipFreeCapacity))")
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                    }
                     HStack {
                         RoundRectButton {
                             isShowingSellModal = false
@@ -1350,6 +1388,7 @@ struct ContentView: View {
                         }
                         .withDisabledStyle(amount == 0 || amount > amountOnShip)
                     }
+                    .padding(.top, 10)
                 }
                 else {
                     if discard {
@@ -1644,11 +1683,21 @@ struct ContentView: View {
         var body: some View {
             VStack {
                 let shipDamagePercent = 100 - game.shipStatus
-                Text("Och, 'tis a pity to be \(shipDamagePercent.formatted(.percent)) damaged.\nWe can fix yer whole ship for \(game.mcHenryOffer!.formatted()), or make partial repairs if you wish.\nHow much will ye spend?")
+                let mcHenryOffer = game.mcHenryOffer!
+                Text("Och, 'tis a pity to be \(shipDamagePercent.formatted(.percent)) damaged.\nWe can fix yer whole ship for \(mcHenryOffer.formatted()), or make partial repairs if you wish.\nHow much will ye spend?")
                 KeypadView(
                     amount: $amount,
                     limitHint: "You have\n\(game.cash!.formatted())"
                 )
+                FullWidthButton {
+                    amount = mcHenryOffer
+                } content: {
+                    VStack {
+                        Text("Fix the whole ship (\(mcHenryOffer.formatted()))")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .withDisabledStyle(game.cash! < mcHenryOffer)
                 HStack {
                     RoundRectButton {
                         game.sendEvent(.no)
@@ -1667,6 +1716,7 @@ struct ContentView: View {
                     }
                     .withDisabledStyle(amount == 0 || amount > min(game.cash!, game.mcHenryOffer!))
                 }
+                .padding(.top, 10)
             }
             .withModalStyle(.taipanSheetColor)
         }
@@ -1801,6 +1851,7 @@ extension Color {
 
 extension Font {
     static let titleFont = Font.custom("MorrisRoman-Black", size: 30)
+    static let keypadDigitFont = Font.custom("MorrisRoman-Black", size: 26)
     static let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
     static let captionFont = Font.custom("MorrisRoman-Black", size: 16)
 }
