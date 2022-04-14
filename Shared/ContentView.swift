@@ -9,8 +9,9 @@ import SwiftUI
 
 struct NameView: View {
     @EnvironmentObject private var game: Game
-    @State private var firmName: String = ""
     @FocusState private var focused: Bool
+    @State private var firmName: String = ""
+    @Binding var splashAnimation: Bool
     
     var body: some View {
         ZStack {
@@ -20,70 +21,83 @@ struct NameView: View {
                     .padding(.top, 10)
                 Divider()
                     .background(Color.taipanColor)
-                Text("A game based on the China\ntrade of the 1800's")
-                    .multilineTextAlignment(.center)
-                    .padding(.bottom, 5)
-                Text("Created by: Art Canfil")
+                if splashAnimation {
+                    Text("A game based on the China\ntrade of the 1800's")
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom, 5)
+                        .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 1).delay(1)), removal: .opacity))
+                    Text("Created by: Art Canfil")
+                        .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 1).delay(1.5)), removal: .opacity))
+                }
                 Spacer()
             }
             VStack {
-                Image("lorcha")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundColor(.taipanColor.opacity(0.2))
-                    .padding(.horizontal, 80)
-                Spacer()
-                RoundRectVStack(.taipanColor) {
-                    HStack {
-                        Text("Taipan,")
-                            .padding(.leading, 40)
-                        Spacer()
-                    }
-                    HStack {
-                        Text("What will you name your")
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 30)
-                        Spacer()
-                    }
-                    HStack {
-                        Text("Firm:")
-                        TextField(
-                            "",
-                            text: $firmName,
-                            onCommit: {
-                                if firmName.count > 0 {
-                                    game.firmName = firmName
-                                    game.sendEvent(.done)
-                                }
-                                else {
-                                    focused = true
-                                }
-                            })
-                            .padding(5)
-                            .foregroundColor(Color.taipanColor)
-                            .background(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .strokeBorder(Color.taipanColor.opacity(0.5))
-                                    .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                        .fill(Color.taipanColor.opacity(0.1))
-                                    )
-                            )
-                            .padding(3)
-                            .focused($focused)
-                    }
-                    .padding(.horizontal, 20)
-                    .onAppear {
-                        // HACK: doesn't work if setting focused = true without the delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            focused = true
+                if splashAnimation {
+                    Image("lorcha")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.taipanColor.opacity(0.2))
+                        .padding(.horizontal, 80)
+                        .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 1)), removal: .opacity))
+                    Spacer()
+                    RoundRectVStack(.taipanColor) {
+                        HStack {
+                            Text("Taipan,")
+                                .padding(.leading, 40)
+                            Spacer()
                         }
-                    }
-                } // RoundRectVStack
-                Spacer()
+                        HStack {
+                            Text("What will you name your")
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 30)
+                            Spacer()
+                        }
+                        HStack {
+                            Text("Firm:")
+                            TextField(
+                                "",
+                                text: $firmName,
+                                onCommit: {
+                                    if firmName.count > 0 {
+                                        game.firmName = firmName
+                                        game.sendEvent(.done)
+                                    }
+                                    else {
+                                        focused = true
+                                    }
+                                })
+                                .padding(5)
+                                .foregroundColor(Color.taipanColor)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .strokeBorder(Color.taipanColor.opacity(0.5))
+                                        .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                            .fill(Color.taipanColor.opacity(0.1))
+                                        )
+                                )
+                                .padding(3)
+                                .focused($focused)
+                        }
+                        .padding(.horizontal, 20)
+                        .onAppear {
+                            // HACK: doesn't work if setting focused = true without the delay
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                focused = true
+                            }
+                        }
+                    } // RoundRectVStack
+                    .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 0.5).delay(2)), removal: .opacity))
+                    Spacer()
+                }
             } // VStack
         } // ZStack
         .onTapGesture {
             focused = true
+        }
+        .onAppear {
+            withAnimation {
+                splashAnimation = true
+            }
         }
     } // body
 }
@@ -1059,116 +1073,118 @@ struct FinalStatsView: View {
     var body: some View {
         let score = game.score
         
-        Group {
-            Text("\(game.firmName!)")
-                .font(.titleFont)
-                .lineLimit(1)
-                .padding(.bottom, 10)
-            Text("Your final status:")
-                .withReportStyle()
-            Text("Net Cash: \(game.netWorth.fancyFormatted())")
-                .withReportStyle()
-            Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns!.formatted()) guns")
-                .withReportStyle()
+        if game.state == .finalStats {
+            Group {
+                Text("\(game.firmName!)")
+                    .font(.titleFont)
+                    .lineLimit(1)
+                    .padding(.bottom, 10)
+                Text("Your final status:")
+                    .withReportStyle()
+                Text("Net Cash: \(game.netWorth.fancyFormatted())")
+                    .withReportStyle()
+                Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns!.formatted()) guns")
+                    .withReportStyle()
 
-            let years = game.months / 12
-            let months = game.months % 12
-            Text("You traded for \(years) " +
-                 ((years == 1) ? "year" : "years") +
-                 " \(months) " +
-                 ((months == 1) ? "month" : "months"))
-                .withReportStyle()
+                let years = game.months / 12
+                let months = game.months % 12
+                Text("You traded for \(years) " +
+                     ((years == 1) ? "year" : "years") +
+                     " \(months) " +
+                     ((months == 1) ? "month" : "months"))
+                    .withReportStyle()
 
-            Text("Your score is \(score).")
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 3)
-                .foregroundColor(.taipanBackgroundColor)
-                .background(Color.taipanColor)
+                Text("Your score is \(score).")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 3)
+                    .foregroundColor(.taipanBackgroundColor)
+                    .background(Color.taipanColor)
+                
+                if score < 0 {
+                    Text("The crew has requested that you stay on shore for their safety!!")
+                        .withReportStyle()
+                        .padding(.top, 10)
+                }
+                else if score < 100 {
+                    Text("Have you considered a land based job?")
+                        .withReportStyle()
+                        .padding(.top, 10)
+                }
+            } // Group
             
-            if score < 0 {
-                Text("The crew has requested that you stay on shore for their safety!!")
-                    .withReportStyle()
-                    .padding(.top, 10)
-            }
-            else if score < 100 {
-                Text("Have you considered a land based job?")
-                    .withReportStyle()
-                    .padding(.top, 10)
-            }
-        }
-        
-        Text("Your Rating:")
-            .withMessageStyle()
-            .padding(.top, 10)
-        RoundRectVStack(.taipanColor) {
-            HStack {
-                Text("Ma Tsu")
-                    .foregroundColor(score >= 50000 ? .taipanBackgroundColor : Color.taipanColor)
-                    .background(score >= 50000 ? Color.taipanColor : .taipanBackgroundColor)
-                Spacer()
-                Text("50,000 and over")
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            HStack {
-                Text("Master Taipan")
-                    .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor : Color.taipanColor)
-                    .background((score >= 8000 && score < 50000) ? Color.taipanColor : .taipanBackgroundColor)
-                Spacer()
-                Text("8,000 to 49,999")
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            HStack {
-                Text("Taipan")
-                    .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor : Color.taipanColor)
-                    .background((score >= 1000 && score < 8000) ? Color.taipanColor : .taipanBackgroundColor)
-                Spacer()
-                Text("1,000 to 7,999")
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            HStack {
-                Text("Compradore")
-                    .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor : Color.taipanColor)
-                    .background((score >= 500 && score < 1000) ? Color.taipanColor : .taipanBackgroundColor)
-                Spacer()
-                Text("500 to 999")
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-            HStack {
-                Text("Galleyhand")
-                    .foregroundColor(score < 500 ? .taipanBackgroundColor : Color.taipanColor)
-                    .background(score < 500 ? Color.taipanColor : .taipanBackgroundColor)
-                Spacer()
-                Text("less than 500")
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 2)
-        }
-        .padding(.horizontal, 2)
-        
-        Spacer()
-        
-        Group {
-            Text("Play again?")
+            Text("Your Rating:")
                 .withMessageStyle()
+                .padding(.top, 10)
+            RoundRectVStack(.taipanColor) {
+                HStack {
+                    Text("Ma Tsu")
+                        .foregroundColor(score >= 50000 ? .taipanBackgroundColor : Color.taipanColor)
+                        .background(score >= 50000 ? Color.taipanColor : .taipanBackgroundColor)
+                    Spacer()
+                    Text("50,000 and over")
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                HStack {
+                    Text("Master Taipan")
+                        .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor : Color.taipanColor)
+                        .background((score >= 8000 && score < 50000) ? Color.taipanColor : .taipanBackgroundColor)
+                    Spacer()
+                    Text("8,000 to 49,999")
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                HStack {
+                    Text("Taipan")
+                        .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor : Color.taipanColor)
+                        .background((score >= 1000 && score < 8000) ? Color.taipanColor : .taipanBackgroundColor)
+                    Spacer()
+                    Text("1,000 to 7,999")
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                HStack {
+                    Text("Compradore")
+                        .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor : Color.taipanColor)
+                        .background((score >= 500 && score < 1000) ? Color.taipanColor : .taipanBackgroundColor)
+                    Spacer()
+                    Text("500 to 999")
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                HStack {
+                    Text("Galleyhand")
+                        .foregroundColor(score < 500 ? .taipanBackgroundColor : Color.taipanColor)
+                        .background(score < 500 ? Color.taipanColor : .taipanBackgroundColor)
+                    Spacer()
+                    Text("less than 500")
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+            } // RoundRectVStack
+            .padding(.horizontal, 2)
             
-            HStack {
-                RoundRectButton {
-                    game.sendEvent(.no)
-                } content: {
-                    Text("No")
-                        .frame(minWidth:100, minHeight:30)
-                }
-                RoundRectButton {
-                    game.sendEvent(.yes)
-                } content: {
-                    Text("Yes")
-                        .frame(minWidth:100, minHeight:30)
-                }
-            }
+            Spacer()
+            
+            Group {
+                Text("Play again?")
+                    .withMessageStyle()
+                
+                HStack {
+                    RoundRectButton {
+                        game.sendEvent(.no)
+                    } content: {
+                        Text("No")
+                            .frame(minWidth:100, minHeight:30)
+                    }
+                    RoundRectButton {
+                        game.sendEvent(.yes)
+                    } content: {
+                        Text("Yes")
+                            .frame(minWidth:100, minHeight:30)
+                    }
+                } // HStack
+            } // Group
         }
     }
 }
@@ -1186,6 +1202,7 @@ struct ContentView: View {
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
     @State private var battleBackgroundColor = Color.clear
+    @State private var splashAnimation = false
     
     var body: some View {
         GeometryReader { proxy in
@@ -1208,9 +1225,11 @@ struct ContentView: View {
                         .frame(minHeight: proxy.size.height)
                     }
                     else if game.state == .name {
-                        VStack { NameView() }
-                            .padding(2)
-                            .frame(minHeight: proxy.size.height)
+                        VStack {
+                            NameView(splashAnimation: $splashAnimation)
+                        }
+                        .padding(2)
+                        .frame(minHeight: proxy.size.height)
                     }
                     else if game.state == .debtOrGuns {
                         VStack { DebtOrGunsView() }
@@ -1273,6 +1292,7 @@ struct ContentView: View {
                 battleBackgroundColor = .taipanBackgroundColor
             }
         }
+        .statusBar(hidden: true)
     }
     
     var isShowingModal: Bool {

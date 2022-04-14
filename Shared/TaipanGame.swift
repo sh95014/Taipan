@@ -8,6 +8,7 @@
 //  Game formulas largely based on Jay Link's port at https://github.com/cymonsgames/CymonsGames/tree/master/taipan
 
 import Foundation
+import UIKit
 
 extension Int {
     static func random(_ numerator: Int, in denominator: Int, comment: String? = nil) -> Bool {
@@ -159,6 +160,9 @@ class Game: ObservableObject {
         print("transitioning to state \(newState)")
         
         switch newState {
+        case .name:
+            initializeGame()
+            state = newState
         case .arriving:
             setTimer(3)
             state = newState
@@ -590,7 +594,6 @@ class Game: ObservableObject {
             exit(0)
         case (.finalStats, .yes):
             transitionTo(.name)
-            initializeGame()
             break
         
         default:
@@ -1362,6 +1365,7 @@ class Game: ObservableObject {
         battleMessage = "They‘re firing on us, Taipan!"
         setBattleTimer(3) { [self] in
             shipBeingHit = true
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         }
     }
     

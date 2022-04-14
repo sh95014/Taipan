@@ -7,5 +7,14 @@
 		<string>KingsCross.ttf</string>
 		<string>MorrisRoman-Black.ttf</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>BackgroundColor</string>
+		<key>UILaunchScreen</key>
+		<dict/>
+	</dict>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>
