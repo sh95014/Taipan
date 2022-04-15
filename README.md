@@ -29,7 +29,9 @@ I retain the copyright to the source code of this project. You *may not* publish
 
 ## Progress
 
-The iPhone version took about two weeks to build, and is now playable. I'm about done with it, and would probably move on to the iPad port before dealing with the known issues listed below.
+The iPhone version took about two weeks to build, and is now playable. The landscape iPad version took about a day of tweaking, but the portrait iPad and larger iPhone layouts proved difficult. SwiftUI doesn't make it easy to make small spacing adjustments, especially when we're wrapping everything in a `ScrollView` for accesibility text sizes.
+
+I'll probably move on to macOS before coming back and trying again.
 
 ## Features
 
@@ -49,7 +51,6 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 - [ ] Keyboard support, including for the custom keypad and Apple \]\[ compatibility
 - [X] Untested haptics for when ship is hit
 - [ ] Feedback and alert sounds
-- [ ] Improve layout on larger phones
 
 ## Extra Effort
 
@@ -57,6 +58,7 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 - [ ] Particle effects (confetti for retirement, fire for ship battles)
 - [ ] Saved game state
 - [ ] High scores
+- [ ] Improve layout on larger iPhones and portrait-orientation iPad
 
 ## Screenshots
 
@@ -73,3 +75,9 @@ Impossible options are disabled, convenient options are offered
 Explore the seas and lands beyond, and battle pirates to protect your merchandise (and booty!)
 
 <img src="https://user-images.githubusercontent.com/95387068/163507361-8698e8ed-f629-4a7b-9058-0be50cc7125b.png" width=375 /> <img src="https://user-images.githubusercontent.com/95387068/163480120-e3b14831-07b8-4f24-ab6b-2648a60608fc.png" width=375 />
+
+iPad
+
+<img src="https://user-images.githubusercontent.com/95387068/163653050-ac8e35e5-d263-4507-95ac-b14892b0d35c.png" width=1133 />
+
+<img src="https://user-images.githubusercontent.com/95387068/163653055-dfea5985-7077-4658-8e1b-8fa56f8b2456.png" width=1133 />
