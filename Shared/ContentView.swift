@@ -941,11 +941,13 @@ struct BattleView: View {
                     Text("Your orders are to: \(game.battleOrder?.rawValue ?? "")")
                         .withMessageStyle()
                 }
+                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 10 : 0)
                 Spacer()
                 Text("We have\n\(game.shipGuns!.formatted()) guns")
                     .multilineTextAlignment(.trailing)
                     .padding(5)
-                    .border(Color.taipanColor)
+                    .overlay(Rectangle().frame(width: nil, height: 1).foregroundColor(.taipanColor), alignment: .bottom)
+                    .overlay(Rectangle().frame(width: 1, height: nil).foregroundColor(.taipanColor), alignment: .leading)
             }
             Text(game.battleMessage ?? " ")
             
