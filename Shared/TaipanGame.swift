@@ -67,7 +67,7 @@ class Game: ObservableObject {
     
     init() {
         initializeGame()
-        transitionTo(.name)
+        transitionTo(.splash)
     }
     
     func initializeGame() {
@@ -88,6 +88,7 @@ class Game: ObservableObject {
     // MARK: - State Machine
     
     enum State: String {
+        case splash
         case name
         case debtOrGuns
         case arriving
@@ -146,7 +147,7 @@ class Game: ObservableObject {
         case liYuen
     }
     
-    @Published var state: State = .name
+    @Published var state: State = .splash
     private var timer: Timer?
     
     private func setTimer(_ interval: TimeInterval) {
@@ -160,6 +161,9 @@ class Game: ObservableObject {
         print("transitioning to state \(newState)")
         
         switch newState {
+        case .splash:
+            setTimer(5)
+            state = newState
         case .name:
             initializeGame()
             state = newState
@@ -404,6 +408,10 @@ class Game: ObservableObject {
         print("received event \(event) in state \(state)")
         
         switch (state, event) {
+        case (.splash, .tap): timer?.invalidate(); fallthrough
+        case (.splash, .timer):
+            transitionTo(.name)
+            
         case (.name, .done):
             transitionTo(.debtOrGuns)
             

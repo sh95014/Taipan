@@ -7,98 +7,110 @@
 
 import SwiftUI
 
+struct SplashView: View {
+    @EnvironmentObject private var game: Game
+    @State var splashAnimation = false
+    @State var lorchaOpacity: CGFloat = 0.0
+    
+    var body: some View {
+        ZStack {
+                VStack {
+                    Spacer()
+                    Image("lorcha")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.taipanColor.opacity(lorchaOpacity))
+                        .padding(.horizontal, 80)
+                    Spacer()
+                }
+                VStack {
+                    if splashAnimation {
+                        Spacer()
+                        Text("T   A   I   P   A   N   !")
+                            .font(.custom("Georgia", size: 30))
+                            .multilineTextAlignment(.center)
+                            .transition(.opacity.animation(.easeIn(duration: 1.0)))
+                        Divider()
+                            .background(Color.taipanColor)
+                            .transition(.opacity.animation(.easeIn(duration: 1.0)))
+                        Text("A game based on the China\ntrade of the 1800's")
+                            .multilineTextAlignment(.center)
+                            .padding(.bottom, 5)
+                            .transition(.opacity.animation(.easeIn(duration: 1).delay(1)))
+                        Text("Created by: Art Canfil")
+                            .transition(.opacity.animation(.easeIn(duration: 1).delay(1.5)))
+                        Spacer()
+                    }
+                }
+                .withTappableStyle(game)
+        } // ZStack
+        .onAppear {
+            withAnimation(.easeIn(duration: 2.0)) {
+                splashAnimation = true
+                lorchaOpacity = 0.2
+            }
+        }
+    }
+}
+
 struct NameView: View {
     @EnvironmentObject private var game: Game
     @FocusState private var focused: Bool
     @State private var firmName: String = ""
-    @Binding var splashAnimation: Bool
     
     var body: some View {
-        ZStack {
-            VStack {
-                Text("T   A   I   P   A   N   !")
-                    .font(.custom("Georgia", size: 30))
-                    .padding(.top, 10)
-                Divider()
-                    .background(Color.taipanColor)
-                if splashAnimation {
-                    Text("A game based on the China\ntrade of the 1800's")
-                        .multilineTextAlignment(.center)
-                        .padding(.bottom, 5)
-                        .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 1).delay(1)), removal: .opacity))
-                    Text("Created by: Art Canfil")
-                        .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 1).delay(1.5)), removal: .opacity))
-                }
-                Spacer()
-            }
-            VStack {
-                if splashAnimation {
-                    Image("lorcha")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.taipanColor.opacity(0.2))
-                        .padding(.horizontal, 80)
-                        .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 1)), removal: .opacity))
+        VStack {
+            Spacer()
+            RoundRectVStack(.taipanColor) {
+                HStack {
+                    Text("Taipan,")
+                        .padding(.leading, 40)
                     Spacer()
-                    RoundRectVStack(.taipanColor) {
-                        HStack {
-                            Text("Taipan,")
-                                .padding(.leading, 40)
-                            Spacer()
-                        }
-                        HStack {
-                            Text("What will you name your")
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 30)
-                            Spacer()
-                        }
-                        HStack {
-                            Text("Firm:")
-                            TextField(
-                                "",
-                                text: $firmName,
-                                onCommit: {
-                                    if firmName.count > 0 {
-                                        game.firmName = firmName
-                                        game.sendEvent(.done)
-                                    }
-                                    else {
-                                        focused = true
-                                    }
-                                })
-                                .padding(5)
-                                .foregroundColor(Color.taipanColor)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 5)
-                                        .strokeBorder(Color.taipanColor.opacity(0.5))
-                                        .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
-                                            .fill(Color.taipanColor.opacity(0.1))
-                                        )
-                                )
-                                .padding(3)
-                                .focused($focused)
-                        }
+                }
+                HStack {
+                    Text("What will you name your")
                         .padding(.horizontal, 20)
-                    } // RoundRectVStack
-                    .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 0.5).delay(2)), removal: .opacity))
+                        .padding(.vertical, 30)
                     Spacer()
                 }
-            } // VStack
-        } // ZStack
+                HStack {
+                    Text("Firm:")
+                    TextField(
+                        "",
+                        text: $firmName,
+                        onCommit: {
+                            if firmName.count > 0 {
+                                game.firmName = firmName
+                                game.sendEvent(.done)
+                            }
+                            else {
+                                focused = true
+                            }
+                        })
+                        .padding(5)
+                        .foregroundColor(Color.taipanColor)
+                        .background(
+                            RoundedRectangle(cornerRadius: 5)
+                                .strokeBorder(Color.taipanColor.opacity(0.5))
+                                .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .fill(Color.taipanColor.opacity(0.1))
+                                )
+                        )
+                        .padding(3)
+                        .focused($focused)
+                } // HStack
+                .padding(.horizontal, 20)
+            } // RoundRectVStack
+            .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 0.5).delay(2)), removal: .opacity))
+            Spacer()
+        } // VStack
         .onTapGesture {
             focused = true
         }
         .onAppear {
             // HACK: doesn't work if setting focused = true without the delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + (splashAnimation ? 0.1 : 2.5)) {
-                // first time this runs, splashAnimation is still false so we delay the
-                // focus until after the RoundRectVStack animates in. subsequent times,
-                // it's already true so we use the short delay because we skip the slow
-                // animation.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 focused = true
-            }
-            withAnimation {
-                splashAnimation = true
             }
         }
     } // body
@@ -1204,7 +1216,6 @@ struct ContentView: View {
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
     @State private var battleBackgroundColor = Color.clear
-    @State private var splashAnimation = false
     
     var body: some View {
         GeometryReader { proxy in
@@ -1226,22 +1237,18 @@ struct ContentView: View {
                         .background(battleBackgroundColor)
                         .frame(minHeight: proxy.size.height)
                     }
-                    else if game.state == .name {
+                    else if [ .splash, .name, .debtOrGuns, .finalStats ].contains(game.state) {
                         VStack {
-                            NameView(splashAnimation: $splashAnimation)
+                            switch game.state {
+                            case .splash: SplashView()
+                            case .name: NameView()
+                            case .debtOrGuns: DebtOrGunsView()
+                            case .finalStats: FinalStatsView()
+                            default: Group {}
+                            }
                         }
                         .padding(2)
                         .frame(minHeight: proxy.size.height)
-                    }
-                    else if game.state == .debtOrGuns {
-                        VStack { DebtOrGunsView() }
-                            .padding(2)
-                            .frame(minHeight: proxy.size.height)
-                    }
-                    else if game.state == .finalStats {
-                        VStack { FinalStatsView() }
-                            .padding(2)
-                            .frame(minHeight: proxy.size.height)
                     }
                     else {
                         ZStack {
