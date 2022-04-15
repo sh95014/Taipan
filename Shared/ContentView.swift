@@ -336,6 +336,7 @@ struct TradingView: View {
                     Text("Firm: \(game.firmName!), Hong Kong")
                         .font(.titleFont)
                         .lineLimit(1)
+                        .padding(.top, 20) // avoid the ··· multitasking button on iPads
                 }
             }
             
