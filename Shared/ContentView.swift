@@ -79,12 +79,6 @@ struct NameView: View {
                                 .focused($focused)
                         }
                         .padding(.horizontal, 20)
-                        .onAppear {
-                            // HACK: doesn't work if setting focused = true without the delay
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                                focused = true
-                            }
-                        }
                     } // RoundRectVStack
                     .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 0.5).delay(2)), removal: .opacity))
                     Spacer()
@@ -95,6 +89,14 @@ struct NameView: View {
             focused = true
         }
         .onAppear {
+            // HACK: doesn't work if setting focused = true without the delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + (splashAnimation ? 0.1 : 2.5)) {
+                // first time this runs, splashAnimation is still false so we delay the
+                // focus until after the RoundRectVStack animates in. subsequent times,
+                // it's already true so we use the short delay because we skip the slow
+                // animation.
+                focused = true
+            }
             withAnimation {
                 splashAnimation = true
             }
