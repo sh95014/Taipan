@@ -7,8 +7,9 @@
 
 //  Game formulas largely based on Jay Link's port at https://github.com/cymonsgames/CymonsGames/tree/master/taipan
 
-import Foundation
 import AudioToolbox
+import Foundation
+import UIKit
 
 extension Int {
     static func random(_ numerator: Int, in denominator: Int, comment: String? = nil) -> Bool {
@@ -1141,6 +1142,7 @@ class Game: ObservableObject {
     
     // start the battle
     private func seaBattle() {
+        maxHostilesOnScreen = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 9
         hostilesOnScreen = Array(repeating: (0, 0), count: maxHostilesOnScreen)
         nextDamage = Int.random(in: 0...3)
         fillScreenWithShips()

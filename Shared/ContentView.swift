@@ -14,36 +14,36 @@ struct SplashView: View {
     
     var body: some View {
         ZStack {
-                VStack {
+            VStack {
+                Spacer()
+                Image("lorcha")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.taipanColor.opacity(lorchaOpacity))
+                    .frame(maxWidth: 400)
+                    .padding(.horizontal, 80)
+                Spacer()
+            }
+            VStack {
+                if splashAnimation {
                     Spacer()
-                    Image("lorcha")
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundColor(.taipanColor.opacity(lorchaOpacity))
-                        .frame(maxWidth: 400)
-                        .padding(.horizontal, 80)
+                    Text("T   A   I   P   A   N   !")
+                        .font(.custom("Georgia", size: UIDevice.current.userInterfaceIdiom == .phone ? 30 : 60))
+                        .multilineTextAlignment(.center)
+                        .transition(.opacity.animation(.easeIn(duration: 1.0)))
+                    Divider()
+                        .background(Color.taipanColor)
+                        .transition(.opacity.animation(.easeIn(duration: 1.0)))
+                    Text("A game based on the China\ntrade of the 1800's")
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom, 5)
+                        .transition(.opacity.animation(.easeIn(duration: 1).delay(1)))
+                    Text("Created by: Art Canfil")
+                        .transition(.opacity.animation(.easeIn(duration: 1).delay(1.5)))
                     Spacer()
                 }
-                VStack {
-                    if splashAnimation {
-                        Spacer()
-                        Text("T   A   I   P   A   N   !")
-                            .font(.custom("Georgia", size: UIDevice.current.userInterfaceIdiom == .phone ? 30 : 60))
-                            .multilineTextAlignment(.center)
-                            .transition(.opacity.animation(.easeIn(duration: 1.0)))
-                        Divider()
-                            .background(Color.taipanColor)
-                            .transition(.opacity.animation(.easeIn(duration: 1.0)))
-                        Text("A game based on the China\ntrade of the 1800's")
-                            .multilineTextAlignment(.center)
-                            .padding(.bottom, 5)
-                            .transition(.opacity.animation(.easeIn(duration: 1).delay(1)))
-                        Text("Created by: Art Canfil")
-                            .transition(.opacity.animation(.easeIn(duration: 1).delay(1.5)))
-                        Spacer()
-                    }
-                }
-                .withTappableStyle(game)
+            }
+            .withTappableStyle(game)
         } // ZStack
         .onAppear {
             withAnimation(.easeIn(duration: 2.0)) {
@@ -102,7 +102,6 @@ struct NameView: View {
                 } // HStack
                 .padding(.horizontal, 20)
             } // RoundRectVStack
-            .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 0.5).delay(2)), removal: .opacity))
             Spacer()
         } // VStack
         .frame(maxWidth: 768)
@@ -637,13 +636,17 @@ struct TradingView: View {
                         game.sendEvent(.no)
                     } content: {
                         Text("No")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
                         Text("Yes")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                 }
             }
@@ -689,13 +692,17 @@ struct TradingView: View {
                         game.sendEvent(.no)
                     } content: {
                         Text("No")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                     RoundRectButton {
                         isShowingRepairModal = true
                     } content: {
                         Text("Repair")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                 } // HStack
             } // VStack
@@ -719,20 +726,26 @@ struct TradingView: View {
                         game.sendEvent(.no)
                     } content: {
                         Text("No")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                     RoundRectButton {
                         isShowingBorrowModal = true
                     } content: {
                         Text("Borrow")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                     .withDisabledStyle(game.cash! <= 0)
                     RoundRectButton {
                         isShowingRepayModal = true
                     } content: {
                         Text("Repay")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                     .withDisabledStyle(game.debt <= 0)
                 }
@@ -763,13 +776,17 @@ struct TradingView: View {
                         game.sendEvent(.no)
                     } content: {
                         Text("No")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
                         Text("Yes")
-                            .frame(minWidth:100, minHeight:30)
+                            .frame(minWidth: 100,
+                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   minHeight: 30)
                     }
                 }
             }
@@ -934,23 +951,49 @@ struct BattleView: View {
             
             Spacer()
             
-            LazyVGrid(columns: [
-                GridItem(),
-                GridItem(),
-                GridItem(),
-            ], spacing: 10) {
-                ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
-                    HostileShipView(ship: ship,
-                                    firedOnShipForeground: $firedOnShipForeground,
-                                    firedOnShipBackground: $firedOnShipBackground,
-                                    battleBackgroundColor: $battleBackgroundColor,
-                                    hostileYOffset: $hostileYOffset)
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                LazyVGrid(columns: [
+                    GridItem(),
+                    GridItem(),
+                    GridItem(),
+                ], spacing: 10) {
+                    ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
+                        HostileShipView(ship: ship,
+                                        firedOnShipForeground: $firedOnShipForeground,
+                                        firedOnShipBackground: $firedOnShipBackground,
+                                        battleBackgroundColor: $battleBackgroundColor,
+                                        hostileYOffset: $hostileYOffset)
+                    }
+                }
+                .padding(.horizontal, 8)
+                Image(systemName: "plus")
+                    .padding(.top, 5)
+                    .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
+            }
+            else {
+                HStack {
+                    LazyVGrid(columns: [
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                    ], spacing: 10) {
+                        ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
+                            HostileShipView(ship: ship,
+                                            firedOnShipForeground: $firedOnShipForeground,
+                                            firedOnShipBackground: $firedOnShipBackground,
+                                            battleBackgroundColor: $battleBackgroundColor,
+                                            hostileYOffset: $hostileYOffset)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 8)
+                    Image(systemName: "plus")
+                        .padding(.top, 5)
+                        .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
                 }
             }
-            .padding(.horizontal, 8)
-            Image(systemName: "plus")
-                .padding(.top, 5)
-                .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
             
             Spacer()
             
@@ -1083,7 +1126,7 @@ struct BattleView: View {
                         let sinkDuration = Double.random(in: 0.3...2.0)
                         withAnimation(.easeIn(duration: sinkDuration)) {
                             // the lorcha is 5.56“ x 4.31“, and the iPhone Pro Max is 428pt wide
-                            hostileYOffset = 111
+                            hostileYOffset = UIDevice.current.userInterfaceIdiom == .phone ? 111 : 265
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
                             game.targetedShipSunk()
