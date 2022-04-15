@@ -44,10 +44,10 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 
 ## Known Issues
 
-- [ ] App Icon
+- [X] App Icon
 - [ ] Localization, including proper plurality handling and `fancyFormatted`
 - [ ] Keyboard support, including for the custom keypad and Apple \]\[ compatibility
-- [ ] Untested haptics for when ship is hit
+- [X] Untested haptics for when ship is hit
 - [ ] Feedback and alert sounds
 - [ ] Improve layout on larger phones
 
@@ -72,4 +72,4 @@ Impossible options are disabled, convenient options are offered
 
 Explore the seas and lands beyond, and battle pirates to protect your merchandise (and booty!)
 
-<img src="https://user-images.githubusercontent.com/95387068/163480078-4cf484f0-3a8a-4a4b-a26a-4bcbbb894259.png" width=375 /> <img src="https://user-images.githubusercontent.com/95387068/163480120-e3b14831-07b8-4f24-ab6b-2648a60608fc.png" width=375 />
+<img src="https://user-images.githubusercontent.com/95387068/163507361-8698e8ed-f629-4a7b-9058-0be50cc7125b.png" width=375 /> <img src="https://user-images.githubusercontent.com/95387068/163480120-e3b14831-07b8-4f24-ab6b-2648a60608fc.png" width=375 />
