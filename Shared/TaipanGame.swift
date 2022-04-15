@@ -8,7 +8,7 @@
 //  Game formulas largely based on Jay Link's port at https://github.com/cymonsgames/CymonsGames/tree/master/taipan
 
 import Foundation
-import UIKit
+import AudioToolbox
 
 extension Int {
     static func random(_ numerator: Int, in denominator: Int, comment: String? = nil) -> Bool {
@@ -1365,7 +1365,7 @@ class Game: ObservableObject {
         battleMessage = "They‘re firing on us, Taipan!"
         setBattleTimer(3) { [self] in
             shipBeingHit = true
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            AudioServicesPlayAlertSound(kSystemSoundID_Vibrate)
         }
     }
     

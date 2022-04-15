@@ -81,7 +81,7 @@ struct NameView: View {
                         .padding(.horizontal, 20)
                         .onAppear {
                             // HACK: doesn't work if setting focused = true without the delay
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                                 focused = true
                             }
                         }
