@@ -60,6 +60,7 @@ class Game: ObservableObject {
     var dbgHostilesCount: Int?
     var dbgRanAway = false
     var dbgHitGun = false
+    var dbgEscapedSome = false
     var dbgliYuenDroveThemOff = false
     var dbgLiYuenAttack = false
     var dbgStorm = false
@@ -1456,8 +1457,9 @@ class Game: ObservableObject {
             else {
                 battleMessage = "Couldn‘t lose ‘em."
                 setBattleTimer(3) { [self] in
-                    if hostilesCount! > 2 && Int.random(1, in: 5) {
-                        let lost = Int.random(in: 1..<hostilesCount! / 2)
+                    if (hostilesCount! > 2 && Int.random(1, in: 5)) || dbgEscapedSome {
+                        dbgEscapedSome = false
+                        let lost = hostilesCount! < 4 ? 1 : Int.random(in: 1..<hostilesCount! / 2)
                         hostilesCount! -= lost
                         battleMessage = "But we escaped from \(lost.formatted()) of ‘em!"
                         refreshHostilesOnScreen()
