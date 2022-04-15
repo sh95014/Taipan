@@ -20,6 +20,7 @@ struct SplashView: View {
                         .resizable()
                         .scaledToFit()
                         .foregroundColor(.taipanColor.opacity(lorchaOpacity))
+                        .frame(maxWidth: 400)
                         .padding(.horizontal, 80)
                     Spacer()
                 }
@@ -27,7 +28,7 @@ struct SplashView: View {
                     if splashAnimation {
                         Spacer()
                         Text("T   A   I   P   A   N   !")
-                            .font(.custom("Georgia", size: 30))
+                            .font(.custom("Georgia", size: UIDevice.current.userInterfaceIdiom == .phone ? 30 : 60))
                             .multilineTextAlignment(.center)
                             .transition(.opacity.animation(.easeIn(duration: 1.0)))
                         Divider()
@@ -104,6 +105,7 @@ struct NameView: View {
             .transition(.asymmetric(insertion: .opacity.animation(.easeIn(duration: 0.5).delay(2)), removal: .opacity))
             Spacer()
         } // VStack
+        .frame(maxWidth: 768)
         .onTapGesture {
             focused = true
         }
@@ -120,30 +122,33 @@ struct DebtOrGunsView: View {
     @EnvironmentObject private var game: Game
     
     var body: some View {
-        Spacer()
-        HStack {
-            Text("Do you want to start . . .")
+        VStack {
+            Spacer()
+            HStack {
+                Text("Do you want to start . . .")
+                Spacer()
+            }
+            FullWidthButton {
+                game.sendEvent(.debt)
+            } content: {
+                Text("1) With cash (and a debt)")
+            }
+            .padding(.vertical, 10)
+            Text("» or «")
+            FullWidthButton {
+                game.sendEvent(.guns)
+            } content: {
+                VStack {
+                    Text("2) With five guns and no cash")
+                    Text("(But no debt!)")
+                        .font(.captionFont)
+                }
+            }
+            .padding(.vertical, 10)
+            Text("?")
             Spacer()
         }
-        FullWidthButton {
-            game.sendEvent(.debt)
-        } content: {
-            Text("1) With cash (and a debt)")
-        }
-        .padding(.vertical, 10)
-        Text("» or «")
-        FullWidthButton {
-            game.sendEvent(.guns)
-        } content: {
-            VStack {
-                Text("2) With five guns and no cash")
-                Text("(But no debt!)")
-                    .font(.captionFont)
-            }
-        }
-        .padding(.vertical, 10)
-        Text("?")
-        Spacer()
+        .frame(maxWidth: 768)
     }
 }
 
@@ -164,20 +169,29 @@ struct TradingView: View {
     
     var locationDebtStatus: some View {
         Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                VStack {
+                    Text("Date")
+                        .font(.captionFont)
+                        .opacity(0.8)
+                    Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
+                }
+                FixedSpacer(maxLength: 10)
+            }
             VStack {
                 Text("Location")
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.currentCity?.rawValue ?? "At sea")
             }
-            Spacer()
+            FixedSpacer(maxLength: 10)
             VStack {
                 Text("Debt")
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.debt.fancyFormatted())
             }
-            Spacer()
+            FixedSpacer(maxLength: 10)
             VStack {
                 Text("Ship Status")
                     .font(.captionFont)
@@ -185,80 +199,11 @@ struct TradingView: View {
                 Text(game.fancyShipStatus(.colon))
                     .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
             }
-        }
+        } // Group
     }
     
-    var actions: some View {
-        Group {
-            RoundRectButton {
-                isShowingBuyModal = true
-            } content: {
-                Text("Buy")
-                    .frame(minWidth: bottomRowMinWidth,
-                           maxWidth: sizeCategory > .large ? .infinity : nil,
-                           minHeight: bottomRowMinHeight)
-            }
-            .withDisabledStyle(!game.canAffordAny())
-            Spacer()
-            RoundRectButton {
-                isShowingSellModal = true
-            } content: {
-                Text("Sell")
-                    .frame(minWidth: bottomRowMinWidth,
-                           maxWidth: sizeCategory > .large ? .infinity : nil,
-                           minHeight: bottomRowMinHeight)
-            }
-            .withDisabledStyle(!game.shipHasCargo())
-            Spacer()
-            RoundRectButton {
-                isShowingBankModal = true
-            } content: {
-                Text(sizeCategory > .large ? "Visit Bank" : "Visit\nBank")
-                    .frame(minWidth: bottomRowMinWidth,
-                           maxWidth: sizeCategory > .large ? .infinity : nil,
-                           minHeight: bottomRowMinHeight)
-            }
-            .withDisabledStyle(game.currentCity != .hongkong || (game.cash! <= 0 && game.bank <= 0))
-            Spacer()
-            RoundRectButton {
-                isShowingTransferModal = true
-            } content: {
-                Text(sizeCategory > .large ? "Transfer Cargo" : "Transfer\nCargo")
-                    .frame(minWidth: bottomRowMinWidth,
-                           maxWidth: sizeCategory > .large ? .infinity : nil,
-                           minHeight: bottomRowMinHeight)
-            }
-            .withDisabledStyle(game.currentCity != .hongkong || (!game.shipHasCargo() && game.warehouseUsedCapacity == 0))
-            Spacer()
-            RoundRectButton {
-                isShowingDestinationModal = true
-            } content: {
-                Text(sizeCategory > .large ? "Quit Trading" : "Quit\nTrading")
-                    .frame(minWidth: bottomRowMinWidth,
-                           maxWidth: sizeCategory > .large ? .infinity : nil,
-                           minHeight: bottomRowMinHeight)
-            }
-            .withDisabledStyle(game.shipFreeCapacity < 0)
-        }
-    }
-    
-    var body: some View {
+    var inventory: some View {
         VStack {
-            Group {
-                Text("\(game.firmName!)")
-                    .font(.titleFont)
-                    .lineLimit(1)
-                Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
-                    .padding(.bottom, 5)
-            }
-            
-            if sizeCategory > .large {
-                VStack { locationDebtStatus }
-            }
-            else {
-                HStack { locationDebtStatus }
-            }
-            
             RoundRectVStack(.taipanColor) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
@@ -319,6 +264,98 @@ struct TradingView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, merchandisePadding())
+            }
+        }
+    }
+    
+    var actions: some View {
+        Group {
+            let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad
+            RoundRectButton {
+                isShowingBuyModal = true
+            } content: {
+                Text("Buy")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: wideButtons ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(!game.canAffordAny())
+            FixedSpacer(maxLength: 10)
+            RoundRectButton {
+                isShowingSellModal = true
+            } content: {
+                Text("Sell")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: wideButtons ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(!game.shipHasCargo())
+            FixedSpacer(maxLength: 10)
+            RoundRectButton {
+                isShowingBankModal = true
+            } content: {
+                Text(wideButtons ? "Visit Bank" : "Visit\nBank")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: wideButtons ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(game.currentCity != .hongkong || (game.cash! <= 0 && game.bank <= 0))
+            FixedSpacer(maxLength: 10)
+            RoundRectButton {
+                isShowingTransferModal = true
+            } content: {
+                Text(wideButtons ? "Transfer Cargo" : "Transfer\nCargo")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: wideButtons ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(game.currentCity != .hongkong || (!game.shipHasCargo() && game.warehouseUsedCapacity == 0))
+            FixedSpacer(maxLength: 10)
+            RoundRectButton {
+                isShowingDestinationModal = true
+            } content: {
+                Text(wideButtons ? "Quit Trading" : "Quit\nTrading")
+                    .frame(minWidth: bottomRowMinWidth,
+                           maxWidth: wideButtons ? .infinity : nil,
+                           minHeight: bottomRowMinHeight)
+            }
+            .withDisabledStyle(game.shipFreeCapacity < 0)
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            Group {
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    Text("\(game.firmName!)")
+                        .font(.titleFont)
+                        .lineLimit(1)
+                    Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
+                        .padding(.bottom, 5)
+                }
+                else {
+                    Text("Firm: \(game.firmName!), Hong Kong")
+                        .font(.titleFont)
+                        .lineLimit(1)
+                }
+            }
+            
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                if sizeCategory > .large {
+                    VStack { locationDebtStatus }
+                }
+                else {
+                    HStack { locationDebtStatus }
+                }
+                inventory
+            }
+            else {
+                HStack {
+                    inventory
+                    Spacer(minLength: 20)
+                    VStack { locationDebtStatus }
+                        .frame(minWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil)
+                }
             }
             
             HStack {
@@ -660,8 +697,8 @@ struct TradingView: View {
                         Text("Repair")
                             .frame(minWidth:100, minHeight:30)
                     }
-                }
-            }
+                } // HStack
+            } // VStack
         }
     }
     
@@ -1204,8 +1241,6 @@ struct FinalStatsView: View {
 }
 
 struct ContentView: View {
-    private let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
-    
     @EnvironmentObject private var game: Game
     @State private var isShowingBuyModal = false
     @State private var isShowingSellModal = false
@@ -1295,7 +1330,7 @@ struct ContentView: View {
                 }
             }
             .foregroundColor(.taipanColor)
-            .font(bodyFont)
+            .font(.bodyFont)
             .statusBar(hidden: true)
             .onAppear {
                 battleBackgroundColor = .taipanBackgroundColor
@@ -1384,8 +1419,9 @@ struct ContentView: View {
                     }
                     .withCancelStyle()
                 }
-            }
+            } // VStack
             .withModalStyle(.taipanSheetColor)
+            .frame(maxWidth: 500)
         }
     }
     
@@ -1494,8 +1530,9 @@ struct ContentView: View {
                         Text("Cancel")
                     }
                 }
-            }
+            } // VStack
             .withModalStyle(.taipanSheetColor)
+            .frame(maxWidth: 500)
         }
     }
     
@@ -1523,8 +1560,9 @@ struct ContentView: View {
                     Text("Cancel")
                 }
                 .withCancelStyle()
-            }
+            } // VStack
             .withModalStyle(.taipanSheetColor)
+            .frame(maxWidth: 500)
         }
     }
     
@@ -1746,6 +1784,7 @@ struct ContentView: View {
                 }
             }
             .withModalStyle(.taipanSheetColor)
+            .frame(maxWidth: 500)
         }
     }
 
@@ -1789,10 +1828,11 @@ struct ContentView: View {
                             .frame(minWidth: 80)
                     }
                     .withDisabledStyle(amount == 0 || amount > min(game.cash!, game.mcHenryOffer!))
-                }
+                } // HStack
                 .padding(.top, 10)
-            }
+            } // VStack
             .withModalStyle(.taipanSheetColor)
+            .frame(maxWidth: 500)
         }
     }
 }
@@ -1914,6 +1954,24 @@ struct RoundRectVStack<Content: View>: View {
     }
 }
 
+struct FixedSpacer: View {
+    private var maxLength: CGFloat = 0
+    
+    init(maxLength: CGFloat) {
+        self.maxLength = maxLength
+    }
+    
+    var body: some View {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            Spacer()
+        }
+        else {
+            VStack {}
+                .frame(width: maxLength, height: maxLength)
+        }
+    }
+}
+
 // MARK: - Styling
 
 extension Color {
@@ -1924,10 +1982,10 @@ extension Color {
 }
 
 extension Font {
-    static let titleFont = Font.custom("MorrisRoman-Black", size: 30)
-    static let keypadDigitFont = Font.custom("MorrisRoman-Black", size: 26)
-    static let bodyFont = Font.custom("MorrisRoman-Black", size: 22)
-    static let captionFont = Font.custom("MorrisRoman-Black", size: 16)
+    static let titleFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 30 : 40)
+    static let keypadDigitFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 26 : 39)
+    static let bodyFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 22 : 28)
+    static let captionFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 16 : 20)
 }
 
 struct LeadingLabelStyle: LabelStyle {
