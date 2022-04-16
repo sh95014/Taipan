@@ -7,9 +7,11 @@
 
 //  Game formulas largely based on Jay Link's port at https://github.com/cymonsgames/CymonsGames/tree/master/taipan
 
-import AudioToolbox
 import Foundation
+#if os(iOS)
+import AudioToolbox
 import UIKit
+#endif
 
 extension Int {
     static func random(_ numerator: Int, in denominator: Int, comment: String? = nil) -> Bool {
@@ -1143,7 +1145,11 @@ class Game: ObservableObject {
     
     // start the battle
     private func seaBattle() {
+        #if os(iOS)
         maxHostilesOnScreen = UIDevice.current.userInterfaceIdiom == .pad ? 10 : 9
+        #else
+        maxHostilesOnScreen = 10
+        #endif
         hostilesOnScreen = Array(repeating: (0, 0), count: maxHostilesOnScreen)
         nextDamage = Int.random(in: 0...3)
         fillScreenWithShips()
@@ -1377,7 +1383,9 @@ class Game: ObservableObject {
         battleMessage = "They‘re firing on us, Taipan!"
         setBattleTimer(3) { [self] in
             shipBeingHit = true
+            #if os(iOS)
             AudioServicesPlayAlertSound(kSystemSoundID_Vibrate)
+            #endif
         }
     }
     

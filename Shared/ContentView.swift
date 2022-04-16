@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+#if os(iOS)
+let hasLargeScreen = UIDevice.current.userInterfaceIdiom == .pad
+let hasSmallScreen = UIDevice.current.userInterfaceIdiom == .phone
+let isLandscape = UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+let isPortrait = UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height
+#else
+let hasLargeScreen = true
+let hasSmallScreen = false
+let isLandscape = true
+let isPortrait = false
+#endif
+
 struct SplashView: View {
     @EnvironmentObject private var game: Game
     @State var splashAnimation = false
@@ -28,7 +40,7 @@ struct SplashView: View {
                 if splashAnimation {
                     Spacer()
                     Text("T   A   I   P   A   N   !")
-                        .font(.custom("Georgia", size: UIDevice.current.userInterfaceIdiom == .phone ? 30 : 60))
+                        .font(.custom("Georgia", size: hasSmallScreen ? 30 : 60))
                         .multilineTextAlignment(.center)
                         .transition(.opacity.animation(.easeIn(duration: 1.0)))
                     Divider()
@@ -104,7 +116,7 @@ struct NameView: View {
             } // RoundRectVStack
             Spacer()
         } // VStack
-        .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .phone ? 500 : 768)
+        .frame(maxWidth: hasSmallScreen ? 500 : 768)
         .onTapGesture {
             focused = true
         }
@@ -147,7 +159,7 @@ struct DebtOrGunsView: View {
             Text("?")
             Spacer()
         }
-        .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .phone ? 500 : 768)
+        .frame(maxWidth: hasSmallScreen ? 500 : 768)
     }
 }
 
@@ -163,7 +175,7 @@ struct TradingView: View {
     @Binding var isShowingTransferModal: Bool
     @Binding var isShowingRepairModal: Bool
     
-    var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+    var isLandscapePhone = hasSmallScreen && isLandscape
 
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
@@ -175,7 +187,7 @@ struct TradingView: View {
     
     var locationDebtStatus: some View {
         Group {
-            if UIDevice.current.userInterfaceIdiom == .pad {
+            if hasLargeScreen {
                 VStack {
                     Text("Date")
                         .font(.captionFont)
@@ -276,7 +288,7 @@ struct TradingView: View {
     
     var actions: some View {
         Group {
-            let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad || isLandscapePhone
+            let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
             RoundRectButton {
                 isShowingBuyModal = true
             } content: {
@@ -331,11 +343,9 @@ struct TradingView: View {
     
     var body: some View {
         VStack {
-            let isPortrait = UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height
-            
             Group {
                 let fullFirmName = "Firm: \(game.firmName!), Hong Kong"
-                if UIDevice.current.userInterfaceIdiom == .phone {
+                if hasSmallScreen {
                     if isPortrait {
                         VStack {
                             Text("\(game.firmName!)")
@@ -362,7 +372,7 @@ struct TradingView: View {
                 }
             }
             
-            if UIDevice.current.userInterfaceIdiom == .phone {
+            if hasSmallScreen {
                 if isPortrait {
                     if sizeCategory > .large {
                         VStack { locationDebtStatus }
@@ -385,7 +395,7 @@ struct TradingView: View {
                     VStack { inventory }
                     Spacer(minLength: 20)
                     VStack { locationDebtStatus }
-                        .frame(minWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil)
+                        .frame(minWidth: hasLargeScreen ? 200 : nil)
                 }
             }
             
@@ -674,7 +684,7 @@ struct TradingView: View {
                     } content: {
                         Text("No")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                     RoundRectButton {
@@ -682,7 +692,7 @@ struct TradingView: View {
                     } content: {
                         Text("Yes")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                 }
@@ -730,7 +740,7 @@ struct TradingView: View {
                     } content: {
                         Text("No")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                     RoundRectButton {
@@ -738,7 +748,7 @@ struct TradingView: View {
                     } content: {
                         Text("Repair")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                 } // HStack
@@ -764,7 +774,7 @@ struct TradingView: View {
                     } content: {
                         Text("No")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                     RoundRectButton {
@@ -772,7 +782,7 @@ struct TradingView: View {
                     } content: {
                         Text("Borrow")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                     .withDisabledStyle(game.cash! <= 0)
@@ -781,7 +791,7 @@ struct TradingView: View {
                     } content: {
                         Text("Repay")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                     .withDisabledStyle(game.debt <= 0)
@@ -814,7 +824,7 @@ struct TradingView: View {
                     } content: {
                         Text("No")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                     RoundRectButton {
@@ -822,7 +832,7 @@ struct TradingView: View {
                     } content: {
                         Text("Yes")
                             .frame(minWidth: 100,
-                                   maxWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil,
+                                   maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
                 }
@@ -919,7 +929,7 @@ struct KeypadView: View {
             }
             Spacer()
                 .frame(height: 20)
-            if UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
+            if hasSmallScreen && isLandscape {
                 HStack {
                     ForEach(0...9, id: \.self) { digit in
                         KeypadButton {
@@ -985,10 +995,10 @@ struct BattleView: View {
     @Binding var battleBackgroundColor: Color
     @Binding var isShowingSellModal: Bool
     
-    var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+    var isLandscapePhone = hasSmallScreen && isLandscape
 
     var body: some View {
-        let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad || isLandscapePhone
+        let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
         
         VStack {
             HStack {
@@ -998,7 +1008,7 @@ struct BattleView: View {
                     Text("\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
                         .withMessageStyle()
                 }
-                .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 10 : 0)
+                .padding(.top, hasLargeScreen ? 10 : 0)
                 Spacer()
                 Text("We have\(isLandscapePhone ? " " : "\n")\(game.shipGuns!.formatted()) guns")
                     .multilineTextAlignment(.trailing)
@@ -1010,7 +1020,7 @@ struct BattleView: View {
             
             Spacer()
             
-            if UIDevice.current.userInterfaceIdiom == .phone {
+            if hasSmallScreen {
                 if isLandscapePhone {
                     LazyVGrid(columns: [
                         GridItem(),
@@ -1208,7 +1218,7 @@ struct BattleView: View {
                         let sinkDuration = Double.random(in: 0.3...2.0)
                         withAnimation(.easeIn(duration: sinkDuration)) {
                             // the lorcha is 5.56“ x 4.31“, and the iPhone Pro Max is 428pt wide
-                            hostileYOffset = UIDevice.current.userInterfaceIdiom == .phone ? 111 : 265
+                            hostileYOffset = hasSmallScreen ? 111 : 265
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + sinkDuration) {
                             game.targetedShipSunk()
@@ -1247,18 +1257,17 @@ struct FinalStatsView: View {
     @EnvironmentObject private var game: Game
     @Environment(\.sizeCategory) var sizeCategory
 
-    var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+    var isLandscapePhone = hasSmallScreen && isLandscape
     
     var body: some View {
         let score = game.score
-        let isPortrait = UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height
-        let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad || isLandscapePhone
+        let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
         
         VStack {
             if game.state == .finalStats {
                 Group {
                     let fullFirmName = "Firm: \(game.firmName!), Hong Kong"
-                    if UIDevice.current.userInterfaceIdiom == .phone {
+                    if hasSmallScreen {
                         if isPortrait {
                             Text("\(game.firmName!)")
                                 .font(.titleFont)
@@ -1486,12 +1495,16 @@ struct ContentView: View {
             }
             .foregroundColor(.taipanColor)
             .font(.bodyFont)
+            #if os(iOS)
             .statusBar(hidden: true)
+            #endif
             .onAppear {
                 battleBackgroundColor = .taipanBackgroundColor
             }
         }
+        #if os(iOS)
         .statusBar(hidden: true)
+        #endif
     }
     
     var isShowingModal: Bool {
@@ -2097,7 +2110,7 @@ struct RoundRectVStack<Content: View>: View {
             content()
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height ? 5 : 10)
+        .padding(.vertical, isLandscape ? 5 : 10)
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .strokeBorder(color.opacity(0.3))
@@ -2117,7 +2130,7 @@ struct FixedSpacer: View {
     }
     
     var body: some View {
-        if UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height {
+        if hasSmallScreen && isPortrait {
             Spacer()
         }
         else {
@@ -2137,10 +2150,10 @@ extension Color {
 }
 
 extension Font {
-    static let titleFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 30 : 40)
-    static let keypadDigitFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 26 : 39)
-    static let bodyFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 22 : 28)
-    static let captionFont = Font.custom("MorrisRoman-Black", size: UIDevice.current.userInterfaceIdiom == .phone ? 16 : 20)
+    static let titleFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 30 : 40)
+    static let keypadDigitFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 26 : 39)
+    static let bodyFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 22 : 28)
+    static let captionFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 16 : 20)
 }
 
 struct LeadingLabelStyle: LabelStyle {
@@ -2177,7 +2190,7 @@ extension Text {
     }
     
     func withReportStyle() -> some View {
-        return (UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) ?
+        return (hasSmallScreen && isLandscape) ?
             self.frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 2) :
             self.frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 20)
     }
