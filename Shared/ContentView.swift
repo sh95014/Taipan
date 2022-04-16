@@ -1245,123 +1245,153 @@ struct BattleView: View {
 
 struct FinalStatsView: View {
     @EnvironmentObject private var game: Game
+    @Environment(\.sizeCategory) var sizeCategory
 
+    var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+    
     var body: some View {
         let score = game.score
+        let isPortrait = UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height
+        let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad || isLandscapePhone
         
-        if game.state == .finalStats {
-            Group {
-                Text("\(game.firmName!)")
-                    .font(.titleFont)
-                    .lineLimit(1)
-                    .padding(.bottom, 10)
-                Text("Your final status:")
-                    .withReportStyle()
-                Text("Net Cash: \(game.netWorth.fancyFormatted())")
-                    .withReportStyle()
-                Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns!.formatted()) guns")
-                    .withReportStyle()
-
-                let years = game.months / 12
-                let months = game.months % 12
-                Text("You traded for \(years) " +
-                     ((years == 1) ? "year" : "years") +
-                     " \(months) " +
-                     ((months == 1) ? "month" : "months"))
-                    .withReportStyle()
-
-                Text("Your score is \(score).")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 3)
-                    .foregroundColor(.taipanBackgroundColor)
-                    .background(Color.taipanColor)
+        VStack {
+            if game.state == .finalStats {
+                Group {
+                    let fullFirmName = "Firm: \(game.firmName!), Hong Kong"
+                    if UIDevice.current.userInterfaceIdiom == .phone {
+                        if isPortrait {
+                            Text("\(game.firmName!)")
+                                .font(.titleFont)
+                                .lineLimit(1)
+                                .padding(.bottom, 10)
+                        }
+                        else {
+                            Text(fullFirmName)
+                                .font(.titleFont)
+                                .lineLimit(1)
+                                .padding(.bottom, 10)
+                        }
+                    }
+                    else {
+                        Text(fullFirmName)
+                            .font(.titleFont)
+                            .lineLimit(1)
+                            .padding(.top, 20) // avoid the ··· multitasking button on iPads
+                            .padding(.bottom, 10)
+                    }
+                    Text("Your final status:")
+                        .withReportStyle()
+                    Text("Net Cash: \(game.netWorth.fancyFormatted())")
+                        .withReportStyle()
+                    Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns!.formatted()) guns")
+                        .withReportStyle()
+                    
+                    let years = game.months / 12
+                    let months = game.months % 12
+                    Text("You traded for \(years) " +
+                         ((years == 1) ? "year" : "years") +
+                         " \(months) " +
+                         ((months == 1) ? "month" : "months"))
+                        .withReportStyle()
+                    
+                    Text("Your score is \(score).")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 3)
+                        .foregroundColor(.taipanBackgroundColor)
+                        .background(Color.taipanColor)
+                    
+                    if score < 0 {
+                        Text("The crew has requested that you stay on shore for their safety!!")
+                            .withReportStyle()
+                            .padding(.top, 10)
+                    }
+                    else if score < 100 {
+                        Text("Have you considered a land based job?")
+                            .withReportStyle()
+                            .padding(.top, 10)
+                    }
+                } // Group
                 
-                if score < 0 {
-                    Text("The crew has requested that you stay on shore for their safety!!")
-                        .withReportStyle()
-                        .padding(.top, 10)
-                }
-                else if score < 100 {
-                    Text("Have you considered a land based job?")
-                        .withReportStyle()
-                        .padding(.top, 10)
-                }
-            } // Group
-            
-            Text("Your Rating:")
-                .withMessageStyle()
-                .padding(.top, 10)
-            RoundRectVStack(.taipanColor) {
-                HStack {
-                    Text("Ma Tsu")
-                        .foregroundColor(score >= 50000 ? .taipanBackgroundColor : Color.taipanColor)
-                        .background(score >= 50000 ? Color.taipanColor : .taipanBackgroundColor)
-                    Spacer()
-                    Text("50,000 and over")
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                HStack {
-                    Text("Master Taipan")
-                        .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor : Color.taipanColor)
-                        .background((score >= 8000 && score < 50000) ? Color.taipanColor : .taipanBackgroundColor)
-                    Spacer()
-                    Text("8,000 to 49,999")
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                HStack {
-                    Text("Taipan")
-                        .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor : Color.taipanColor)
-                        .background((score >= 1000 && score < 8000) ? Color.taipanColor : .taipanBackgroundColor)
-                    Spacer()
-                    Text("1,000 to 7,999")
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                HStack {
-                    Text("Compradore")
-                        .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor : Color.taipanColor)
-                        .background((score >= 500 && score < 1000) ? Color.taipanColor : .taipanBackgroundColor)
-                    Spacer()
-                    Text("500 to 999")
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                HStack {
-                    Text("Galleyhand")
-                        .foregroundColor(score < 500 ? .taipanBackgroundColor : Color.taipanColor)
-                        .background(score < 500 ? Color.taipanColor : .taipanBackgroundColor)
-                    Spacer()
-                    Text("less than 500")
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-            } // RoundRectVStack
-            .padding(.horizontal, 2)
-            
-            Spacer()
-            
-            Group {
-                Text("Play again?")
+                Text("Your Rating:")
                     .withMessageStyle()
+                    .padding(.top, 10)
+                RoundRectVStack(.taipanColor) {
+                    HStack {
+                        Text("Ma Tsu")
+                            .foregroundColor(score >= 50000 ? .taipanBackgroundColor : Color.taipanColor)
+                            .background(score >= 50000 ? Color.taipanColor : .taipanBackgroundColor)
+                        Spacer()
+                        Text("50,000 and over")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    HStack {
+                        Text("Master Taipan")
+                            .foregroundColor((score >= 8000 && score < 50000) ? .taipanBackgroundColor : Color.taipanColor)
+                            .background((score >= 8000 && score < 50000) ? Color.taipanColor : .taipanBackgroundColor)
+                        Spacer()
+                        Text("8,000 to 49,999")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    HStack {
+                        Text("Taipan")
+                            .foregroundColor((score >= 1000 && score < 8000) ? .taipanBackgroundColor : Color.taipanColor)
+                            .background((score >= 1000 && score < 8000) ? Color.taipanColor : .taipanBackgroundColor)
+                        Spacer()
+                        Text("1,000 to 7,999")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    HStack {
+                        Text("Compradore")
+                            .foregroundColor((score >= 500 && score < 1000) ? .taipanBackgroundColor : Color.taipanColor)
+                            .background((score >= 500 && score < 1000) ? Color.taipanColor : .taipanBackgroundColor)
+                        Spacer()
+                        Text("500 to 999")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    HStack {
+                        Text("Galleyhand")
+                            .foregroundColor(score < 500 ? .taipanBackgroundColor : Color.taipanColor)
+                            .background(score < 500 ? Color.taipanColor : .taipanBackgroundColor)
+                        Spacer()
+                        Text("less than 500")
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                } // RoundRectVStack
+                .padding(.horizontal, 2)
                 
-                HStack {
-                    RoundRectButton {
-                        game.sendEvent(.no)
-                    } content: {
-                        Text("No")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                    RoundRectButton {
-                        game.sendEvent(.yes)
-                    } content: {
-                        Text("Yes")
-                            .frame(minWidth:100, minHeight:30)
-                    }
-                } // HStack
-            } // Group
-        }
+                Spacer()
+                
+                Group {
+                    Text("Play again?")
+                        .withMessageStyle()
+                    
+                    HStack {
+                        RoundRectButton {
+                            game.sendEvent(.no)
+                        } content: {
+                            Text("No")
+                                .frame(minWidth: 100,
+                                       maxWidth: wideButtons ? .infinity : nil,
+                                       minHeight: 30)
+                        }
+                        RoundRectButton {
+                            game.sendEvent(.yes)
+                        } content: {
+                            Text("Yes")
+                                .frame(minWidth: 100,
+                                       maxWidth: wideButtons ? .infinity : nil,
+                                       minHeight: 30)
+                        }
+                    } // HStack
+                } // Group
+            }
+        } // VStack
+        .frame(maxWidth: 768)
     }
 }
 
