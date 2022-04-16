@@ -1338,7 +1338,8 @@ class Game: ObservableObject {
                 let numerator = Int(Double(hostilesCount!) * 0.6 / Double(hostileType!.rawValue))
                 if Int.random(numerator, in: originalHostileShipsCount!) || dbgRanAway {
                     dbgRanAway = false
-                    let ranAway = Int.random(in: 1...hostilesCount! / 3 / hostileType!.rawValue)
+                    let cowards = hostilesCount! / 3 / hostileType!.rawValue
+                    let ranAway = cowards <= 1 ? 1 : Int.random(in: 1...cowards)
                     setBattleTimer(3) { [self] in
                         battleMessage = "\(ranAway.formatted()) ran away, Taipan!"
                         hostilesCount! -= ranAway

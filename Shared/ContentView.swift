@@ -977,6 +977,7 @@ struct BattleView: View {
     private let bottomRowMinHeight: CGFloat = 45
 
     @EnvironmentObject private var game: Game
+    @Environment(\.sizeCategory) var sizeCategory
     @State private var hostileYOffset: CGFloat = 0
     @State private var firedOnShipForeground = Color.clear
     @State private var firedOnShipBackground = Color.clear
@@ -985,8 +986,10 @@ struct BattleView: View {
     @Binding var isShowingSellModal: Bool
     
     var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
-    
+
     var body: some View {
+        let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad || isLandscapePhone
+        
         VStack {
             HStack {
                 VStack {
@@ -1099,7 +1102,7 @@ struct BattleView: View {
                     game.orderThrowCargo()
                     isShowingSellModal = true
                 } content: {
-                    Text("Throw\nCargo")
+                    Text(wideButtons ? "Throw Cargo" : "Throw\nCargo")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(!game.shipHasCargo() || game.hostilesCount! == 0)
