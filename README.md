@@ -51,6 +51,7 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 - [ ] Keyboard support, including for the custom keypad and Apple \]\[ compatibility
 - [X] Untested haptics for when ship is hit
 - [ ] Feedback and alert sounds
+- [ ] Rotating a device between portrait and landscape orientations during a game
 
 ## Extra Effort
 
