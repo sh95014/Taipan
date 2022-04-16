@@ -104,7 +104,7 @@ struct NameView: View {
             } // RoundRectVStack
             Spacer()
         } // VStack
-        .frame(maxWidth: 768)
+        .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .phone ? 500 : 768)
         .onTapGesture {
             focused = true
         }
@@ -147,7 +147,7 @@ struct DebtOrGunsView: View {
             Text("?")
             Spacer()
         }
-        .frame(maxWidth: 768)
+        .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .phone ? 500 : 768)
     }
 }
 
@@ -162,9 +162,16 @@ struct TradingView: View {
     @Binding var isShowingBankModal: Bool
     @Binding var isShowingTransferModal: Bool
     @Binding var isShowingRepairModal: Bool
+    
+    var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
 
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
+    
+    var date: some View {
+        Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
+            .padding(.bottom, 5)
+    }
     
     var locationDebtStatus: some View {
         Group {
@@ -183,14 +190,14 @@ struct TradingView: View {
                     .opacity(0.8)
                 Text(game.currentCity?.rawValue ?? "At sea")
             }
-            FixedSpacer(maxLength: 10)
+            FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
                 Text("Debt")
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.debt.fancyFormatted())
             }
-            FixedSpacer(maxLength: 10)
+            FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
                 Text("Ship Status")
                     .font(.captionFont)
@@ -202,7 +209,7 @@ struct TradingView: View {
     }
     
     var inventory: some View {
-        VStack {
+        Group {
             RoundRectVStack(.taipanColor) {
                 Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
@@ -269,7 +276,7 @@ struct TradingView: View {
     
     var actions: some View {
         Group {
-            let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad
+            let wideButtons = sizeCategory > .large || UIDevice.current.userInterfaceIdiom == .pad || isLandscapePhone
             RoundRectButton {
                 isShowingBuyModal = true
             } content: {
@@ -324,16 +331,31 @@ struct TradingView: View {
     
     var body: some View {
         VStack {
+            let isPortrait = UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height
+            
             Group {
+                let fullFirmName = "Firm: \(game.firmName!), Hong Kong"
                 if UIDevice.current.userInterfaceIdiom == .phone {
-                    Text("\(game.firmName!)")
-                        .font(.titleFont)
-                        .lineLimit(1)
-                    Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
-                        .padding(.bottom, 5)
+                    if isPortrait {
+                        VStack {
+                            Text("\(game.firmName!)")
+                                .font(.titleFont)
+                                .lineLimit(1)
+                            date
+                        }
+                    }
+                    else {
+                        HStack {
+                            Text(fullFirmName)
+                                .font(.titleFont)
+                                .lineLimit(1)
+                            Spacer()
+                            date
+                        }
+                    }
                 }
                 else {
-                    Text("Firm: \(game.firmName!), Hong Kong")
+                    Text(fullFirmName)
                         .font(.titleFont)
                         .lineLimit(1)
                         .padding(.top, 20) // avoid the ··· multitasking button on iPads
@@ -341,17 +363,26 @@ struct TradingView: View {
             }
             
             if UIDevice.current.userInterfaceIdiom == .phone {
-                if sizeCategory > .large {
-                    VStack { locationDebtStatus }
+                if isPortrait {
+                    if sizeCategory > .large {
+                        VStack { locationDebtStatus }
+                    }
+                    else {
+                        HStack { locationDebtStatus }
+                    }
+                    VStack { inventory }
                 }
                 else {
-                    HStack { locationDebtStatus }
+                    HStack {
+                        inventory
+                        VStack { locationDebtStatus }
+                            .frame(minWidth: 150)
+                    }
                 }
-                inventory
             }
             else {
                 HStack {
-                    inventory
+                    VStack { inventory }
                     Spacer(minLength: 20)
                     VStack { locationDebtStatus }
                         .frame(minWidth: UIDevice.current.userInterfaceIdiom == .pad ? 200 : nil)
@@ -372,7 +403,7 @@ struct TradingView: View {
                 Group {
                     Text("Comprador‘s Report")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 5)
+                        .padding(.bottom, isLandscapePhone ? 2 : 5)
                     
                     Spacer()
                     
@@ -400,7 +431,7 @@ struct TradingView: View {
                         }
                         Spacer()
                     }
-                    .padding(.vertical, 3)
+                    .padding(.vertical, isLandscapePhone ? 0 : 3)
                     
                     Spacer()
                     
@@ -414,12 +445,14 @@ struct TradingView: View {
                         HStack { actions }
                     }
                     
-                    FullWidthButton {
-                        game.transitionTo(.retirement)
-                    } content: {
-                        Text("Retire")
+                    if game.currentCity == .hongkong {
+                        FullWidthButton {
+                            game.transitionTo(.retirement)
+                        } content: {
+                            Text("Retire")
+                        }
+                        .withDisabledStyle(game.cash! + game.bank < 1000000)
                     }
-                    .withDisabledStyle(game.currentCity != .hongkong || game.cash! + game.bank < 1000000)
                 }
             case .arriving:
                 CaptainsReport("Arriving at \(game.destinationCity!.rawValue)...")
@@ -502,6 +535,9 @@ struct TradingView: View {
     }
     
     func merchandisePadding() -> CGFloat {
+        if isLandscapePhone {
+            return 10
+        }
         switch sizeCategory {
         case .extraSmall: fallthrough
         case .small: fallthrough
@@ -883,10 +919,9 @@ struct KeypadView: View {
             }
             Spacer()
                 .frame(height: 20)
-            ForEach(0...2, id: \.self) { row in
+            if UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
                 HStack {
-                    ForEach(0...2, id: \.self) { column in
-                        let digit = row * 3 + column + 1
+                    ForEach(0...9, id: \.self) { digit in
                         KeypadButton {
                             amount = (amount % 1000000000000) * 10 + digit
                         } content: {
@@ -895,23 +930,45 @@ struct KeypadView: View {
                         }
                         .padding(2)
                     }
+                    KeypadButton {
+                        amount = amount / 10
+                    } content: {
+                        Image(systemName: "delete.backward")
+                    }
+                    .padding(2)
                 }
             }
-            HStack {
-                KeypadButton {
-                    amount = (amount % 1000000000000) * 10
-                } content: {
-                    Text("0")
+            else {
+                ForEach(0...2, id: \.self) { row in
+                    HStack {
+                        ForEach(0...2, id: \.self) { column in
+                            let digit = row * 3 + column + 1
+                            KeypadButton {
+                                amount = (amount % 1000000000000) * 10 + digit
+                            } content: {
+                                Text("\(digit)")
+                                    .font(.keypadDigitFont)
+                            }
+                            .padding(2)
+                        }
+                    }
                 }
-                .padding(2)
-                KeypadButton {
-                    amount = amount / 10
-                } content: {
-                    Image(systemName: "delete.backward")
+                HStack {
+                    KeypadButton {
+                        amount = (amount % 1000000000000) * 10
+                    } content: {
+                        Text("0")
+                    }
+                    .padding(2)
+                    KeypadButton {
+                        amount = amount / 10
+                    } content: {
+                        Image(systemName: "delete.backward")
+                    }
+                    .padding(2)
                 }
-                .padding(2)
+                .padding(.bottom, 20)
             }
-            .padding(.bottom, 20)
         }
     }
 }
@@ -927,24 +984,20 @@ struct BattleView: View {
     @Binding var battleBackgroundColor: Color
     @Binding var isShowingSellModal: Bool
     
+    var isLandscapePhone = UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+    
     var body: some View {
         VStack {
             HStack {
                 VStack {
-                    if game.hostilesCount! == 1 {
-                        Text("1 ship attacking, Taipan!")
-                            .withMessageStyle()
-                    }
-                    else {
-                        Text("\(game.hostilesCount!.formatted()) ships attacking, Taipan!")
-                            .withMessageStyle()
-                    }
-                    Text("Your orders are to: \(game.battleOrder?.rawValue ?? "")")
+                    let attacking = game.hostilesCount! == 1 ? "1 ship attacking, Taipan!" : "\(game.hostilesCount!.formatted()) ships attacking, Taipan!"
+                    let orders = "Your orders are to: \(game.battleOrder?.rawValue ?? "")"
+                    Text("\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
                         .withMessageStyle()
                 }
                 .padding(.top, UIDevice.current.userInterfaceIdiom == .pad ? 10 : 0)
                 Spacer()
-                Text("We have\n\(game.shipGuns!.formatted()) guns")
+                Text("We have\(isLandscapePhone ? " " : "\n")\(game.shipGuns!.formatted()) guns")
                     .multilineTextAlignment(.trailing)
                     .padding(5)
                     .overlay(Rectangle().frame(width: nil, height: 1).foregroundColor(.taipanColor), alignment: .bottom)
@@ -955,23 +1008,46 @@ struct BattleView: View {
             Spacer()
             
             if UIDevice.current.userInterfaceIdiom == .phone {
-                LazyVGrid(columns: [
-                    GridItem(),
-                    GridItem(),
-                    GridItem(),
-                ], spacing: 10) {
-                    ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
-                        HostileShipView(ship: ship,
-                                        firedOnShipForeground: $firedOnShipForeground,
-                                        firedOnShipBackground: $firedOnShipBackground,
-                                        battleBackgroundColor: $battleBackgroundColor,
-                                        hostileYOffset: $hostileYOffset)
+                if isLandscapePhone {
+                    LazyVGrid(columns: [
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                    ], spacing: 10) {
+                        ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
+                            HostileShipView(ship: ship,
+                                            firedOnShipForeground: $firedOnShipForeground,
+                                            firedOnShipBackground: $firedOnShipBackground,
+                                            battleBackgroundColor: $battleBackgroundColor,
+                                            hostileYOffset: $hostileYOffset)
+                        }
+                        Image(systemName: "plus")
+                            .padding(.top, 5)
+                            .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
                     }
+                    .padding(.horizontal, 8)
                 }
-                .padding(.horizontal, 8)
-                Image(systemName: "plus")
-                    .padding(.top, 5)
-                    .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
+                else {
+                    LazyVGrid(columns: [
+                        GridItem(),
+                        GridItem(),
+                        GridItem(),
+                    ], spacing: 10) {
+                        ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
+                            HostileShipView(ship: ship,
+                                            firedOnShipForeground: $firedOnShipForeground,
+                                            firedOnShipBackground: $firedOnShipBackground,
+                                            battleBackgroundColor: $battleBackgroundColor,
+                                            hostileYOffset: $hostileYOffset)
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    Image(systemName: "plus")
+                        .padding(.top, 5)
+                        .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
+                }
             }
             else {
                 HStack {
@@ -1988,15 +2064,15 @@ struct RoundRectVStack<Content: View>: View {
             content()
         }
         .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .strokeBorder(color.opacity(0.3))
-                    .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(LinearGradient(gradient: Gradient(colors: [color.opacity(0.1), .clear]), startPoint: .top, endPoint: .bottom)
-                    )
+        .padding(.vertical, UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height ? 5 : 10)
+        .overlay(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .strokeBorder(color.opacity(0.3))
+                .background(RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(LinearGradient(gradient: Gradient(colors: [color.opacity(0.1), .clear]), startPoint: .top, endPoint: .bottom)
                 )
             )
+        )
     }
 }
 
@@ -2008,7 +2084,7 @@ struct FixedSpacer: View {
     }
     
     var body: some View {
-        if UIDevice.current.userInterfaceIdiom == .phone {
+        if UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height {
             Spacer()
         }
         else {
@@ -2068,8 +2144,9 @@ extension Text {
     }
     
     func withReportStyle() -> some View {
-        self.frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 20)
+        return (UIDevice.current.userInterfaceIdiom == .phone && UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) ?
+            self.frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 2) :
+            self.frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 20)
     }
     
     func withMessageStyle() -> some View {
