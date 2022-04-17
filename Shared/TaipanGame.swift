@@ -665,11 +665,7 @@ class Game: ObservableObject {
     private let gunWeight = 10
     
     var shipFreeCapacity: Int {
-        var freeCapacity = shipCapacity - shipGuns! * gunWeight
-        for (_, units) in shipHold {
-            freeCapacity -= units
-        }
-        return freeCapacity
+        return shipCapacity - shipGuns! * gunWeight - shipHold.reduce(into: 0) { $0 += $1.value }
     }
     
     func transferToShip(_ merchandise: Merchandise, _ amount: Int) {
@@ -716,11 +712,7 @@ class Game: ObservableObject {
     private let warehouseCapacity = 10000
     
     var warehouseUsedCapacity: Int {
-        var usedCapacity = 0
-        for (_, units) in warehouse {
-            usedCapacity += units
-        }
-        return usedCapacity
+        return warehouse.reduce(into: 0) { $0 += $1.value }
     }
     
     var warehouseFreeCapacity: Int { warehouseCapacity - warehouseUsedCapacity }
