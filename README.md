@@ -29,9 +29,9 @@ I retain the copyright to the source code of this project. You *may not* publish
 
 ## Progress
 
-The iPhone version took about two weeks to build, and is now playable. The landscape iPad version took about a day of tweaking, but the portrait iPad and larger iPhone layouts proved difficult. SwiftUI doesn't make it easy to make small spacing adjustments, especially when we're wrapping everything in a `ScrollView` for accesibility text sizes.
+The iPhone, iPad, and macOS versions are all largely functional and playable.
 
-I'll probably move on to macOS before coming back and trying again.
+The iPhone version took about two weeks to build, and is now playable. The landscape iPad version took about a day of tweaking, but the portrait iPad and larger iPhone layouts proved difficult. SwiftUI doesn't make it easy to make small spacing adjustments, especially when we're wrapping everything in a `ScrollView` for accesibility text sizes. The macOS version took another couple of days to bring up, with just ten `#if os()` chunks.
 
 ## Features
 
@@ -48,18 +48,21 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 
 - [X] App Icon
 - [ ] Localization, including proper plurality handling and `fancyFormatted`
-- [ ] Keyboard support, including for the custom keypad and Apple \]\[ compatibility
+- [X] Keyboard support, including for the custom keypad and Apple \]\[ compatibility
 - [X] Untested haptics for when ship is hit
 - [ ] Feedback and alert sounds
 - [ ] Rotating a device between portrait and landscape orientations during a game
+- [ ] Buttons should look different while being pressed
+- [ ] Should be able to press any key to skip game delays
 
 ## Extra Effort
 
+- [ ] Unit tests, maybe even a robot that plays the game
 - [ ] Other color schemes, including a nostalgic green on black
 - [ ] Particle effects (confetti for retirement, fire for ship battles)
 - [ ] Saved game state
 - [ ] High scores
-- [ ] Improve layout on larger iPhones and portrait-orientation iPad
+- [ ] Improve layout on larger iPhones and portrait-orientation iPad. There's too much space given to the bottom pane, but SwiftUI makes this harder to fix than it sounds, at least for me.
 
 ## Screenshots
 
