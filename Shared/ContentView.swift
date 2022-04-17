@@ -145,6 +145,7 @@ struct DebtOrGunsView: View {
                 Text("1) With cash (and a debt)")
             }
             .padding(.vertical, 10)
+            .keyboardShortcut("1", modifiers: [])
             Text("» or «")
             FullWidthButton {
                 game.sendEvent(.guns)
@@ -156,6 +157,7 @@ struct DebtOrGunsView: View {
                 }
             }
             .padding(.vertical, 10)
+            .keyboardShortcut("2", modifiers: [])
             Text("?")
             Spacer()
         }
@@ -298,6 +300,7 @@ struct TradingView: View {
                            minHeight: bottomRowMinHeight)
             }
             .withDisabledStyle(!game.canAffordAny())
+            .keyboardShortcut("b", modifiers: [])
             FixedSpacer(maxLength: 10)
             RoundRectButton {
                 isShowingSellModal = true
@@ -308,6 +311,7 @@ struct TradingView: View {
                            minHeight: bottomRowMinHeight)
             }
             .withDisabledStyle(!game.shipHasCargo())
+            .keyboardShortcut("s", modifiers: [])
             FixedSpacer(maxLength: 10)
             RoundRectButton {
                 isShowingBankModal = true
@@ -318,6 +322,7 @@ struct TradingView: View {
                            minHeight: bottomRowMinHeight)
             }
             .withDisabledStyle(game.currentCity != .hongkong || (game.cash! <= 0 && game.bank <= 0))
+            .keyboardShortcut("v", modifiers: [])
             FixedSpacer(maxLength: 10)
             RoundRectButton {
                 isShowingTransferModal = true
@@ -328,6 +333,7 @@ struct TradingView: View {
                            minHeight: bottomRowMinHeight)
             }
             .withDisabledStyle(game.currentCity != .hongkong || (!game.shipHasCargo() && game.warehouseUsedCapacity == 0))
+            .keyboardShortcut("t", modifiers: [])
             FixedSpacer(maxLength: 10)
             RoundRectButton {
                 isShowingDestinationModal = true
@@ -338,6 +344,7 @@ struct TradingView: View {
                            minHeight: bottomRowMinHeight)
             }
             .withDisabledStyle(game.shipFreeCapacity < 0)
+            .keyboardShortcut("q", modifiers: [])
         }
     }
     
@@ -464,6 +471,7 @@ struct TradingView: View {
                             Text("Retire")
                         }
                         .withDisabledStyle(game.cash! + game.bank < 1000000)
+                        .keyboardShortcut("r", modifiers: [])
                     }
                 }
             case .arriving:
@@ -689,6 +697,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("n", modifiers: [])
+                    .keyboardShortcut(.cancelAction)
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
@@ -697,6 +707,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("y", modifiers: [])
+                    .keyboardShortcut(.defaultAction)
                 }
             }
         }
@@ -745,6 +757,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("n", modifiers: [])
+                    .keyboardShortcut(.cancelAction)
                     RoundRectButton {
                         isShowingRepairModal = true
                     } content: {
@@ -753,6 +767,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("r", modifiers: [])
+                    .keyboardShortcut(.defaultAction)
                 } // HStack
             } // VStack
         }
@@ -779,6 +795,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("n", modifiers: [])
+                    .keyboardShortcut(.cancelAction)
                     RoundRectButton {
                         isShowingBorrowModal = true
                     } content: {
@@ -788,6 +806,7 @@ struct TradingView: View {
                                    minHeight: 30)
                     }
                     .withDisabledStyle(game.cash! <= 0)
+                    .keyboardShortcut("b", modifiers: [])
                     RoundRectButton {
                         isShowingRepayModal = true
                     } content: {
@@ -797,6 +816,7 @@ struct TradingView: View {
                                    minHeight: 30)
                     }
                     .withDisabledStyle(game.debt <= 0)
+                    .keyboardShortcut("r", modifiers: [])
                 }
             }
         }
@@ -829,6 +849,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("n", modifiers: [])
+                    .keyboardShortcut(.cancelAction)
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
@@ -837,6 +859,8 @@ struct TradingView: View {
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
                     }
+                    .keyboardShortcut("y", modifiers: [])
+                    .keyboardShortcut(.defaultAction)
                 }
             }
         }
@@ -941,6 +965,7 @@ struct KeypadView: View {
                                 .font(.keypadDigitFont)
                         }
                         .padding(2)
+                        .keyboardShortcut(KeyEquivalent("\(digit)".first!), modifiers: [])
                     }
                     KeypadButton {
                         amount = amount / 10
@@ -948,6 +973,7 @@ struct KeypadView: View {
                         Image(systemName: "delete.backward")
                     }
                     .padding(2)
+                    .keyboardShortcut(.delete, modifiers: [])
                 }
             }
             else {
@@ -962,6 +988,7 @@ struct KeypadView: View {
                                     .font(.keypadDigitFont)
                             }
                             .padding(2)
+                            .keyboardShortcut(KeyEquivalent("\(digit)".first!), modifiers: [])
                         }
                     }
                 }
@@ -972,12 +999,14 @@ struct KeypadView: View {
                         Text("0")
                     }
                     .padding(2)
+                    .keyboardShortcut("0", modifiers: [])
                     KeypadButton {
                         amount = amount / 10
                     } content: {
                         Image(systemName: "delete.backward")
                     }
                     .padding(2)
+                    .keyboardShortcut(.delete, modifiers: [])
                 }
                 .padding(.bottom, 20)
             }
@@ -1101,6 +1130,7 @@ struct BattleView: View {
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(game.shipGuns! == 0 || game.hostilesCount! == 0)
+                .keyboardShortcut("f", modifiers: [])
                 Spacer()
                 RoundRectButton {
                     game.orderRun()
@@ -1109,6 +1139,7 @@ struct BattleView: View {
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(game.hostilesCount! == 0)
+                .keyboardShortcut("r", modifiers: [])
                 Spacer()
                 RoundRectButton {
                     game.orderThrowCargo()
@@ -1118,6 +1149,7 @@ struct BattleView: View {
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(!game.shipHasCargo() || game.hostilesCount! == 0)
+                .keyboardShortcut("t", modifiers: [])
             }
         }
         .withTappableStyle(game)
@@ -1392,6 +1424,8 @@ struct FinalStatsView: View {
                                        maxWidth: wideButtons ? .infinity : nil,
                                        minHeight: 30)
                         }
+                        .keyboardShortcut("n", modifiers: [])
+                        .keyboardShortcut(.cancelAction)
                         RoundRectButton {
                             game.sendEvent(.yes)
                         } content: {
@@ -1400,6 +1434,8 @@ struct FinalStatsView: View {
                                        maxWidth: wideButtons ? .infinity : nil,
                                        minHeight: 30)
                         }
+                        .keyboardShortcut("y", modifiers: [])
+                        .keyboardShortcut(.defaultAction)
                     } // HStack
                 } // Group
             }
@@ -1550,6 +1586,7 @@ struct ContentView: View {
                                 .frame(maxWidth: .infinity)
                         }
                     }
+                    .keyboardShortcut("a", modifiers: [])
                     FullWidthButton {
                         amount = game.shipFreeCapacity
                     } content: {
@@ -1559,6 +1596,7 @@ struct ContentView: View {
                         }
                     }
                     .withDisabledStyle(game.shipFreeCapacity > game.canAfford(selectedMerchandise))
+                    .keyboardShortcut("e", modifiers: [])
                     HStack {
                         RoundRectButton {
                             isShowingBuyModal = false
@@ -1576,6 +1614,7 @@ struct ContentView: View {
                                 .frame(minWidth: 80)
                         }
                         .withDisabledStyle(amount == 0 || amount > game.canAfford(selectedMerchandise))
+                        .keyboardShortcut("b", modifiers: [])
                     }
                     .padding(.top, 10)
                 }
@@ -1593,6 +1632,7 @@ struct ContentView: View {
                             }
                         }
                         .withDisabledStyle(game.canAfford(item) == 0)
+                        .keyboardShortcut(KeyEquivalent(item.keyboardShortcut), modifiers: [])
                     }
                     FullWidthButton {
                         isShowingBuyModal = false
@@ -1639,6 +1679,7 @@ struct ContentView: View {
                                 .frame(maxWidth: .infinity)
                         }
                     }
+                    .keyboardShortcut("a", modifiers: [])
                     if game.shipFreeCapacity < 0 {
                         FullWidthButton {
                             amount = -game.shipFreeCapacity
@@ -1680,6 +1721,7 @@ struct ContentView: View {
                             }
                         }
                         .withDisabledStyle(amount == 0 || amount > amountOnShip)
+                        .keyboardShortcut(discard ? "t" : "s", modifiers: [])
                     }
                     .padding(.top, 10)
                 }
@@ -1702,6 +1744,7 @@ struct ContentView: View {
                             }
                         }
                         .withDisabledStyle(game.shipHold[item] == nil || game.shipHold[item]! == 0)
+                        .keyboardShortcut(KeyEquivalent(item.keyboardShortcut), modifiers: [])
                     }
                     FullWidthButton {
                         isShowingSellModal = false
@@ -1712,6 +1755,7 @@ struct ContentView: View {
                     } content: {
                         Text("Cancel")
                     }
+                    .withCancelStyle()
                 }
             } // VStack
             .withModalStyle(.taipanSheetColor)
@@ -1732,9 +1776,10 @@ struct ContentView: View {
                             game.departFor(city)
                             isShowingDestinationModal = false
                         } content: {
-                            Text(city.rawValue)
+                            Text("\(String(city.keyboardShortcut)). \(city.rawValue)")
                                 .frame(maxWidth: .infinity)
                         }
+                        .keyboardShortcut(KeyEquivalent(city.keyboardShortcut), modifiers: [])
                     }
                 }
                 FullWidthButton {
@@ -1778,6 +1823,7 @@ struct ContentView: View {
                             .frame(minWidth: 80)
                     }
                     .withDisabledStyle(amount == 0 || amount > game.maximumLoan)
+                    .keyboardShortcut(.defaultAction)
                 }
             }
             .withModalStyle(.taipanSheetColor)
@@ -1812,6 +1858,7 @@ struct ContentView: View {
                             .frame(minWidth: 80)
                     }
                     .withDisabledStyle(amount == 0 || amount > game.cash!)
+                    .keyboardShortcut(.defaultAction)
                 }
             }
             .withModalStyle(.taipanSheetColor)
@@ -1847,6 +1894,7 @@ struct ContentView: View {
                                 .frame(minWidth: 80)
                         }
                         .withDisabledStyle(amount == 0 || amount > game.cash!)
+                        .keyboardShortcut("d", modifiers: [])
                     }
                     VStack {
                         Text("You have\n\(game.bank.formatted())\nin the bank")
@@ -1860,6 +1908,7 @@ struct ContentView: View {
                                 .frame(minWidth: 80)
                         }
                         .withDisabledStyle(amount == 0 || amount > game.bank)
+                        .keyboardShortcut("w", modifiers: [])
                     }
                 }
             }
@@ -1912,6 +1961,8 @@ struct ContentView: View {
                                 .frame(minWidth: 80)
                         }
                         .withDisabledStyle(amount == 0 || amount > transferLimit)
+                        .keyboardShortcut("t", modifiers: [])
+                        .keyboardShortcut(.defaultAction)
                     }
                 }
                 else {
@@ -1994,6 +2045,7 @@ struct ContentView: View {
                     }
                 }
                 .withDisabledStyle(game.cash! < mcHenryOffer)
+                .keyboardShortcut("f", modifiers: [])
                 HStack {
                     RoundRectButton {
                         game.sendEvent(.no)
@@ -2011,6 +2063,8 @@ struct ContentView: View {
                             .frame(minWidth: 80)
                     }
                     .withDisabledStyle(amount == 0 || amount > min(game.cash!, game.mcHenryOffer!))
+                    .keyboardShortcut("r", modifiers: [])
+                    .keyboardShortcut(.defaultAction)
                 } // HStack
                 .padding(.top, 10)
             } // VStack
@@ -2226,6 +2280,7 @@ extension View {
 
     func withCancelStyle() -> some View {
         self.saturation(0.5)
+            .keyboardShortcut(.cancelAction)
     }
 }
 

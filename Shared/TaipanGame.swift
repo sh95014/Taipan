@@ -742,7 +742,8 @@ class Game: ObservableObject {
         case silk    = "Silk"
         case arms    = "Arms"
         case general = "General Cargo"
-        var shortValue: String { self.rawValue.components(separatedBy: " ").first! }
+        var shortValue: String { rawValue.components(separatedBy: " ").first! }
+        var keyboardShortcut: Character { rawValue.prefix(1).first! }
     }
     
     private let priceMultiplier: [City: [Merchandise: Int]] = [
@@ -854,6 +855,7 @@ class Game: ObservableObject {
         case manila    = "Manila"
         case singapore = "Singapore"
         case batavia   = "Batavia"
+        var keyboardShortcut: Character { "\(Self.allCases.firstIndex(of: self)! + 1)".prefix(1).first! }
     }
 
     enum Month: String, CaseIterable {
