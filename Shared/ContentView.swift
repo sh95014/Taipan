@@ -368,7 +368,9 @@ struct TradingView: View {
                     Text(fullFirmName)
                         .font(.titleFont)
                         .lineLimit(1)
+                        #if os(iOS)
                         .padding(.top, 20) // avoid the ··· multitasking button on iPads
+                        #endif
                 }
             }
             
@@ -1285,8 +1287,10 @@ struct FinalStatsView: View {
                         Text(fullFirmName)
                             .font(.titleFont)
                             .lineLimit(1)
+                            #if os(iOS)
                             .padding(.top, 20) // avoid the ··· multitasking button on iPads
                             .padding(.bottom, 10)
+                            #endif
                     }
                     Text("Your final status:")
                         .withReportStyle()
@@ -1418,6 +1422,14 @@ struct ContentView: View {
     
     var body: some View {
         GeometryReader { proxy in
+            #if os(iOS)
+            let height = proxy.size.height
+            #else
+            let bottomPadding: CGFloat = 20
+            let height = proxy.size.height - bottomPadding
+            let width = proxy.size.width
+            #endif
+            
             ZStack {
                 battleBackgroundColor
                     .ignoresSafeArea()
@@ -1434,7 +1446,7 @@ struct ContentView: View {
                             }
                         }
                         .background(battleBackgroundColor)
-                        .frame(minHeight: proxy.size.height)
+                        .frame(minHeight: height)
                     }
                     else if [ .splash, .name, .debtOrGuns, .finalStats ].contains(game.state) {
                         VStack {
@@ -1447,7 +1459,7 @@ struct ContentView: View {
                             }
                         }
                         .padding(2)
-                        .frame(minHeight: proxy.size.height)
+                        .frame(minHeight: height)
                     }
                     else {
                         ZStack {
@@ -1489,22 +1501,25 @@ struct ContentView: View {
                             }
                         }
                         .background(Color.taipanBackgroundColor)
-                        .frame(minHeight: proxy.size.height)
+                        .frame(minHeight: height)
                     }
-                }
-            }
+                    #if os(macOS)
+                    VStack {}
+                        .frame(width: width, height: bottomPadding)
+                    #endif
+                } // ScrollView
+            } // ZStack
             .foregroundColor(.taipanColor)
             .font(.bodyFont)
             #if os(iOS)
             .statusBar(hidden: true)
+            #else
+            .frame(minWidth: 900, minHeight: 710)
             #endif
             .onAppear {
                 battleBackgroundColor = .taipanBackgroundColor
             }
-        }
-        #if os(iOS)
-        .statusBar(hidden: true)
-        #endif
+        } // GeometryReader
     }
     
     var isShowingModal: Bool {
@@ -2041,6 +2056,7 @@ struct FullWidthButton<Content: View>: View {
                 .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor, .taipanColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
+        .buttonStyle(.borderless)
     }
 }
 
@@ -2068,6 +2084,7 @@ struct KeypadButton<Content: View>: View {
                 .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor, .taipanColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
+        .buttonStyle(.borderless)
     }
 }
 
@@ -2093,6 +2110,7 @@ struct RoundRectButton<Content: View>: View {
                 .fill(LinearGradient(gradient: Gradient(colors: [.taipanColor, .taipanColor.opacity(0.6)]), startPoint: .top, endPoint: .bottom)
             )
         )
+        .buttonStyle(.borderless)
     }
 }
 
