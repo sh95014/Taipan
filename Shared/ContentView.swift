@@ -1549,13 +1549,14 @@ struct ContentView: View {
             .font(.bodyFont)
             #if os(iOS)
             .statusBar(hidden: true)
-            #else
-            .frame(minWidth: 900, minHeight: 710)
             #endif
             .onAppear {
                 battleBackgroundColor = .taipanBackgroundColor
             }
         } // GeometryReader
+        #if os(macOS)
+        .frame(minWidth: 1024, minHeight: 768)
+        #endif
     }
     
     var isShowingModal: Bool {
