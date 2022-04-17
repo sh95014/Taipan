@@ -17,8 +17,20 @@ extension Int {
     static func random(_ numerator: Int, in denominator: Int, comment: String? = nil) -> Bool {
         // random(in: 0..<denominator) < numerator
         let r = random(in: 0..<denominator)
-        print("\(comment ?? "") random(\(numerator) in: \(denominator)) -> \(r)")
+        print("[\(comment ?? "")] random(\(numerator) in: \(denominator)) -> \(r)")
         return r < numerator
+    }
+    
+    static func randomLog(in range: Range<Int>, comment: String? = nil) -> Int {
+        let r = random(in: range)
+        print("[\(comment ?? "")] random(in: \(range)) -> \(r)")
+        return r
+    }
+    
+    static func randomLog(in range: ClosedRange<Int>, comment: String? = nil) -> Int {
+        let r = random(in: range)
+        print("[\(comment ?? "")] random(in: \(range)) -> \(r)")
+        return r
     }
     
     func fancyFormatted() -> String {
@@ -37,6 +49,20 @@ extension Int {
         else {
             return "\(self.formatted())"
         }
+    }
+}
+
+extension Double {
+    static func randomLog(in range: Range<Double>, comment: String? = nil) -> Double {
+        let r = random(in: range)
+        print("[\(comment ?? "")] random(in: \(range)) -> \(r)")
+        return r
+    }
+        
+    static func randomLog(in range: ClosedRange<Double>, comment: String? = nil) -> Double {
+        let r = random(in: range)
+        print("[\(comment ?? "")] random(in: \(range)) -> \(r)")
+        return r
     }
 }
 
@@ -243,7 +269,7 @@ class Game: ObservableObject {
             setTimer(5)
             state = newState
         case .cutthroats:
-            if debt > 20000 && cash! > 0 && (Int.random(1, in: 5) || dbgCutthroats) {
+            if debt > 20000 && cash! > 0 && (Int.random(1, in: 5, comment: "cutthroats") || dbgCutthroats) {
                 cutthroats()
                 setTimer(5)
                 state = newState
@@ -252,7 +278,7 @@ class Game: ObservableObject {
                 transitionTo(newShipOrGunOffer() ?? .opiumSeized)
             }
         case .opiumSeized:
-            if hasOpiumOnShip && currentCity != .hongkong && (Int.random(1, in: 18) || dbgOpiumSeized) {
+            if hasOpiumOnShip && currentCity != .hongkong && (Int.random(1, in: 18, comment: "opium seizure") || dbgOpiumSeized) {
                 seizeOpium()
                 state = newState
                 setTimer(5)
@@ -261,7 +287,7 @@ class Game: ObservableObject {
                 transitionTo(.warehouseTheft)
             }
         case .warehouseTheft:
-            if warehouseUsedCapacity > 0 && (Int.random(1, in: 50) || dbgWarehouseTheft) {
+            if warehouseUsedCapacity > 0 && (Int.random(1, in: 50, comment: "warehouse theft") || dbgWarehouseTheft) {
                 warehouseTheft()
                 state = newState
                 setTimer(5)
@@ -270,7 +296,7 @@ class Game: ObservableObject {
                 transitionTo(.liYuenMessage)
             }
         case .liYuenMessage:
-            if Int.random(1, in: 20) {
+            if Int.random(1, in: 20, comment: "li yuen message") {
                 if liYuenCounter >= liYuenCounterJustPaid {
                     liYuenCounter += 1
                 }
@@ -278,7 +304,7 @@ class Game: ObservableObject {
                     liYuenCounter = liYuenCounterWantsMoney
                 }
             }
-            if currentCity != .hongkong && liYuenCounter == liYuenCounterWantsMoney && (Int.random(3, in: 4) || dbgLiYuenMessage) {
+            if currentCity != .hongkong && liYuenCounter == liYuenCounterWantsMoney && (Int.random(3, in: 4, comment: "li yuen message") || dbgLiYuenMessage) {
                 dbgLiYuenMessage = false
                 state = newState
                 setTimer(3)
@@ -287,8 +313,8 @@ class Game: ObservableObject {
                 transitionTo(.goodPrices)
             }
         case .goodPrices:
-            if Int.random(1, in: 9) || dbgPriceDrop || dbgPriceJump {
-                if Int.random(1, in: 2) || dbgPriceDrop {
+            if Int.random(1, in: 9, comment: "good prices") || dbgPriceDrop || dbgPriceJump {
+                if Int.random(1, in: 2, comment: "jump or drop") || dbgPriceDrop {
                     transitionTo(.priceDrop)
                 }
                 else {
@@ -307,7 +333,7 @@ class Game: ObservableObject {
             state = newState
             setTimer(3)
         case .robbery:
-            if cash! > 25000 && (Int.random(1, in: 20) || dbgRobbery) {
+            if cash! > 25000 && (Int.random(1, in: 20, comment: "robbery") || dbgRobbery) {
                 robbery()
                 state = newState
                 setTimer(5)
@@ -316,12 +342,12 @@ class Game: ObservableObject {
                 transitionTo(.trading)
             }
         case .hostilesApproaching:
-            if Int.random(1, in: pirateOdds!) || dbgHostileShips {
+            if Int.random(1, in: pirateOdds!, comment: "pirates") || dbgHostileShips {
                 dbgHostileShips = false
                 hostileShips(.generic)
                 state = newState
                 setTimer(3)
-            } else if Int.random(1, in: 4 + 8 * liYuenCounter) || dbgLiYuenAttack {
+            } else if Int.random(1, in: 4 + 8 * liYuenCounter, comment: "li yuen's pirates") || dbgLiYuenAttack {
                 dbgLiYuenAttack = false
                 transitionTo(.liYuenApproaching)
             }
@@ -361,7 +387,7 @@ class Game: ObservableObject {
             state = newState
             setTimer(3)
         case .storm:
-            if Int.random(1, in: 10) || dbgStorm {
+            if Int.random(1, in: 10, comment: "storm") || dbgStorm {
                 dbgStorm = false
                 state = newState
                 setTimer(3)
@@ -370,7 +396,7 @@ class Game: ObservableObject {
                 transitionTo(.arriving)
             }
         case .storm2:
-            if Int.random(1, in: 30) || dbgGoingDown {
+            if Int.random(1, in: 30, comment: "going down") || dbgGoingDown {
                 state = newState
                 setTimer(3)
             }
@@ -378,7 +404,7 @@ class Game: ObservableObject {
                 transitionTo(.stormMadeIt)
             }
         case .stormGoingDown:
-            if Double.random(in: 0...Double(shipDamage / shipCapacity * 3)) > 1 || dbgGoingDown {
+            if Double.randomLog(in: 0...Double(shipDamage / shipCapacity * 3), comment: "going down") > 1 || dbgGoingDown {
                 dbgGoingDown = false
                 state = newState
                 setTimer(3)
@@ -390,7 +416,7 @@ class Game: ObservableObject {
             state = newState
             setTimer(3)
         case .stormBlownOffCourse:
-            if Int.random(1, in: 3) || dbgBlownOffCourse {
+            if Int.random(1, in: 3, comment: "blown off course") || dbgBlownOffCourse {
                 dbgBlownOffCourse = false
                 blownOffCourse()
                 state = newState
@@ -713,7 +739,7 @@ class Game: ObservableObject {
     
     func warehouseTheft() {
         for (merchandise, units) in warehouse {
-            warehouse[merchandise] = Int(Double(units) / 1.8 * Double.random(in: 0.0...1.0))
+            warehouse[merchandise] = Int(Double(units) / 1.8 * Double.randomLog(in: 0.0...1.0, comment: "warehouse theft"))
         }
     }
 
@@ -750,7 +776,7 @@ class Game: ObservableObject {
         for merchandise in Merchandise.allCases {
             if let cityPriceMultiplerForMerchandise = cityPriceMultiplier[merchandise],
                let basePriceForMerchandise = basePrice[merchandise] {
-                price[merchandise] = cityPriceMultiplerForMerchandise / 2 * Int.random(in: 1...3) * basePriceForMerchandise
+                price[merchandise] = cityPriceMultiplerForMerchandise / 2 * Int.randomLog(in: 1...3, comment: "price of \(merchandise.rawValue)") * basePriceForMerchandise
             }
             else {
                 print("unable to set price for \(merchandise)")
@@ -776,7 +802,7 @@ class Game: ObservableObject {
         if let merchandise = Merchandise.allCases.randomElement(),
            let originalPrice = price[merchandise] {
             goodPriceMerchandise = merchandise
-            price[merchandise] = originalPrice * Int.random(in: 5...9)
+            price[merchandise] = originalPrice * Int.randomLog(in: 5...9, comment: "price jump")
         }
         else {
             print("unable to compute price jump")
@@ -916,10 +942,11 @@ class Game: ObservableObject {
             //   float i = 1.8, j = 0,
             //   amount = ((cash / i) * ((float) rand() / RAND_MAX)) + j;
             // which can be zero, so let's enforce a floor
-            liYuenDemand = 50 + Int.random(in: 0...Int(Double(cash!) / 1.8))
+            liYuenDemand = 50 + Int.randomLog(in: 0...Int(Double(cash!) / 1.8), comment: "li yuen demand 1")
         }
         else {
-            liYuenDemand = Int.random(in: 1000 * months...2000 * months) + Int.random(in: 0...Int(Double(cash!) / 1.4))
+            liYuenDemand = Int.randomLog(in: 1000 * months...2000 * months, comment: "li yuen demand 2-1") +
+                           Int.randomLog(in: 0...Int(Double(cash!) / 1.4), comment: "li yuen demand 2-2")
         }
     }
     
@@ -941,7 +968,7 @@ class Game: ObservableObject {
     var mcHenryOffer: Int?
     private var mcHenryRate: Int?
     private func setMcHenryOffer() {
-        let mcHenryRate = Int(Double(60 * (months + 3) / 4) * Double.random(in: 0.0...1.0) + Double(25 * (months + 3) / 4 * shipCapacity / 50))
+        let mcHenryRate = Int(Double(60 * (months + 3) / 4) * Double.randomLog(in: 0.0...1.0, comment: "mchenry rate") + Double(25 * (months + 3) / 4 * shipCapacity / 50))
         mcHenryOffer = mcHenryRate * shipDamage + 1
         self.mcHenryRate = mcHenryRate
     }
@@ -962,7 +989,7 @@ class Game: ObservableObject {
     
     @Published var debt: Int = 0
     private var elderBrotherWuWarningIssued = false
-    let elderBrotherWuBraves = Int.random(in: 50...149)
+    let elderBrotherWuBraves = Int.randomLog(in: 50...149, comment: "elder brother wu braves")
     
     var maximumLoan: Int { cash! * 2 }
     
@@ -993,8 +1020,8 @@ class Game: ObservableObject {
     
     func elderBrotherWuBailout() {
         bailoutCounter += 1
-        bailoutOffer = Int.random(in: 500...1999)
-        bailoutRepay = 1500 + Int.random(in: 0...2000 * bailoutCounter)
+        bailoutOffer = Int.randomLog(in: 500...1999, comment: "bailout amount")
+        bailoutRepay = 1500 + Int.randomLog(in: 0...2000 * bailoutCounter, comment: "repay amount")
         dbgBailoutOffer = false
     }
     
@@ -1034,7 +1061,7 @@ class Game: ObservableObject {
         if Int.random(1, in: 4, comment: "make offer?") || dbgMakeShipOffer || dbgMakeGunOffer {
             if Int.random(1, in: 2, comment: "ship?") || dbgMakeShipOffer {
                 dbgMakeShipOffer = false
-                let offerAmount = 1000 + Int.random(in: 0...1000 * (months + 5) / 6) * (shipCapacity / 50)
+                let offerAmount = 1000 + Int.randomLog(in: 0...1000 * (months + 5) / 6, comment: "new ship offer") * (shipCapacity / 50)
                 if cash! >= offerAmount {
                     self.offerAmount = offerAmount
                     return .newShipOffer
@@ -1050,7 +1077,7 @@ class Game: ObservableObject {
     
     private func newGunOffer() -> State? {
         if shipGuns! < 1000 {
-            let offerAmount = 500 + Int.random(in: 0...1000 * (months + 5) / 6)
+            let offerAmount = 500 + Int.randomLog(in: 0...1000 * (months + 5) / 6, comment: "new gun offer")
             if cash! >= offerAmount && shipFreeCapacity > gunWeight {
                 self.offerAmount = offerAmount
                 return .newGunOffer
@@ -1109,11 +1136,11 @@ class Game: ObservableObject {
             // Link's implementation has this as:
             //   int num_ships = rand()%((capacity / 10) + guns) + 1;
             // but let's enforce a floor of 2 pirate ships
-            hostilesCount = dbgHostilesCount ?? min(Int.random(in: 2...shipCapacity / 10 + shipGuns!), 9999)
+            hostilesCount = dbgHostilesCount ?? min(Int.randomLog(in: 2...shipCapacity / 10 + shipGuns!, comment: "generic count"), 9999)
         }
         else {
             // int num_ships = rand()%((capacity / 5) + guns) + 5;
-            hostilesCount = dbgHostilesCount ?? 5 + Int.random(in: 0...shipCapacity / 5 + shipGuns!)
+            hostilesCount = dbgHostilesCount ?? 5 + Int.randomLog(in: 0...shipCapacity / 5 + shipGuns!, comment: "li yuen count")
         }
         originalHostileShipsCount = hostilesCount
         dbgHostilesCount = nil
@@ -1151,7 +1178,7 @@ class Game: ObservableObject {
         maxHostilesOnScreen = 10
         #endif
         hostilesOnScreen = Array(repeating: (0, 0), count: maxHostilesOnScreen)
-        nextDamage = Int.random(in: 0...3)
+        nextDamage = Int.randomLog(in: 0...3, comment: "next damage")
         fillScreenWithShips()
         escapeChance = 0
         escapeChanceIncrement = 1
@@ -1182,7 +1209,7 @@ class Game: ObservableObject {
                     // Link's implementation:
                     // (int)((ec * ((float) rand() / RAND_MAX)) + 20);
                     // 'ec' is a counter that starts at 20 and increments by 10 every year
-                    hostilesOnScreen![i].hitPoints = 20 + Int.random(in: 0...(20 + (year! - startYear) * 10))
+                    hostilesOnScreen![i].hitPoints = 20 + Int.randomLog(in: 0...(20 + (year! - startYear) * 10), comment: "hit points of ship \(i)")
                     hostilesOnScreen![i].damage = 0
                     shipsToPlace -= 1
                     print("ship[\(i)] = \(hostilesOnScreen![i])")
@@ -1282,7 +1309,7 @@ class Game: ObservableObject {
         self.setBattleTimer(1) { [self] in
             // randomly pick a target among ships on screen that haven't sunk yet
             repeat {
-                let target = Int.random(in: 0..<maxHostilesOnScreen)
+                let target = Int.randomLog(in: 0..<maxHostilesOnScreen, comment: "target ship")
                 if hostilesOnScreen![target].hitPoints > 0 {
                     targetedShip = target
                 }
@@ -1294,10 +1321,10 @@ class Game: ObservableObject {
     // animation for gunfire has completed
     func gunDidFire() {
         if let targetedShip = targetedShip {
-            hostilesOnScreen![targetedShip].hitPoints -= Int.random(in: 10...40)
+            hostilesOnScreen![targetedShip].hitPoints -= Int.randomLog(in: 10...40, comment: "damage to ship \(targetedShip)")
             // show some random visual damage, unrelated to the hit points
             hostilesOnScreen![targetedShip].damage |= 1 << nextDamage
-            nextDamage = (nextDamage + Int.random(in: 1...3)) % 4
+            nextDamage = (nextDamage + Int.randomLog(in: 1...3, comment: "steps to next damage")) % 4
             print("ship[\(targetedShip)] = \(hostilesOnScreen![targetedShip])")
             if hostilesOnScreen![targetedShip].hitPoints <= 0 {
                 targetedShipSinking = true
@@ -1345,7 +1372,7 @@ class Game: ObservableObject {
                 if Int.random(numerator, in: originalHostileShipsCount!) || dbgRanAway {
                     dbgRanAway = false
                     let cowards = hostilesCount! / 3 / hostileType!.rawValue
-                    let ranAway = cowards <= 1 ? 1 : Int.random(in: 1...cowards)
+                    let ranAway = cowards <= 1 ? 1 : Int.randomLog(in: 1...cowards, comment: "ran away")
                     setBattleTimer(3) { [self] in
                         battleMessage = "\(ranAway.formatted()) ran away, Taipan!"
                         hostilesCount! -= ranAway
@@ -1415,14 +1442,14 @@ class Game: ObservableObject {
             setBattleTimer(3) { [self] in
                 battleMessage = "The buggers hit a gun, Taipan!!"
                 shipGuns! -= 1
-                shipDamage += Int(Double.random(in: 0.0...(ed * id)) + i / 2)
+                shipDamage += Int(Double.randomLog(in: 0.0...(ed * id), comment: "damage 1") + i / 2)
                 setBattleTimer(3) { [self] in
                     executeOrder()
                 }
             }
         }
         else {
-            shipDamage += Int(Double.random(in: 0.0...(ed * i * id)) + i / 2)
+            shipDamage += Int(Double.randomLog(in: 0.0...(ed * i * id), comment: "damage 2") + i / 2)
             if hostileType == .generic && (Int.random(1, in: 20) || dbgliYuenDroveThemOff) {
                 setBattleTimer(3) { [self] in
                     sendEvent(.liYuen)
@@ -1457,7 +1484,7 @@ class Game: ObservableObject {
             escapeChanceIncrement! += 1
             print("escapeChance = \(escapeChance!)")
             print("escapeChanceIncrement = \(escapeChanceIncrement!)")
-            if Int.random(in: 0..<escapeChance!) > Int.random(in: 0..<hostilesCount!) {
+            if Int.randomLog(in: 0..<escapeChance!, comment: "escape chance") > Int.randomLog(in: 0..<hostilesCount!, comment: "hostiles count") {
                 battleMessage = "We got away from ‘em, Taipan!"
                 setBattleTimer(3) { [self] in
                     sendEvent(.battleEnded)
@@ -1468,7 +1495,7 @@ class Game: ObservableObject {
                 setBattleTimer(3) { [self] in
                     if (hostilesCount! > 2 && Int.random(1, in: 5)) || dbgEscapedSome {
                         dbgEscapedSome = false
-                        let lost = hostilesCount! < 4 ? 1 : Int.random(in: 1..<hostilesCount! / 2)
+                        let lost = hostilesCount! < 4 ? 1 : Int.randomLog(in: 1..<hostilesCount! / 2, comment: "escaped from")
                         hostilesCount! -= lost
                         battleMessage = "But we escaped from \(lost.formatted()) of ‘em!"
                         refreshHostilesOnScreen()
@@ -1510,7 +1537,7 @@ class Game: ObservableObject {
     
     private func battleSummary() {
         if hostilesCount == 0 {
-            booty = 250 + months * 250 * originalHostileShipsCount! + Int.random(in: 0...1000)
+            booty = 250 + months * 250 * originalHostileShipsCount! + Int.randomLog(in: 0...1000, comment: "booty")
             cash! += booty!
         }
     }
@@ -1540,7 +1567,7 @@ class Game: ObservableObject {
     var opiumFine: Int?
     
     func seizeOpium() {
-        let fine = Int(Double(cash!) / 1.8 * Double.random(in: 0.0...1.0) + 1)
+        let fine = Int(Double(cash!) / 1.8 * Double.randomLog(in: 0.0...1.0, comment: "opium fine") + 1)
         cash! = max(cash! - fine, 0)
         shipHold[.opium] = nil
         self.opiumFine = fine
@@ -1553,7 +1580,7 @@ class Game: ObservableObject {
         // Link's implementation has this as:
         //   float robbed = ((cash / 1.4) * ((float) rand() / RAND_MAX));
         // but that could yield 0 if rand() is 0.
-        let robberyLoss = Int(Double(cash!) / 1.4 * Double.random(in: 0.1...1.0))
+        let robberyLoss = Int(Double(cash!) / 1.4 * Double.randomLog(in: 0.1...1.0, comment: "robbery loss"))
         cash! = max(cash! - robberyLoss, 0)
         self.robberyLoss = robberyLoss
         dbgRobbery = false
@@ -1563,7 +1590,7 @@ class Game: ObservableObject {
     
     func cutthroats() {
         cash = 0
-        bodyguardsLost = Int.random(in: 1...3)
+        bodyguardsLost = Int.randomLog(in: 1...3, comment: "bodyguards lost")
     }
     
     func blownOffCourse() {
