@@ -1491,7 +1491,7 @@ struct ContentView: View {
                             case .name: NameView()
                             case .debtOrGuns: DebtOrGunsView()
                             case .finalStats: FinalStatsView()
-                            default: Group {}
+                            default: EmptyView()
                             }
                         }
                         .padding(2)
