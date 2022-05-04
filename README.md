@@ -85,3 +85,75 @@ iPad
 <img src="https://user-images.githubusercontent.com/95387068/163653050-ac8e35e5-d263-4507-95ac-b14892b0d35c.png" width=1133 />
 
 <img src="https://user-images.githubusercontent.com/95387068/163653055-dfea5985-7077-4658-8e1b-8fa56f8b2456.png" width=1133 />
+
+## UI State Diagram
+
+The state machine of the game is depicted below. Note that some of the states are "pass through" and do nothing and simply move on to a subsequent state if certain conditions (e.g., random numbers) are not met. There are nicer ways to depict that, but I think keeping this diagram close to what the code actually does is more useful.
+
+```mermaid
+stateDiagram-v2
+    [*] --> splash
+    splash --> name
+    arriving --> liYuenExtortion
+    name --> debtOrGuns
+    debtOrGuns --> liYuenExtortion
+    liYuenExtortion --> notEnoughCash: yes
+    liYuenExtortion --> mcHenryOffer: no
+    notEnoughCash --> mcHenryOffer
+    notEnoughCash --> borrowForLiYuen
+    borrowForLiYuen --> borrowedForLiYuen: yes
+    borrowForLiYuen --> elderBrotherWuPirateWarning: no
+    elderBrotherWuPirateWarning --> mcHenryOffer
+    borrowedForLiYuen --> mcHenryOffer
+    mcHenryOffer --> elderBrotherWuWarning1: debt > 10000
+    mcHenryOffer --> elderBrotherWuBusiness
+    elderBrotherWuWarning1 --> elderBrotherWuWarning2
+    elderBrotherWuWarning2 --> elderBrotherWuWarning3
+    elderBrotherWuWarning3 --> elderBrotherWuBusiness
+    elderBrotherWuBusiness --> cutthroats: no
+    elderBrotherWuBusiness --> elderBrotherWuBailout
+    elderBrotherWuBailout --> bailoutReaction: yes
+    elderBrotherWuBailout --> bankruptcy: no
+    bailoutReaction --> cutthroats
+    bankruptcy --> finalStats
+    cutthroats --> opiumSeized
+    cutthroats --> newShipOffer
+    cutthroats --> newGunOffer
+    newShipOffer --> opiumSeized
+    newShipOffer --> newGunOffer
+    newGunOffer --> opiumSeized
+    opiumSeized --> warehouseTheft
+    warehouseTheft --> liYuenMessage
+    liYuenMessage --> goodPrices
+    goodPrices --> priceJump
+    goodPrices --> priceDrop
+    goodPrices --> robbery
+    priceJump --> robbery
+    priceDrop --> robbery
+    robbery --> trading
+    trading --> hostilesApproaching: Quit Trading
+    trading --> retirement: Retire
+    hostilesApproaching --> storm
+    hostilesApproaching --> liYuenApproaching
+    hostilesApproaching --> seaBattle
+    seaBattle --> liYuenDroveThemOff
+    seaBattle --> battleSummary
+    battleSummary --> storm: shipStatus > 0
+    battleSummary --> finalStats: shipStatus <= 0
+    liYuenDroveThemOff --> liYuenApproaching
+    liYuenApproaching --> liYuenLetUsBe
+    liYuenLetUsBe --> storm
+    liYuenLetUsBe --> liYuenAttacking
+    liYuenAttacking --> liYuenBattle
+    liYuenBattle --> liYuenBattleSummary
+    liYuenBattleSummary --> storm
+    storm --> storm2
+    storm2 --> stormMadeIt
+    storm2 --> stormGoingDown
+    stormGoingDown --> finalStats
+    stormMadeIt --> stormBlownOffCourse
+    stormBlownOffCourse --> arriving
+    retirement --> finalStats
+    finalStats --> [*]: no
+    finalStats --> name: yes
+```
