@@ -1156,26 +1156,15 @@ struct BattleView: View {
         .offset(shipOffset)
         .onChange(of: game.shipBeingHit) { newValue in
             if newValue ?? false {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-                    shipTakingFire()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+                let flashes = 6
+                let flashDuration = 0.07
+                for i in 1...flashes {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration * Double(i)) {
                         shipTakingFire()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-                            shipTakingFire()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-                                shipTakingFire()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-                                    shipTakingFire()
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-                                        shipTakingFire()
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-                                            game.shipDidGetHit()
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration * Double(flashes + 1)) {
+                    game.shipDidGetHit()
                 }
             }
             else {
