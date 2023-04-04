@@ -649,7 +649,14 @@ class Game: ObservableObject {
         case parenthesis
     }
     func fancyShipStatus(_ style: ShipStatusStyle = .colon) -> String {
-        let statusStrings = [ "Critical", "Poor", "Fair", "Good", "Prime", "Perfect" ]
+        let statusStrings = [
+            NSLocalizedString("Critical", comment: ""),
+            NSLocalizedString("Poor", comment: ""),
+            NSLocalizedString("Fair", comment: ""),
+            NSLocalizedString("Good", comment: ""),
+            NSLocalizedString("Prime", comment: ""),
+            NSLocalizedString("Perfect", comment: "")
+            ]
         switch style {
         case .colon:
             return "\(statusStrings[shipStatus / 20]): \(shipStatus)"

@@ -39,18 +39,18 @@ struct SplashView: View {
             VStack {
                 if splashAnimation {
                     Spacer()
-                    Text("T   A   I   P   A   N   !")
+                    Text(NSLocalizedString("T   A   I   P   A   N   !", comment: ""))
                         .font(.custom("Georgia", size: hasSmallScreen ? 30 : 60))
                         .multilineTextAlignment(.center)
                         .transition(.opacity.animation(.easeIn(duration: 1.0)))
                     Divider()
                         .background(Color.taipanColor)
                         .transition(.opacity.animation(.easeIn(duration: 1.0)))
-                    Text("A game based on the China\ntrade of the 1800's")
+                    Text(NSLocalizedString("A game based on the China\ntrade of the 1800's", comment: ""))
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 5)
                         .transition(.opacity.animation(.easeIn(duration: 1).delay(1)))
-                    Text("Created by: Art Canfil")
+                    Text(NSLocalizedString("Created by: Art Canfil", comment: ""))
                         .transition(.opacity.animation(.easeIn(duration: 1).delay(1.5)))
                     Spacer()
                 }
@@ -76,18 +76,18 @@ struct NameView: View {
             Spacer()
             RoundRectVStack(.taipanColor) {
                 HStack {
-                    Text("Taipan,")
+                    Text(NSLocalizedString("Taipan,", comment: ""))
                         .padding(.leading, 40)
                     Spacer()
                 }
                 HStack {
-                    Text("What will you name your")
+                    Text(NSLocalizedString("What will you name your", comment: ""))
                         .padding(.horizontal, 20)
                         .padding(.vertical, 30)
                     Spacer()
                 }
                 HStack {
-                    Text("Firm:")
+                    Text(NSLocalizedString("Firm:", comment: ""))
                     TextField(
                         "",
                         text: $firmName,
@@ -136,29 +136,29 @@ struct DebtOrGunsView: View {
         VStack {
             Spacer()
             HStack {
-                Text("Do you want to start . . .")
+                Text(NSLocalizedString("Do you want to start . . .", comment: ""))
                 Spacer()
             }
             FullWidthButton {
                 game.sendEvent(.debt)
             } content: {
-                Text("1) With cash (and a debt)")
+                Text(NSLocalizedString("1) With cash (and a debt)", comment: ""))
             }
             .padding(.vertical, 10)
             .keyboardShortcut("1", modifiers: [])
-            Text("» or «")
+            Text(NSLocalizedString("» or «", comment: ""))
             FullWidthButton {
                 game.sendEvent(.guns)
             } content: {
                 VStack {
-                    Text("2) With five guns and no cash")
-                    Text("(But no debt!)")
+                    Text(NSLocalizedString("2) With five guns and no cash", comment: ""))
+                    Text(NSLocalizedString("(But no debt!)", comment: ""))
                         .font(.captionFont)
                 }
             }
             .padding(.vertical, 10)
             .keyboardShortcut("2", modifiers: [])
-            Text("?")
+            Text(NSLocalizedString("?", comment: ""))
             Spacer()
         }
         .frame(maxWidth: hasSmallScreen ? 500 : 768)
@@ -191,7 +191,7 @@ struct TradingView: View {
         Group {
             if hasLargeScreen {
                 VStack {
-                    Text("Date")
+                    Text(NSLocalizedString("Date", comment: ""))
                         .font(.captionFont)
                         .opacity(0.8)
                     Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
@@ -199,21 +199,21 @@ struct TradingView: View {
                 FixedSpacer(maxLength: 10)
             }
             VStack {
-                Text("Location")
+                Text(NSLocalizedString("Location", comment: ""))
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.currentCity?.rawValue ?? "At sea")
             }
             FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
-                Text("Debt")
+                Text(NSLocalizedString("Debt", comment: ""))
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.debt.fancyFormatted())
             }
             FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
-                Text("Ship Status")
+                Text(NSLocalizedString("Ship Status", comment: ""))
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.fancyShipStatus(.colon))
@@ -225,7 +225,7 @@ struct TradingView: View {
     var inventory: some View {
         Group {
             RoundRectVStack(.taipanColor) {
-                Text("Hong Kong Warehouse")
+                Text(NSLocalizedString("Hong Kong Warehouse", comment: ""))
                     .padding(.horizontal, 8)
                     .padding(.bottom, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -242,11 +242,11 @@ struct TradingView: View {
                     }
                     Spacer()
                     VStack(alignment: .trailing) {
-                        Text("In Use:")
+                        Text(NSLocalizedString("In Use:", comment: ""))
                             .font(.captionFont)
                             .opacity(0.8)
                         Text("\(game.warehouseUsedCapacity)")
-                        Text("Vacant")
+                        Text(NSLocalizedString("Vacant", comment: ""))
                             .font(.captionFont)
                             .opacity(0.8)
                         Text("\(game.warehouseFreeCapacity)")
@@ -261,7 +261,7 @@ struct TradingView: View {
                         Text("Hold \(game.shipFreeCapacity)")
                     }
                     else {
-                        Text("Overload")
+                        Text(NSLocalizedString("Overload", comment: ""))
                             .foregroundColor(.warningColor)
                     }
                     Spacer()
@@ -294,7 +294,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingBuyModal = true
             } content: {
-                Text("Buy")
+                Text(NSLocalizedString("Buy", comment: ""))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -305,7 +305,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingSellModal = true
             } content: {
-                Text("Sell")
+                Text(NSLocalizedString("Sell", comment: ""))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -316,7 +316,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingBankModal = true
             } content: {
-                Text(wideButtons ? "Visit Bank" : "Visit\nBank")
+                Text(wideButtons ? NSLocalizedString("Visit Bank", comment: "") : NSLocalizedString("Visit\nBank", comment: ""))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -327,7 +327,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingTransferModal = true
             } content: {
-                Text(wideButtons ? "Transfer Cargo" : "Transfer\nCargo")
+                Text(wideButtons ? NSLocalizedString("Transfer Cargo", comment: "") : NSLocalizedString("Transfer\nCargo", comment: ""))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -338,7 +338,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingDestinationModal = true
             } content: {
-                Text(wideButtons ? "Quit Trading" : "Quit\nTrading")
+                Text(wideButtons ? NSLocalizedString("Quit Trading", comment: "") : NSLocalizedString("Quit\nTrading", comment: ""))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -420,13 +420,13 @@ struct TradingView: View {
             switch game.state {
             case .trading:
                 Group {
-                    Text("Comprador‘s Report")
+                    Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, isLandscapePhone ? 2 : 5)
                     
                     Spacer()
                     
-                    Text("Taipan, present prices per unit here are")
+                    Text(NSLocalizedString("Taipan, present prices per unit here are", comment: ""))
                         .withMessageStyle()
                     
                     HStack {
@@ -454,7 +454,7 @@ struct TradingView: View {
                     
                     Spacer()
                     
-                    Text("Shall I")
+                    Text(NSLocalizedString("Shall I", comment: ""))
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     if sizeCategory > .large {
@@ -468,7 +468,7 @@ struct TradingView: View {
                         FullWidthButton {
                             game.transitionTo(.retirement)
                         } content: {
-                            Text("Retire")
+                            Text(NSLocalizedString("Retire", comment: ""))
                         }
                         .withDisabledStyle(game.cash! + game.bank < 1000000)
                         .keyboardShortcut("r", modifiers: [])
@@ -585,7 +585,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Captain‘s Report")
+                Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
@@ -605,7 +605,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Captain‘s Report")
+                Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
                 Text("Li Yuen‘s pirates, Taipan!!")
                     .withMessageStyle()
@@ -625,7 +625,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Captain‘s Report")
+                Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
                 Text("Storm, Taipan!!")
                     .withMessageStyle()
@@ -663,7 +663,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
@@ -683,7 +683,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
@@ -724,7 +724,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 Text("Bad Joss!!")
                     .withMessageStyle()
@@ -743,7 +743,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 Text("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!!  He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"")
                     .withMessageStyle()
@@ -781,7 +781,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 Text("Do you have business with Elder Brother Wu, the moneylender?")
                     .withMessageStyle()
@@ -827,7 +827,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 if game.shipDamage > 0 {
                     (Text("Do you wish to trade in your ")
@@ -871,7 +871,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text("Captain‘s Report")
+                Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
                 if let booty = game.booty {
                     Text("We captured some booty.")
@@ -901,7 +901,7 @@ struct TradingView: View {
 
         var body: some View {
             VStack {
-                Text("Comprador‘s Report")
+                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 VStack {
                     Text("You‘re a")

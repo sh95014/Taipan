@@ -17,3 +17,10 @@ struct TaipanApp: App {
         }
     }
 }
+
+enum BartyCrouch {
+    enum SupportedLanguage: String {
+        case chineseTraditional = "zh-Hant"
+        case english = "en"
+    }
+}
