@@ -865,25 +865,42 @@ class Game: ObservableObject {
         var keyboardShortcut: Character { "\(Self.allCases.firstIndex(of: self)! + 1)".prefix(1).first! }
     }
 
-    enum Month: String, CaseIterable {
-        case january   = "Jan"
-        case february  = "Feb"
-        case march     = "Mar"
-        case april     = "Apr"
-        case may       = "May"
-        case june      = "Jun"
-        case july      = "Jul"
-        case august    = "Aug"
-        case september = "Sep"
-        case october   = "Oct"
-        case november  = "Nov"
-        case december  = "Dec"
+    enum Month: Int, CaseIterable {
+        case january = 0
+        case february
+        case march
+        case april
+        case may
+        case june
+        case july
+        case august
+        case september
+        case october
+        case november
+        case december
         func next() -> Self {
             let allCases = Self.allCases
             return allCases[(allCases.firstIndex(of: self)! + 1) % allCases.count]
         }
         func index() -> Int {
             Self.allCases.firstIndex(of: self)!
+        }
+        func label() -> String {
+            let months = [
+                NSLocalizedString("Jan", comment: "January"),
+                NSLocalizedString("Feb", comment: "February"),
+                NSLocalizedString("Mar", comment: "March"),
+                NSLocalizedString("Apr", comment: "April"),
+                NSLocalizedString("May", comment: "May"),
+                NSLocalizedString("Jun", comment: "June"),
+                NSLocalizedString("Jul", comment: "July"),
+                NSLocalizedString("Aug", comment: "August"),
+                NSLocalizedString("Sep", comment: "September"),
+                NSLocalizedString("Oct", comment: "October"),
+                NSLocalizedString("Nov", comment: "November"),
+                NSLocalizedString("Dec", comment: "December"),
+            ]
+            return months[self.rawValue]
         }
     }
     

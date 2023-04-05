@@ -4,6 +4,9 @@
 /* No comment provided by engineer. */
 "1) With cash (and a debt)" = "1) With cash (and a debt)";
 
+/* day month year */
+"15 %@ %@" = "15 %1$@ %2$@";
+
 /* No comment provided by engineer. */
 "2) With five guns and no cash" = "2) With five guns and no cash";
 
@@ -12,6 +15,12 @@
 
 /* No comment provided by engineer. */
 "A game based on the China\ntrade of the 1800's" = "A game based on the China\ntrade of the 1800's";
+
+/* April */
+"Apr" = "Apr";
+
+/* August */
+"Aug" = "Aug";
 
 /* No comment provided by engineer. */
 "Buy" = "Buy";
@@ -34,13 +43,19 @@
 /* No comment provided by engineer. */
 "Debt" = "Debt";
 
+/* December */
+"Dec" = "Dec";
+
 /* No comment provided by engineer. */
 "Do you want to start . . ." = "Do you want to start . . .";
 
 /* No comment provided by engineer. */
 "Fair" = "Fair";
 
-/* No comment provided by engineer. */
+/* February */
+"Feb" = "Feb";
+
+/* What will you name your... */
 "Firm:" = "Firm:";
 
 /* No comment provided by engineer. */
@@ -52,8 +67,29 @@
 /* No comment provided by engineer. */
 "In Use:" = "In Use:";
 
+/* January */
+"Jan" = "Jan";
+
+/* July */
+"Jul" = "Jul";
+
+/* June */
+"Jun" = "Jun";
+
 /* No comment provided by engineer. */
 "Location" = "Location";
+
+/* March */
+"Mar" = "Mar";
+
+/* May */
+"May" = "May";
+
+/* November */
+"Nov" = "Nov";
+
+/* October */
+"Oct" = "Oct";
 
 /* No comment provided by engineer. */
 "Overload" = "Overload";
@@ -78,6 +114,9 @@
 
 /* No comment provided by engineer. */
 "Sell" = "Sell";
+
+/* September */
+"Sep" = "Sep";
 
 /* No comment provided by engineer. */
 "Shall I" = "Shall I";
@@ -109,7 +148,7 @@
 /* No comment provided by engineer. */
 "Visit\nBank" = "Visit\nBank";
 
-/* No comment provided by engineer. */
+/* ...firm */
 "What will you name your" = "What will you name your";
 
 /* No comment provided by engineer. */

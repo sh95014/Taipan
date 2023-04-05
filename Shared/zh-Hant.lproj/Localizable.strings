@@ -4,6 +4,9 @@
 /* No comment provided by engineer. */
 "1) With cash (and a debt)" = "1) 現金（和債務）";
 
+/* day month year */
+"15 %@ %@" = "%2$@年%1$@";
+
 /* No comment provided by engineer. */
 "2) With five guns and no cash" = "2) 五座炮但無現金";
 
@@ -12,6 +15,12 @@
 
 /* No comment provided by engineer. */
 "A game based on the China\ntrade of the 1800's" = "一個基於 1800 年代\n中國海上貿易的遊戲";
+
+/* April */
+"Apr" = "四月";
+
+/* August */
+"Aug" = "八月";
 
 /* No comment provided by engineer. */
 "Buy" = "買";
@@ -34,13 +43,19 @@
 /* No comment provided by engineer. */
 "Debt" = "債務";
 
+/* December */
+"Dec" = "十二月";
+
 /* No comment provided by engineer. */
 "Do you want to start . . ." = "您想要以 ． ． ．";
 
 /* No comment provided by engineer. */
 "Fair" = "尚可";
 
-/* No comment provided by engineer. */
+/* February */
+"Feb" = "二月";
+
+/* What will you name your... */
 "Firm:" = "行號：";
 
 /* No comment provided by engineer. */
@@ -50,10 +65,31 @@
 "Hong Kong Warehouse" = "香港倉庫";
 
 /* No comment provided by engineer. */
-"In Use:" = "使用中：";
+"In Use:" = "使用中";
+
+/* January */
+"Jan" = "一月";
+
+/* July */
+"Jul" = "七月";
+
+/* June */
+"Jun" = "六月";
 
 /* No comment provided by engineer. */
 "Location" = "位置";
+
+/* March */
+"Mar" = "三月";
+
+/* May */
+"May" = "五月";
+
+/* November */
+"Nov" = "十一月";
+
+/* October */
+"Oct" = "十月";
 
 /* No comment provided by engineer. */
 "Overload" = "超載";
@@ -78,6 +114,9 @@
 
 /* No comment provided by engineer. */
 "Sell" = "賣";
+
+/* September */
+"Sep" = "九月";
 
 /* No comment provided by engineer. */
 "Shall I" = "請開示";
@@ -109,7 +148,7 @@
 /* No comment provided by engineer. */
 "Visit\nBank" = "去\n銀行";
 
-/* No comment provided by engineer. */
+/* ...firm */
 "What will you name your" = "您想如何稱呼您的";
 
 /* No comment provided by engineer. */

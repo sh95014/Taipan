@@ -81,13 +81,13 @@ struct NameView: View {
                     Spacer()
                 }
                 HStack {
-                    Text(NSLocalizedString("What will you name your", comment: ""))
+                    Text(NSLocalizedString("What will you name your", comment: "...firm"))
                         .padding(.horizontal, 20)
                         .padding(.vertical, 30)
                     Spacer()
                 }
                 HStack {
-                    Text(NSLocalizedString("Firm:", comment: ""))
+                    Text(NSLocalizedString("Firm:", comment: "What will you name your..."))
                     TextField(
                         "",
                         text: $firmName,
@@ -182,9 +182,10 @@ struct TradingView: View {
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
     
-    var date: some View {
-        Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
-            .padding(.bottom, 5)
+    var CurrentDate: some View {
+        let dateFormat = NSLocalizedString("15 %@ %@", comment: "day month year")
+        let dateText = String.localizedStringWithFormat(dateFormat, game.month.label(), String(game.year!))
+        return Text(dateText)
     }
     
     var locationDebtStatus: some View {
@@ -194,7 +195,7 @@ struct TradingView: View {
                     Text(NSLocalizedString("Date", comment: ""))
                         .font(.captionFont)
                         .opacity(0.8)
-                    Text(verbatim: "15 \(game.month.rawValue) \(game.year!)")
+                    CurrentDate
                 }
                 FixedSpacer(maxLength: 10)
             }
@@ -358,7 +359,8 @@ struct TradingView: View {
                             Text("\(game.firmName!)")
                                 .font(.titleFont)
                                 .lineLimit(1)
-                            date
+                            CurrentDate
+                                .padding(.bottom, 5)
                         }
                     }
                     else {
@@ -367,7 +369,8 @@ struct TradingView: View {
                                 .font(.titleFont)
                                 .lineLimit(1)
                             Spacer()
-                            date
+                            CurrentDate
+                                .padding(.bottom, 5)
                         }
                     }
                 }
@@ -2212,10 +2215,11 @@ extension Color {
 }
 
 extension Font {
-    static let titleFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 30 : 40)
-    static let keypadDigitFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 26 : 39)
-    static let bodyFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 22 : 28)
-    static let captionFont = Font.custom("MorrisRoman-Black", size: hasSmallScreen ? 16 : 20)
+    static let taipanFont = Bundle.main.preferredLocalizations[0].hasPrefix("zh") ? "STFangSong" : "MorrisRoman-Black"
+    static let titleFont = Font.custom(taipanFont, size: hasSmallScreen ? 30 : 40)
+    static let keypadDigitFont = Font.custom(taipanFont, size: hasSmallScreen ? 26 : 39)
+    static let bodyFont = Font.custom(taipanFont, size: hasSmallScreen ? 22 : 28)
+    static let captionFont = Font.custom(taipanFont, size: hasSmallScreen ? 16 : 20)
 }
 
 struct LeadingLabelStyle: LabelStyle {
