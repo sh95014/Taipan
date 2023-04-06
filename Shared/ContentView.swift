@@ -487,28 +487,28 @@ struct TradingView: View {
             case .liYuenExtortion:
                 CompradorsReportYesNo("Li Yuen asks \(game.liYuenDemand!.formatted()) in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?")
             case .notEnoughCash:
-                CompradorsReport("Taipan, you do not have enough cash!!")
+                CompradorsReport(NSLocalizedString("Taipan, you do not have enough cash!!", comment: ""))
             case .borrowForLiYuen:
-                CompradorsReportYesNo("Do you want Elder Brother Wu to make up the difference for you?")
+                CompradorsReportYesNo(NSLocalizedString("Do you want Elder Brother Wu to make up the difference for you?", comment: ""))
             case .borrowedForLiYuen:
-                CompradorsReport("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.")
+                CompradorsReport(NSLocalizedString("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.", comment: ""))
             case .elderBrotherWuPirateWarning:
-                CompradorsReport("Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.")
+                CompradorsReport(NSLocalizedString("Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.", comment: ""))
             case .mcHenryOffer:
                 McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
                 CompradorsReport("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
             case .elderBrotherWuWarning2:
-                CompradorsReport("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.")
+                CompradorsReport(NSLocalizedString("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.", comment: ""))
             case .elderBrotherWuWarning3:
-                CompradorsReport("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
+                CompradorsReport(NSLocalizedString("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.", comment: ""))
             case .elderBrotherWuBusiness:
                 ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
                                            isShowingRepayModal: $isShowingRepayModal)
             case .elderBrotherWuBailout:
                 CompradorsReportYesNo("Elder Brother is aware of your plight, Taipan.  He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
             case .bailoutReaction:
-                CompradorsReport("Very well, Taipan. Good joss!!")
+                CompradorsReport(NSLocalizedString("Very well, Taipan. Good joss!!", comment: ""))
             case .bankruptcy:
                 CompradorsReport("Very well, Taipan, the game is over!")
             case .cutthroats:
@@ -520,9 +520,9 @@ struct TradingView: View {
             case .opiumSeized:
                 CompradorsReportBadJoss("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
             case .warehouseTheft:
-                CompradorsReport("Messenger reports large theft from warehouse, Taipan.")
+                CompradorsReport(NSLocalizedString("Messenger reports large theft from warehouse, Taipan.", comment: ""))
             case .liYuenMessage:
-                CompradorsReport("Li Yuen has sent a Lieutenant, Taipan.  He says his admiral wishes to see you in Hong Kong, posthaste!")
+                CompradorsReport(NSLocalizedString("Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!", comment: ""))
             case .priceDrop:
                 CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.label) has dropped to \(game.price[game.goodPriceMerchandise!]!.formatted())!!")
             case .priceJump:
@@ -534,11 +534,11 @@ struct TradingView: View {
             case .battleSummary:
                 BattleSummaryView()
             case .liYuenDroveThemOff:
-                CaptainsReport("Li Yuen‘s fleet drove them off!")
+                CaptainsReport(NSLocalizedString("Li Yuen‘s fleet drove them off!", comment: ""))
             case .liYuenApproaching:
                 CaptainsReportLiYuen(nil)
             case .liYuenLetUsBe:
-                CaptainsReportLiYuen("Good joss!! They let us be!!")
+                CaptainsReportLiYuen(NSLocalizedString("Good joss!! They let us be!!", comment: ""))
             case .liYuenAttacking:
                 CaptainsReportLiYuen("\(game.hostilesCount!.formatted()) ships of Li Yuen‘s pirate fleet, Taipan!!")
             case .liYuenBattleSummary:
@@ -552,7 +552,7 @@ struct TradingView: View {
             case .stormMadeIt:
                 CaptainsReportStorm()
             case .stormBlownOffCourse:
-                CaptainsReport("We've been blown off course to \(game.destinationCity!.rawValue).")
+                CaptainsReport("We've been blown off course to \(game.destinationCity!.label).")
             case .retirement:
                 RetirementView()
             default:
@@ -615,7 +615,7 @@ struct TradingView: View {
             VStack {
                 Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
-                Text("Li Yuen‘s pirates, Taipan!!")
+                Text(NSLocalizedString("Li Yuen‘s pirates, Taipan!!", comment: ""))
                     .withMessageStyle()
                 if let message = message {
                     Text(message)
@@ -635,22 +635,22 @@ struct TradingView: View {
             VStack {
                 Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
-                Text("Storm, Taipan!!")
+                Text(NSLocalizedString("Storm, Taipan!!", comment: ""))
                     .withMessageStyle()
                 if [ .storm2, .stormGoingDown ].contains(game.state) {
-                    Text("I think we‘re going down!!")
+                    Text(NSLocalizedString("I think we‘re going down!!", comment: ""))
                         .withMessageStyle()
                         .padding(.leading, 20)
                         .padding(.top, 10)
                 }
                 else if game.state == .stormMadeIt {
-                    Text("We made it!!")
+                    Text(NSLocalizedString("storm.madeit", comment: ""))
                         .withMessageStyle()
                         .padding(.leading, 20)
                         .padding(.top, 10)
                 }
                 if game.state == .stormGoingDown {
-                    Text("We‘re going down, Taipan!!!!")
+                    Text(NSLocalizedString("We‘re going down, Taipan!!!!", comment: ""))
                         .withMessageStyle()
                         .padding(.leading, 40)
                         .padding(.top, 10)
@@ -700,7 +700,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text("No")
+                        Text(NSLocalizedString("comprador.no", comment: ""))
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -710,7 +710,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
-                        Text("Yes")
+                        Text(NSLocalizedString("comprador.yes", comment: ""))
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -734,7 +734,7 @@ struct TradingView: View {
             VStack {
                 Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
-                Text("Bad Joss!!")
+                Text(NSLocalizedString("Bad Joss!!", comment: ""))
                     .withMessageStyle()
                 Text(message)
                     .withMessageStyle()
@@ -753,14 +753,14 @@ struct TradingView: View {
             VStack {
                 Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
-                Text("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!!  He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"")
+                Text(NSLocalizedString("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!! He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"", comment: ""))
                     .withMessageStyle()
                 Spacer()
                 HStack {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text("No")
+                        Text(NSLocalizedString("mchenry.no", comment: ""))
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -770,7 +770,7 @@ struct TradingView: View {
                     RoundRectButton {
                         isShowingRepairModal = true
                     } content: {
-                        Text("Repair")
+                        Text(NSLocalizedString("Repair", comment: ""))
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -838,8 +838,8 @@ struct TradingView: View {
                 Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 if game.shipDamage > 0 {
-                    (Text("Do you wish to trade in your ")
-                    + Text("damaged").underline()
+                    (Text(NSLocalizedString("Do you wish to trade in your ", comment: ""))
+                     + Text(NSLocalizedString("damaged", comment: "...trade in your <damaged> ship for one...")).underline()
                     + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
                         .withMessageStyle()
                 }
@@ -852,7 +852,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text("No")
+                        Text(NSLocalizedString("shipoffer.no", comment: ""))
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -862,7 +862,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
-                        Text("Yes")
+                        Text(NSLocalizedString("shipoffer.yes", comment: ""))
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -882,19 +882,19 @@ struct TradingView: View {
                 Text(NSLocalizedString("Captain‘s Report", comment: ""))
                     .withReportStyle()
                 if let booty = game.booty {
-                    Text("We captured some booty.")
+                    Text(NSLocalizedString("We captured some booty.", comment: ""))
                         .withMessageStyle()
                     Text("It‘s worth \(booty.fancyFormatted())!")
                         .withMessageStyle()
                 }
                 else if game.shipStatus <= 0 {
-                    Text("The buggers got us, Taipan!!!")
+                    Text(NSLocalizedString("The buggers got us, Taipan!!!", comment: ""))
                         .withMessageStyle()
-                    Text("It‘s all over, now!!!")
+                    Text(NSLocalizedString("It‘s all over, now!!!", comment: ""))
                         .withMessageStyle()
                 }
                 else {
-                    Text("We made it!")
+                    Text(NSLocalizedString("pirates.madeit", comment: ""))
                         .withMessageStyle()
                 }
                 Spacer()
@@ -912,9 +912,9 @@ struct TradingView: View {
                 Text(NSLocalizedString("Comprador‘s Report", comment: ""))
                     .withReportStyle()
                 VStack {
-                    Text("You‘re a")
+                    Text(NSLocalizedString("You‘re a", comment: ""))
                         .kerning(sizeCategory > .extraLarge ? 7 : 10)
-                    Text("MILLIONAIRE!")
+                    Text(NSLocalizedString("MILLIONAIRE!", comment: ""))
                         .kerning(sizeCategory > .extraLarge ? 7 : 10)
                         .padding(.top, 5)
                 }
@@ -1043,13 +1043,17 @@ struct BattleView: View {
             HStack {
                 VStack {
                     let attacking = game.hostilesCount! == 1 ? "1 ship attacking, Taipan!" : "\(game.hostilesCount!.formatted()) ships attacking, Taipan!"
-                    let orders = "Your orders are to: \(game.battleOrder?.rawValue ?? "")"
+                    let orderFormat = NSLocalizedString("Your orders are to: %@", comment: "")
+                    let orders = String.localizedStringWithFormat(orderFormat, game.battleOrder?.label ?? "")
                     Text("\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
                         .withMessageStyle()
                 }
                 .padding(.top, hasLargeScreen ? 10 : 0)
                 Spacer()
-                Text("We have\(isLandscapePhone ? " " : "\n")\(game.shipGuns!.formatted()) guns")
+                let gunsFormat = isLandscapePhone ?
+                    NSLocalizedString("We have %@ guns", comment: "") :
+                    NSLocalizedString("We have\n%@ guns", comment: "")
+                Text(String.localizedStringWithFormat(gunsFormat, game.shipGuns!.formatted()))
                     .multilineTextAlignment(.trailing)
                     .padding(5)
                     .overlay(Rectangle().frame(width: nil, height: 1).foregroundColor(.taipanColor), alignment: .bottom)
@@ -1128,13 +1132,13 @@ struct BattleView: View {
             
             Spacer()
             
-            Text("Current seaworthiness: ") +
+            Text(NSLocalizedString("Current seaworthiness: ", comment: "")) +
             Text("\(game.fancyShipStatus(.parenthesis))").foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
             HStack {
                 RoundRectButton {
                     game.orderFight()
                 } content: {
-                    Text("Fight")
+                    Text(NSLocalizedString("Fight", comment: ""))
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(game.shipGuns! == 0 || game.hostilesCount! == 0)
@@ -1143,7 +1147,7 @@ struct BattleView: View {
                 RoundRectButton {
                     game.orderRun()
                 } content: {
-                    Text("Run")
+                    Text(NSLocalizedString("Run", comment: ""))
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(game.hostilesCount! == 0)
@@ -1153,7 +1157,7 @@ struct BattleView: View {
                     game.orderThrowCargo()
                     isShowingSellModal = true
                 } content: {
-                    Text(wideButtons ? "Throw Cargo" : "Throw\nCargo")
+                    Text(wideButtons ? NSLocalizedString("Throw Cargo", comment: "") : NSLocalizedString("Throw\nCargo", comment: ""))
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(!game.shipHasCargo() || game.hostilesCount! == 0)
@@ -1571,7 +1575,7 @@ struct ContentView: View {
         var body: some View {
             VStack {
                 if let selectedMerchandise = selectedMerchandise {
-                    Text("How much \(selectedMerchandise.rawValue) shall I buy, Taipan:")
+                    Text("How much \(selectedMerchandise.label) shall I buy, Taipan:")
                     KeypadView(
                         amount: $amount,
                         limitHint: "You can\nafford \(game.canAfford(selectedMerchandise).formatted())"

@@ -1208,10 +1208,17 @@ class Game: ObservableObject {
         dbgHostilesCount = nil
     }
     
-    enum BattleOrder: String {
-        case fight = "Fight"
-        case run = "Run"
-        case throwCargo = "Throw Cargo"
+    enum BattleOrder: Int {
+        case fight
+        case run
+        case throwCargo
+        var label: String {
+            [
+                NSLocalizedString("Fight", comment: ""),
+                NSLocalizedString("Run", comment: ""),
+                NSLocalizedString("Throw Cargo", comment: ""),
+            ][self.rawValue]
+        }
     }
     
     var maxHostilesOnScreen = 9
@@ -1317,7 +1324,7 @@ class Game: ObservableObject {
             sendEvent(.battleEnded)
         }
         else if hostilesCount == 0 {
-            battleMessage = "We got ‘em all, Taipan!"
+            battleMessage = NSLocalizedString("We got ‘em all, Taipan!", comment: "")
             setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
             }
@@ -1330,20 +1337,20 @@ class Game: ObservableObject {
                         fireGuns()
                     }
                     else {
-                        battleMessage = "We have no guns, Taipan!!"
+                        battleMessage = NSLocalizedString("We have no guns, Taipan!!", comment: "")
                         setBattleTimer(3) { [self] in
                             hostileFile()
                         }
                     }
                 case .run:
-                    battleMessage = "Aye, we‘ll run, Taipan."
+                    battleMessage = NSLocalizedString("Aye, we‘ll run, Taipan.", comment: "")
                     runAway()
                     break
                 case .throwCargo:
                     runAway()
                     break
                 default:
-                    battleMessage = "Taipan, what shall we do??"
+                    battleMessage = NSLocalizedString("Taipan, what shall we do??", comment: "")
                     setBattleTimer(3) { [self] in
                         hostileFile()
                     }
@@ -1355,7 +1362,7 @@ class Game: ObservableObject {
     // fire each of our available guns
     private func fireGuns() {
         shotsLeft = shipGuns!
-        battleMessage = "Aye, we‘ll fight ‘em, Taipan."
+        battleMessage = NSLocalizedString("Aye, we‘ll fight ‘em, Taipan.", comment: "")
         fillScreenWithShips()
         sinkCount = 0
         escapeChance = 3
@@ -1367,7 +1374,7 @@ class Game: ObservableObject {
     
     // fire one gun
     private func fireGun() {
-        self.battleMessage = "We‘re firing on ‘em, Taipan!"
+        self.battleMessage = NSLocalizedString("We‘re firing on ‘em, Taipan!", comment: "")
         self.setBattleTimer(1) { [self] in
             // randomly pick a target among ships on screen that haven't sunk yet
             repeat {
@@ -1408,7 +1415,7 @@ class Game: ObservableObject {
             fireNextShot()
         }
         else {
-            battleMessage = "We got ‘em all, Taipan!"
+            battleMessage = NSLocalizedString("We got ‘em all, Taipan!", comment: "")
             setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
             }
@@ -1427,7 +1434,7 @@ class Game: ObservableObject {
                     battleMessage = "Sunk \(sinkCount!.formatted()) of the buggers, Taipan!"
                 }
                 else {
-                    battleMessage = "Hit ‘em, but didn‘t sink ‘em, Taipan!"
+                    battleMessage = NSLocalizedString("Hit ‘em, but didn‘t sink ‘em, Taipan!", comment: "")
                 }
                 
                 let numerator = Int(Double(hostilesCount!) * 0.6 / Double(hostileType!.rawValue))
@@ -1469,7 +1476,7 @@ class Game: ObservableObject {
     
     // pirates fire at us
     private func hostileFile() {
-        battleMessage = "They‘re firing on us, Taipan!"
+        battleMessage = NSLocalizedString("They‘re firing on us, Taipan!", comment: "")
         setBattleTimer(3) { [self] in
             shipBeingHit = true
             #if os(iOS)
@@ -1480,7 +1487,7 @@ class Game: ObservableObject {
     
     // animation for ship hit completed
     func shipDidGetHit() {
-        battleMessage = "We‘ve been hit, Taipan!!"
+        battleMessage = NSLocalizedString("We‘ve been hit, Taipan!!", comment: "")
         shipBeingHit = false
         
         // we don't have an easy way of triggering the pop-up from here,
@@ -1502,7 +1509,7 @@ class Game: ObservableObject {
         if shipGuns! > 0 && (damagePercentage > 80 || Int.random(shipDamage, in: shipCapacity) || dbgHitGun) {
             dbgHitGun = false
             setBattleTimer(3) { [self] in
-                battleMessage = "The buggers hit a gun, Taipan!!"
+                battleMessage = NSLocalizedString("The buggers hit a gun, Taipan!!", comment: "")
                 shipGuns! -= 1
                 shipDamage += Int(Double.randomLog(in: 0.0...(ed * id), comment: "damage 1") + i / 2)
                 setBattleTimer(3) { [self] in
@@ -1547,13 +1554,13 @@ class Game: ObservableObject {
             print("escapeChance = \(escapeChance!)")
             print("escapeChanceIncrement = \(escapeChanceIncrement!)")
             if Int.randomLog(in: 0..<escapeChance!, comment: "escape chance") > Int.randomLog(in: 0..<hostilesCount!, comment: "hostiles count") {
-                battleMessage = "We got away from ‘em, Taipan!"
+                battleMessage = NSLocalizedString("We got away from ‘em, Taipan!", comment: "")
                 setBattleTimer(3) { [self] in
                     sendEvent(.battleEnded)
                 }
             }
             else {
-                battleMessage = "Couldn‘t lose ‘em."
+                battleMessage = NSLocalizedString("Couldn‘t lose ‘em.", comment: "")
                 setBattleTimer(3) { [self] in
                     if (hostilesCount! > 2 && Int.random(1, in: 5)) || dbgEscapedSome {
                         dbgEscapedSome = false
@@ -1579,7 +1586,7 @@ class Game: ObservableObject {
             shipHold[merchandise] = inventory - amount
             escapeChance! += amount / 10
             print("escapeChance = \(escapeChance!)")
-            battleMessage = "Let‘s hope we lose ‘em, Taipan!"
+            battleMessage = NSLocalizedString("Let‘s hope we lose ‘em, Taipan!", comment: "")
             executeOrder()
         }
         else {

@@ -38,6 +38,15 @@
 "Aug" = "Aug";
 
 /* No comment provided by engineer. */
+"Aye, we‘ll fight ‘em, Taipan." = "Aye, we‘ll fight ‘em, Taipan.";
+
+/* No comment provided by engineer. */
+"Aye, we‘ll run, Taipan." = "Aye, we‘ll run, Taipan.";
+
+/* No comment provided by engineer. */
+"Bad Joss!!" = "Bad Joss!!";
+
+/* No comment provided by engineer. */
 "Bank: %@" = "Bank: %@";
 
 /* No comment provided by engineer. */
@@ -56,13 +65,28 @@
 "Cash: %@" = "Cash: %@";
 
 /* No comment provided by engineer. */
+"comprador.no" = "No";
+
+/* No comment provided by engineer. */
+"comprador.yes" = "Yes";
+
+/* No comment provided by engineer. */
 "Comprador‘s Report" = "Comprador‘s Report";
+
+/* No comment provided by engineer. */
+"Couldn‘t lose ‘em." = "Couldn‘t lose ‘em.";
 
 /* No comment provided by engineer. */
 "Created by: Art Canfil" = "Created by: Art Canfil";
 
 /* No comment provided by engineer. */
 "Critical" = "Critical";
+
+/* No comment provided by engineer. */
+"Current seaworthiness: " = "Current seaworthiness: ";
+
+/* ...trade in your <damaged> ship for one... */
+"damaged" = "damaged";
 
 /* No comment provided by engineer. */
 "Date" = "Date";
@@ -77,7 +101,19 @@
 "Do you have business with Elder Brother Wu, the moneylender?" = "Do you have business with Elder Brother Wu, the moneylender?";
 
 /* No comment provided by engineer. */
+"Do you want Elder Brother Wu to make up the difference for you?" = "Do you want Elder Brother Wu to make up the difference for you?";
+
+/* No comment provided by engineer. */
 "Do you want to start . . ." = "Do you want to start . . .";
+
+/* No comment provided by engineer. */
+"Do you wish to trade in your " = "Do you wish to trade in your ";
+
+/* No comment provided by engineer. */
+"Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt." = "Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.";
+
+/* No comment provided by engineer. */
+"Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts." = "Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.";
 
 /* No comment provided by engineer. */
 "elderbrotherwu.no" = "No";
@@ -87,6 +123,9 @@
 
 /* February */
 "Feb" = "Feb";
+
+/* No comment provided by engineer. */
+"Fight" = "Fight";
 
 /* What will you name your... */
 "Firm:" = "Firm:";
@@ -98,7 +137,16 @@
 "Good" = "Good";
 
 /* No comment provided by engineer. */
+"Good joss!! They let us be!!" = "Good joss!! They let us be!!";
+
+/* No comment provided by engineer. */
 "Guns %@" = "Guns %@";
+
+/* No comment provided by engineer. */
+"He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan." = "He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.";
+
+/* No comment provided by engineer. */
+"Hit ‘em, but didn‘t sink ‘em, Taipan!" = "Hit ‘em, but didn‘t sink ‘em, Taipan!";
 
 /* No comment provided by engineer. */
 "Hold %d" = "Hold %d";
@@ -110,7 +158,13 @@
 "Hong Kong Warehouse" = "Hong Kong Warehouse";
 
 /* No comment provided by engineer. */
+"I think we‘re going down!!" = "I think we‘re going down!!";
+
+/* No comment provided by engineer. */
 "In Use:" = "In Use:";
+
+/* No comment provided by engineer. */
+"It‘s all over, now!!!" = "It‘s all over, now!!!";
 
 /* January */
 "Jan" = "Jan";
@@ -120,6 +174,18 @@
 
 /* June */
 "Jun" = "Jun";
+
+/* No comment provided by engineer. */
+"Let‘s hope we lose ‘em, Taipan!" = "Let‘s hope we lose ‘em, Taipan!";
+
+/* No comment provided by engineer. */
+"Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!" = "Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!";
+
+/* No comment provided by engineer. */
+"Li Yuen‘s fleet drove them off!" = "Li Yuen‘s fleet drove them off!";
+
+/* No comment provided by engineer. */
+"Li Yuen‘s pirates, Taipan!!" = "Li Yuen‘s pirates, Taipan!!";
 
 /* No comment provided by engineer. */
 "Location" = "Location";
@@ -132,6 +198,9 @@
 
 /* May */
 "May" = "May";
+
+/* No comment provided by engineer. */
+"mchenry.no" = "No";
 
 /* No comment provided by engineer. */
 "merchandise.arms" = "Arms";
@@ -158,6 +227,12 @@
 "merchandise.silk.short" = "Silk";
 
 /* No comment provided by engineer. */
+"Messenger reports large theft from warehouse, Taipan." = "Messenger reports large theft from warehouse, Taipan.";
+
+/* No comment provided by engineer. */
+"MILLIONAIRE!" = "MILLIONAIRE!";
+
+/* No comment provided by engineer. */
 "Nagasaki" = "Nagasaki";
 
 /* November */
@@ -173,6 +248,9 @@
 "Perfect" = "Perfect";
 
 /* No comment provided by engineer. */
+"pirates.madeit" = "We made it!";
+
+/* No comment provided by engineer. */
 "Poor" = "Poor";
 
 /* No comment provided by engineer. */
@@ -185,10 +263,16 @@
 "Quit\nTrading" = "Quit\nTrading";
 
 /* No comment provided by engineer. */
+"Repair" = "Repair";
+
+/* No comment provided by engineer. */
 "Repay" = "Repay";
 
 /* No comment provided by engineer. */
 "Retire" = "Retire";
+
+/* No comment provided by engineer. */
+"Run" = "Run";
 
 /* No comment provided by engineer. */
 "Saigon" = "Saigon";
@@ -209,7 +293,19 @@
 "Ship Status" = "Ship Status";
 
 /* No comment provided by engineer. */
+"shipoffer.no" = "No";
+
+/* No comment provided by engineer. */
+"shipoffer.yes" = "Yes";
+
+/* No comment provided by engineer. */
 "Singapore" = "Singapore";
+
+/* No comment provided by engineer. */
+"Storm, Taipan!!" = "Storm, Taipan!!";
+
+/* No comment provided by engineer. */
+"storm.madeit" = "We made it!!";
 
 /* No comment provided by engineer. */
 "T   A   I   P   A   N   !" = "T   A   I   P   A   N   !";
@@ -218,7 +314,31 @@
 "Taipan," = "Taipan,";
 
 /* No comment provided by engineer. */
+"Taipan, Mc Henry from the Hong Kong Shipyards has arrived!! He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"" = "Taipan, Mc Henry from the Hong Kong Shipyards has arrived!! He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"";
+
+/* No comment provided by engineer. */
 "Taipan, present prices per unit here are" = "Taipan, present prices per unit here are";
+
+/* No comment provided by engineer. */
+"Taipan, what shall we do??" = "Taipan, what shall we do??";
+
+/* No comment provided by engineer. */
+"Taipan, you do not have enough cash!!" = "Taipan, you do not have enough cash!!";
+
+/* No comment provided by engineer. */
+"The buggers got us, Taipan!!!" = "The buggers got us, Taipan!!!";
+
+/* No comment provided by engineer. */
+"The buggers hit a gun, Taipan!!" = "The buggers hit a gun, Taipan!!";
+
+/* No comment provided by engineer. */
+"They‘re firing on us, Taipan!" = "They‘re firing on us, Taipan!";
+
+/* No comment provided by engineer. */
+"Throw Cargo" = "Throw Cargo";
+
+/* No comment provided by engineer. */
+"Throw\nCargo" = "Throw\nCargo";
 
 /* No comment provided by engineer. */
 "Transfer Cargo" = "Transfer Cargo";
@@ -230,13 +350,52 @@
 "Vacant" = "Vacant";
 
 /* No comment provided by engineer. */
+"Very well, Taipan. Good joss!!" = "Very well, Taipan. Good joss!!";
+
+/* No comment provided by engineer. */
+"Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan." = "Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.";
+
+/* No comment provided by engineer. */
 "Visit Bank" = "Visit Bank";
 
 /* No comment provided by engineer. */
 "Visit\nBank" = "Visit\nBank";
 
+/* No comment provided by engineer. */
+"We captured some booty." = "We captured some booty.";
+
+/* No comment provided by engineer. */
+"We got away from ‘em, Taipan!" = "We got away from ‘em, Taipan!";
+
+/* No comment provided by engineer. */
+"We got ‘em all, Taipan!" = "We got ‘em all, Taipan!";
+
+/* No comment provided by engineer. */
+"We have %@ guns" = "We have %@ guns";
+
+/* No comment provided by engineer. */
+"We have no guns, Taipan!!" = "We have no guns, Taipan!!";
+
+/* No comment provided by engineer. */
+"We have\n%@ guns" = "We have\n%@ guns";
+
+/* No comment provided by engineer. */
+"We‘re firing on ‘em, Taipan!" = "We‘re firing on ‘em, Taipan!";
+
+/* No comment provided by engineer. */
+"We‘re going down, Taipan!!!!" = "We‘re going down, Taipan!!!!";
+
+/* No comment provided by engineer. */
+"We‘ve been hit, Taipan!!" = "We‘ve been hit, Taipan!!";
+
 /* ...firm */
 "What will you name your" = "What will you name your";
+
+/* No comment provided by engineer. */
+"Your orders are to: %@" = "Your orders are to: %@";
+
+/* No comment provided by engineer. */
+"You‘re a" = "You‘re a";
 
 /* No comment provided by engineer. */
 "» or «" = "» or «";
