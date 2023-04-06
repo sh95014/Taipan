@@ -152,7 +152,7 @@
 "Good joss!! They let us be!!" = "我的天啊!! 他們放了我們走!!";
 
 /* No comment provided by engineer. */
-"Guns %@" = "%@座砲";
+"Guns %@" = "%@ 座砲";
 
 /* No comment provided by engineer. */
 "He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan." = "他記得一個傳說中不守信的番人，最後落得死無葬身之地。\n\n大班是朋友，他衷誠希望您不會有這樣的下場。";
@@ -161,7 +161,7 @@
 "Hit ‘em, but didn‘t sink ‘em, Taipan!" = "擊中了，但沒能擊沉他們，大班！";
 
 /* No comment provided by engineer. */
-"Hold %d" = "船艙 %d";
+"Hold %lld" = "船艙 %lld";
 
 /* No comment provided by engineer. */
 "Hong Kong" = "香港";
@@ -392,10 +392,10 @@
 "We got away from ‘em, Taipan!" = "我們溜走了，大班！";
 
 /* No comment provided by engineer. */
-"We have\n%@ guns" = "我們有\n%@座砲";
+"We have\n%@ guns" = "我們有\n%@ 座砲";
 
 /* No comment provided by engineer. */
-"We have %@ guns" = "我們有%@座砲";
+"We have %@ guns" = "我們有 %@ 座砲";
 
 /* No comment provided by engineer. */
 "We have no guns, Taipan!!" = "我們沒有火砲啊，大班!!";

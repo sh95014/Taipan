@@ -183,9 +183,7 @@ struct TradingView: View {
     private let bottomRowMinWidth: CGFloat = 45
     
     var CurrentDate: some View {
-        let dateFormat = NSLocalizedString("15 %@ %@", comment: "day month year")
-        let dateText = String.localizedStringWithFormat(dateFormat, game.month.label, String(game.year!))
-        return Text(dateText)
+        return Text("15 \(game.month.label) \(String(game.year!))", comment: "day month year")
     }
     
     var locationDebtStatus: some View {
@@ -203,7 +201,7 @@ struct TradingView: View {
                 Text("Location")
                     .font(.captionFont)
                     .opacity(0.8)
-                Text(game.currentCity?.label ?? NSLocalizedString("At sea", comment: ""))
+                Text(game.currentCity?.label ?? String(localized: "At sea"))
             }
             FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
@@ -259,16 +257,14 @@ struct TradingView: View {
             RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor : .warningColor) {
                 HStack {
                     if game.shipFreeCapacity >= 0 {
-                        let holdFormat = NSLocalizedString("Hold %d", comment: "")
-                        Text(String.localizedStringWithFormat(holdFormat, game.shipFreeCapacity))
+                        Text("Hold \(game.shipFreeCapacity)")
                     }
                     else {
                         Text("Overload")
                             .foregroundColor(.warningColor)
                     }
                     Spacer()
-                    let gunsFormat = NSLocalizedString("Guns %@", comment: "")
-                    Text(String.localizedStringWithFormat(gunsFormat, game.shipGuns!.formatted()))
+                    Text("Guns \(game.shipGuns!.formatted())")
                 }
                 .padding(.horizontal, 8)
                 .padding(.bottom, 2)
@@ -319,7 +315,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingBankModal = true
             } content: {
-                Text(wideButtons ? NSLocalizedString("Visit Bank", comment: "") : NSLocalizedString("Visit\nBank", comment: ""))
+                Text(wideButtons ? String(localized: "Visit Bank") : String(localized: "Visit\nBank"))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -330,7 +326,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingTransferModal = true
             } content: {
-                Text(wideButtons ? NSLocalizedString("Transfer Cargo", comment: "") : NSLocalizedString("Transfer\nCargo", comment: ""))
+                Text(wideButtons ? String(localized: "Transfer Cargo") : String(localized: "Transfer\nCargo"))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -341,7 +337,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingDestinationModal = true
             } content: {
-                Text(wideButtons ? NSLocalizedString("Quit Trading", comment: "") : NSLocalizedString("Quit\nTrading", comment: ""))
+                Text(wideButtons ? String(localized: "Quit Trading") : String(localized: "Quit\nTrading"))
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -354,7 +350,6 @@ struct TradingView: View {
     var body: some View {
         VStack {
             Group {
-                let fullFirmNameFormat = NSLocalizedString("Firm: %@, Hong Kong", comment: "")
                 if hasSmallScreen {
                     if isPortrait {
                         VStack {
@@ -367,7 +362,7 @@ struct TradingView: View {
                     }
                     else {
                         HStack {
-                            Text(String.localizedStringWithFormat(fullFirmNameFormat, game.firmName!))
+                            Text("Firm: \(game.firmName!), Hong Kong")
                                 .font(.titleFont)
                                 .lineLimit(1)
                             Spacer()
@@ -377,7 +372,7 @@ struct TradingView: View {
                     }
                 }
                 else {
-                    Text(String.localizedStringWithFormat(fullFirmNameFormat, game.firmName!))
+                    Text("Firm: \(game.firmName!), Hong Kong")
                         .font(.titleFont)
                         .lineLimit(1)
                         #if os(iOS)
@@ -1304,7 +1299,6 @@ struct FinalStatsView: View {
         VStack {
             if game.state == .finalStats {
                 Group {
-                    let fullFirmNameFormat = NSLocalizedString("Firm: %@, Hong Kong", comment: "")
                     if hasSmallScreen {
                         if isPortrait {
                             Text("\(game.firmName!)")
@@ -1313,14 +1307,14 @@ struct FinalStatsView: View {
                                 .padding(.bottom, 10)
                         }
                         else {
-                            Text(String.localizedStringWithFormat(fullFirmNameFormat, game.firmName!))
+                            Text("Firm: \(game.firmName!), Hong Kong")
                                 .font(.titleFont)
                                 .lineLimit(1)
                                 .padding(.bottom, 10)
                         }
                     }
                     else {
-                        Text(String.localizedStringWithFormat(fullFirmNameFormat, game.firmName!))
+                        Text("Firm: \(game.firmName!), Hong Kong")
                             .font(.titleFont)
                             .lineLimit(1)
                             #if os(iOS)
