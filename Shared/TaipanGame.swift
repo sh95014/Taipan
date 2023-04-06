@@ -34,21 +34,38 @@ extension Int {
     }
     
     func fancyFormatted() -> String {
-        if self >= 1000000000000 {
-            let s = self.formatted(.number.scale(0.000000000001).precision(.fractionLength(1)))
-            return "\(s) Trillion"
-        }
-        else if self >= 1000000000 {
-            let s = self.formatted(.number.scale(0.000000001).precision(.fractionLength(1)))
-            return "\(s) Billion"
-        }
-        else if self >= 1000000 {
-            let s = self.formatted(.number.scale(0.000001).precision(.fractionLength(1)))
-            return "\(s) Million"
+        if Bundle.main.preferredLocalizations[0].hasPrefix("zh") {
+            if self >= 1_000_000_000_000 {
+                let s = self.formatted(.number.scale(0.000000000001).precision(.fractionLength(1)))
+                return "\(s)兆"
+            }
+            else if self >= 100_000_000 {
+                let s = self.formatted(.number.scale(0.00000001).precision(.fractionLength(1)))
+                return "\(s)億"
+            }
+            else if self >= 10_000 {
+                let s = self.formatted(.number.scale(0.0001).precision(.fractionLength(1)))
+                return "\(s)萬"
+            }
         }
         else {
-            return "\(self.formatted())"
+            if self >= 1_000_000_000_000 {
+                let s = self.formatted(.number.scale(0.000000000001).precision(.fractionLength(1)))
+                let format = NSLocalizedString("%@ Trillion", comment: "")
+                return String.localizedStringWithFormat(format, s)
+            }
+            else if self >= 1_000_000_000 {
+                let s = self.formatted(.number.scale(0.000000001).precision(.fractionLength(1)))
+                let format = NSLocalizedString("%@ Billion", comment: "")
+                return String.localizedStringWithFormat(format, s)
+            }
+            else if self >= 1_000_000 {
+                let s = self.formatted(.number.scale(0.000001).precision(.fractionLength(1)))
+                let format = NSLocalizedString("%@ Million", comment: "")
+                return String.localizedStringWithFormat(format, s)
+            }
         }
+        return "\(self.formatted())"
     }
 }
 
@@ -744,13 +761,30 @@ class Game: ObservableObject {
 
     // MARK: - Market
     
-    enum Merchandise: String, CaseIterable {
-        case opium   = "Opium"
-        case silk    = "Silk"
-        case arms    = "Arms"
-        case general = "General Cargo"
-        var shortValue: String { rawValue.components(separatedBy: " ").first! }
-        var keyboardShortcut: Character { rawValue.prefix(1).first! }
+    enum Merchandise: Int, CaseIterable {
+        case opium
+        case silk
+        case arms
+        case general
+        var shortLabel: String {
+            [
+                NSLocalizedString("merchandise.opium.short", comment: ""),
+                NSLocalizedString("merchandise.silk.short", comment: ""),
+                NSLocalizedString("merchandise.arms.short", comment: ""),
+                NSLocalizedString("merchandise.general.short", comment: ""),
+            ][self.rawValue]
+        }
+        var label: String {
+            [
+                NSLocalizedString("merchandise.opium", comment: ""),
+                NSLocalizedString("merchandise.silk", comment: ""),
+                NSLocalizedString("merchandise.arms", comment: ""),
+                NSLocalizedString("merchandise.general", comment: ""),
+            ][self.rawValue]
+        }
+        var keyboardShortcut: Character {
+            [ "O", "S", "A", "G" ][self.rawValue]
+        }
     }
     
     private let priceMultiplier: [City: [Merchandise: Int]] = [
@@ -854,15 +888,26 @@ class Game: ObservableObject {
     
     // MARK: - Travel
     
-    enum City: String, CaseIterable {
-        case hongkong  = "Hong Kong"
-        case shanghai  = "Shanghai"
-        case nagasaki  = "Nagasaki"
-        case saigon    = "Saigon"
-        case manila    = "Manila"
-        case singapore = "Singapore"
-        case batavia   = "Batavia"
-        var keyboardShortcut: Character { "\(Self.allCases.firstIndex(of: self)! + 1)".prefix(1).first! }
+    enum City: Int, CaseIterable {
+        case hongkong
+        case shanghai
+        case nagasaki
+        case saigon
+        case manila
+        case singapore
+        case batavia
+        var keyboardShortcut: Character { Character("\(self.rawValue + 1)") }
+        var label: String {
+            [
+                NSLocalizedString("Hong Kong", comment: ""),
+                NSLocalizedString("Shanghai", comment: ""),
+                NSLocalizedString("Nagasaki", comment: ""),
+                NSLocalizedString("Saigon", comment: ""),
+                NSLocalizedString("Manila", comment: ""),
+                NSLocalizedString("Singapore", comment: ""),
+                NSLocalizedString("Batavia", comment: ""),
+            ][self.rawValue]
+        }
     }
 
     enum Month: Int, CaseIterable {
@@ -885,8 +930,8 @@ class Game: ObservableObject {
         func index() -> Int {
             Self.allCases.firstIndex(of: self)!
         }
-        func label() -> String {
-            let months = [
+        var label: String {
+            [
                 NSLocalizedString("Jan", comment: "January"),
                 NSLocalizedString("Feb", comment: "February"),
                 NSLocalizedString("Mar", comment: "March"),
@@ -899,8 +944,7 @@ class Game: ObservableObject {
                 NSLocalizedString("Oct", comment: "October"),
                 NSLocalizedString("Nov", comment: "November"),
                 NSLocalizedString("Dec", comment: "December"),
-            ]
-            return months[self.rawValue]
+            ][self.rawValue]
         }
     }
     

@@ -1,4 +1,13 @@
 /* No comment provided by engineer. */
+"%@ Billion" = "%@ Billion";
+
+/* No comment provided by engineer. */
+"%@ Million" = "%@ Million";
+
+/* No comment provided by engineer. */
+"%@ Trillion" = "%@ Trillion";
+
+/* No comment provided by engineer. */
 "(But no debt!)" = "(But no debt!)";
 
 /* No comment provided by engineer. */
@@ -19,14 +28,32 @@
 /* April */
 "Apr" = "Apr";
 
+/* No comment provided by engineer. */
+"Arriving at %@..." = "Arriving at %@...";
+
+/* No comment provided by engineer. */
+"At sea" = "At sea";
+
 /* August */
 "Aug" = "Aug";
+
+/* No comment provided by engineer. */
+"Bank: %@" = "Bank: %@";
+
+/* No comment provided by engineer. */
+"Batavia" = "Batavia";
+
+/* No comment provided by engineer. */
+"Borrow" = "Borrow";
 
 /* No comment provided by engineer. */
 "Buy" = "Buy";
 
 /* No comment provided by engineer. */
 "Captain‘s Report" = "Captain‘s Report";
+
+/* No comment provided by engineer. */
+"Cash: %@" = "Cash: %@";
 
 /* No comment provided by engineer. */
 "Comprador‘s Report" = "Comprador‘s Report";
@@ -47,7 +74,13 @@
 "Dec" = "Dec";
 
 /* No comment provided by engineer. */
+"Do you have business with Elder Brother Wu, the moneylender?" = "Do you have business with Elder Brother Wu, the moneylender?";
+
+/* No comment provided by engineer. */
 "Do you want to start . . ." = "Do you want to start . . .";
+
+/* No comment provided by engineer. */
+"elderbrotherwu.no" = "No";
 
 /* No comment provided by engineer. */
 "Fair" = "Fair";
@@ -59,7 +92,19 @@
 "Firm:" = "Firm:";
 
 /* No comment provided by engineer. */
+"Firm: %@, Hong Kong" = "Firm: %@, Hong Kong";
+
+/* No comment provided by engineer. */
 "Good" = "Good";
+
+/* No comment provided by engineer. */
+"Guns %@" = "Guns %@";
+
+/* No comment provided by engineer. */
+"Hold %d" = "Hold %d";
+
+/* No comment provided by engineer. */
+"Hong Kong" = "Hong Kong";
 
 /* No comment provided by engineer. */
 "Hong Kong Warehouse" = "Hong Kong Warehouse";
@@ -79,11 +124,41 @@
 /* No comment provided by engineer. */
 "Location" = "Location";
 
+/* No comment provided by engineer. */
+"Manila" = "Manila";
+
 /* March */
 "Mar" = "Mar";
 
 /* May */
 "May" = "May";
+
+/* No comment provided by engineer. */
+"merchandise.arms" = "Arms";
+
+/* No comment provided by engineer. */
+"merchandise.arms.short" = "Arms";
+
+/* No comment provided by engineer. */
+"merchandise.general" = "General Cargo";
+
+/* No comment provided by engineer. */
+"merchandise.general.short" = "General";
+
+/* No comment provided by engineer. */
+"merchandise.opium" = "Opium";
+
+/* No comment provided by engineer. */
+"merchandise.opium.short" = "Opium";
+
+/* No comment provided by engineer. */
+"merchandise.silk" = "Silk";
+
+/* No comment provided by engineer. */
+"merchandise.silk.short" = "Silk";
+
+/* No comment provided by engineer. */
+"Nagasaki" = "Nagasaki";
 
 /* November */
 "Nov" = "Nov";
@@ -110,7 +185,13 @@
 "Quit\nTrading" = "Quit\nTrading";
 
 /* No comment provided by engineer. */
+"Repay" = "Repay";
+
+/* No comment provided by engineer. */
 "Retire" = "Retire";
+
+/* No comment provided by engineer. */
+"Saigon" = "Saigon";
 
 /* No comment provided by engineer. */
 "Sell" = "Sell";
@@ -122,7 +203,13 @@
 "Shall I" = "Shall I";
 
 /* No comment provided by engineer. */
+"Shanghai" = "Shanghai";
+
+/* No comment provided by engineer. */
 "Ship Status" = "Ship Status";
+
+/* No comment provided by engineer. */
+"Singapore" = "Singapore";
 
 /* No comment provided by engineer. */
 "T   A   I   P   A   N   !" = "T   A   I   P   A   N   !";

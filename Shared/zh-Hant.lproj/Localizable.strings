@@ -1,4 +1,13 @@
 /* No comment provided by engineer. */
+"%@ Billion" = "%@ Billion";
+
+/* No comment provided by engineer. */
+"%@ Million" = "%@ Million";
+
+/* No comment provided by engineer. */
+"%@ Trillion" = "%@ Trillion";
+
+/* No comment provided by engineer. */
 "(But no debt!)" = "（但也無債務！）";
 
 /* No comment provided by engineer. */
@@ -19,14 +28,32 @@
 /* April */
 "Apr" = "四月";
 
+/* No comment provided by engineer. */
+"Arriving at %@..." = "Arriving at %@...";
+
+/* No comment provided by engineer. */
+"At sea" = "海上";
+
 /* August */
 "Aug" = "八月";
 
 /* No comment provided by engineer. */
-"Buy" = "買";
+"Bank: %@" = "錢莊：%@";
+
+/* No comment provided by engineer. */
+"Batavia" = "八打威";
+
+/* No comment provided by engineer. */
+"Borrow" = "商借";
+
+/* No comment provided by engineer. */
+"Buy" = "購買";
 
 /* No comment provided by engineer. */
 "Captain‘s Report" = "船長報告";
+
+/* No comment provided by engineer. */
+"Cash: %@" = "現金：%@";
 
 /* No comment provided by engineer. */
 "Comprador‘s Report" = "買辦報告";
@@ -47,7 +74,13 @@
 "Dec" = "十二月";
 
 /* No comment provided by engineer. */
-"Do you want to start . . ." = "您想要以 ． ． ．";
+"Do you have business with Elder Brother Wu, the moneylender?" = "您與放貸人吳老大有來往嗎？";
+
+/* No comment provided by engineer. */
+"Do you want to start . . ." = "您想要以．．．";
+
+/* No comment provided by engineer. */
+"elderbrotherwu.no" = "不必";
 
 /* No comment provided by engineer. */
 "Fair" = "尚可";
@@ -59,7 +92,19 @@
 "Firm:" = "行號：";
 
 /* No comment provided by engineer. */
+"Firm: %@, Hong Kong" = "行號：香港%@";
+
+/* No comment provided by engineer. */
 "Good" = "良好";
+
+/* No comment provided by engineer. */
+"Guns %@" = "%@ 座炮";
+
+/* No comment provided by engineer. */
+"Hold %d" = "船艙 %d";
+
+/* No comment provided by engineer. */
+"Hong Kong" = "香港";
 
 /* No comment provided by engineer. */
 "Hong Kong Warehouse" = "香港倉庫";
@@ -79,11 +124,41 @@
 /* No comment provided by engineer. */
 "Location" = "位置";
 
+/* No comment provided by engineer. */
+"Manila" = "馬尼拉";
+
 /* March */
 "Mar" = "三月";
 
 /* May */
 "May" = "五月";
+
+/* No comment provided by engineer. */
+"merchandise.arms" = "軍火";
+
+/* No comment provided by engineer. */
+"merchandise.arms.short" = "軍火";
+
+/* No comment provided by engineer. */
+"merchandise.general" = "雜貨";
+
+/* No comment provided by engineer. */
+"merchandise.general.short" = "雜貨";
+
+/* No comment provided by engineer. */
+"merchandise.opium" = "鴉片";
+
+/* No comment provided by engineer. */
+"merchandise.opium.short" = "鴉片";
+
+/* No comment provided by engineer. */
+"merchandise.silk" = "絲綢";
+
+/* No comment provided by engineer. */
+"merchandise.silk.short" = "絲綢";
+
+/* No comment provided by engineer. */
+"Nagasaki" = "長崎";
 
 /* November */
 "Nov" = "十一月";
@@ -110,10 +185,16 @@
 "Quit\nTrading" = "結束\n貿易";
 
 /* No comment provided by engineer. */
+"Repay" = "償還";
+
+/* No comment provided by engineer. */
 "Retire" = "退休";
 
 /* No comment provided by engineer. */
-"Sell" = "賣";
+"Saigon" = "西貢";
+
+/* No comment provided by engineer. */
+"Sell" = "販賣";
 
 /* September */
 "Sep" = "九月";
@@ -122,7 +203,13 @@
 "Shall I" = "請開示";
 
 /* No comment provided by engineer. */
+"Shanghai" = "上海";
+
+/* No comment provided by engineer. */
 "Ship Status" = "船舶狀態";
+
+/* No comment provided by engineer. */
+"Singapore" = "新加坡";
 
 /* No comment provided by engineer. */
 "T   A   I   P   A   N   !" = "大      班";
@@ -143,10 +230,10 @@
 "Vacant" = "閒置容量";
 
 /* No comment provided by engineer. */
-"Visit Bank" = "去銀行";
+"Visit Bank" = "錢莊";
 
 /* No comment provided by engineer. */
-"Visit\nBank" = "去\n銀行";
+"Visit\nBank" = "拜訪\n錢莊";
 
 /* ...firm */
 "What will you name your" = "您想如何稱呼您的";
