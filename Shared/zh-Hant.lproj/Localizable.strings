@@ -113,6 +113,12 @@
 "Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt." = "吳老大幫您先在李元那邊代墊了價差，錢也加在您帳上了。";
 
 /* No comment provided by engineer. */
+"Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %1$@ if you will pay back %2$@. Are you willing, Taipan?" = "吳老大可以體諒您的困難，大班。如果您日後還他 %2$@，他可以先暫借 %1$@ 給您。您願意嗎，大班？";
+
+/* No comment provided by engineer. */
+"Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan." = "吳老大派了 %d 打手來護送您到吳府，大班。";
+
+/* No comment provided by engineer. */
 "Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts." = "吳老大提醒您儒家以誠為本，欠債可是要還錢的。";
 
 /* No comment provided by engineer. */
@@ -177,6 +183,9 @@
 
 /* No comment provided by engineer. */
 "Let‘s hope we lose ‘em, Taipan!" = "希望我們能逃得掉，大班！";
+
+/* No comment provided by engineer. */
+"Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?" = "李元要求您捐獻 %@ 給護國庇民的媽祖天后廟。您願意付嗎？";
 
 /* No comment provided by engineer. */
 "Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!" = "大班，李元派了個副手來，說他們校尉急欲想在香港跟您會面！";
@@ -348,6 +357,9 @@
 
 /* No comment provided by engineer. */
 "Vacant" = "閒置容量";
+
+/* No comment provided by engineer. */
+"Very well, Taipan, the game is over!" = "好吧，大班，遊戲就此結束！";
 
 /* No comment provided by engineer. */
 "Very well, Taipan. Good joss!!" = "好吧，大班。天啊!!";

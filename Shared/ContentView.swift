@@ -485,7 +485,8 @@ struct TradingView: View {
                 let arrivingFormat = NSLocalizedString("Arriving at %@...", comment: "")
                 CaptainsReport(String.localizedStringWithFormat(arrivingFormat, game.destinationCity!.label))
             case .liYuenExtortion:
-                CompradorsReportYesNo("Li Yuen asks \(game.liYuenDemand!.formatted()) in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?")
+                let demandFormat = NSLocalizedString("Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?", comment: "")
+                CompradorsReportYesNo(String.localizedStringWithFormat(demandFormat, game.liYuenDemand!.formatted()))
             case .notEnoughCash:
                 CompradorsReport(NSLocalizedString("Taipan, you do not have enough cash!!", comment: ""))
             case .borrowForLiYuen:
@@ -497,7 +498,8 @@ struct TradingView: View {
             case .mcHenryOffer:
                 McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
-                CompradorsReport("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
+                let wuBravesFormat = NSLocalizedString("Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan.", comment: "")
+                CompradorsReport(String.localizedStringWithFormat(wuBravesFormat, game.elderBrotherWuBraves))
             case .elderBrotherWuWarning2:
                 CompradorsReport(NSLocalizedString("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.", comment: ""))
             case .elderBrotherWuWarning3:
@@ -506,11 +508,12 @@ struct TradingView: View {
                 ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
                                            isShowingRepayModal: $isShowingRepayModal)
             case .elderBrotherWuBailout:
-                CompradorsReportYesNo("Elder Brother is aware of your plight, Taipan.  He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
+                let bailoutFormat = NSLocalizedString("Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %1$@ if you will pay back %2$@. Are you willing, Taipan?", comment: "")
+                CompradorsReportYesNo(String.localizedStringWithFormat(bailoutFormat, game.bailoutOffer!.formatted(), game.bailoutRepay!.formatted()))
             case .bailoutReaction:
                 CompradorsReport(NSLocalizedString("Very well, Taipan. Good joss!!", comment: ""))
             case .bankruptcy:
-                CompradorsReport("Very well, Taipan, the game is over!")
+                CompradorsReport(NSLocalizedString("Very well, Taipan, the game is over!", comment: ""))
             case .cutthroats:
                 CompradorsReportBadJoss("\(game.bodyguardsLost!.formatted()) of your bodyguards have been killed by cutthroats and you have been robbed of all of your cash, Taipan!!")
             case .newShipOffer:
@@ -1042,7 +1045,7 @@ struct BattleView: View {
         VStack {
             HStack {
                 VStack {
-                    let attacking = game.hostilesCount! == 1 ? "1 ship attacking, Taipan!" : "\(game.hostilesCount!.formatted()) ships attacking, Taipan!"
+                    let attacking = String.localizedPluralString("battle.attacking.count", game.hostilesCount!)
                     let orderFormat = NSLocalizedString("Your orders are to: %@", comment: "")
                     let orders = String.localizedStringWithFormat(orderFormat, game.battleOrder?.label ?? "")
                     Text("\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
@@ -2302,5 +2305,12 @@ extension VStack {
             .onTapGesture {
                 game.sendEvent(.tap)
             }
+    }
+}
+
+extension String {
+    static func localizedPluralString(_ key: String, _ number: Int) -> String {
+        let format = NSLocalizedString(key, comment: "")
+        return String.localizedStringWithFormat(format, NSNumber(value: number), number.formatted())
     }
 }

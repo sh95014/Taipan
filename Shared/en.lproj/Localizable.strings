@@ -113,6 +113,12 @@
 "Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt." = "Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.";
 
 /* No comment provided by engineer. */
+"Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %1$@ if you will pay back %2$@. Are you willing, Taipan?" = "Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %1$@ if you will pay back %2$@. Are you willing, Taipan?";
+
+/* No comment provided by engineer. */
+"Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan." = "Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan.";
+
+/* No comment provided by engineer. */
 "Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts." = "Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.";
 
 /* No comment provided by engineer. */
@@ -177,6 +183,9 @@
 
 /* No comment provided by engineer. */
 "Let‘s hope we lose ‘em, Taipan!" = "Let‘s hope we lose ‘em, Taipan!";
+
+/* No comment provided by engineer. */
+"Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?" = "Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?";
 
 /* No comment provided by engineer. */
 "Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!" = "Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!";
@@ -348,6 +357,9 @@
 
 /* No comment provided by engineer. */
 "Vacant" = "Vacant";
+
+/* No comment provided by engineer. */
+"Very well, Taipan, the game is over!" = "Very well, Taipan, the game is over!";
 
 /* No comment provided by engineer. */
 "Very well, Taipan. Good joss!!" = "Very well, Taipan. Good joss!!";
