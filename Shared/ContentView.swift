@@ -39,18 +39,18 @@ struct SplashView: View {
             VStack {
                 if splashAnimation {
                     Spacer()
-                    Text(NSLocalizedString("T   A   I   P   A   N   !", comment: ""))
+                    Text("T   A   I   P   A   N   !")
                         .font(.custom("Georgia", size: hasSmallScreen ? 30 : 60))
                         .multilineTextAlignment(.center)
                         .transition(.opacity.animation(.easeIn(duration: 1.0)))
                     Divider()
                         .background(Color.taipanColor)
                         .transition(.opacity.animation(.easeIn(duration: 1.0)))
-                    Text(NSLocalizedString("A game based on the China\ntrade of the 1800's", comment: ""))
+                    Text("A game based on the China\ntrade of the 1800's")
                         .multilineTextAlignment(.center)
                         .padding(.bottom, 5)
                         .transition(.opacity.animation(.easeIn(duration: 1).delay(1)))
-                    Text(NSLocalizedString("Created by: Art Canfil", comment: ""))
+                    Text("Created by: Art Canfil")
                         .transition(.opacity.animation(.easeIn(duration: 1).delay(1.5)))
                     Spacer()
                 }
@@ -76,18 +76,18 @@ struct NameView: View {
             Spacer()
             RoundRectVStack(.taipanColor) {
                 HStack {
-                    Text(NSLocalizedString("Taipan,", comment: ""))
+                    Text("Taipan,")
                         .padding(.leading, 40)
                     Spacer()
                 }
                 HStack {
-                    Text(NSLocalizedString("What will you name your", comment: "...firm"))
+                    Text("What will you name your", comment: "...firm")
                         .padding(.horizontal, 20)
                         .padding(.vertical, 30)
                     Spacer()
                 }
                 HStack {
-                    Text(NSLocalizedString("Firm:", comment: "What will you name your..."))
+                    Text("Firm:", comment: "What will you name your...")
                     TextField(
                         "",
                         text: $firmName,
@@ -136,29 +136,29 @@ struct DebtOrGunsView: View {
         VStack {
             Spacer()
             HStack {
-                Text(NSLocalizedString("Do you want to start . . .", comment: ""))
+                Text("Do you want to start . . .")
                 Spacer()
             }
             FullWidthButton {
                 game.sendEvent(.debt)
             } content: {
-                Text(NSLocalizedString("1) With cash (and a debt)", comment: ""))
+                Text("1) With cash (and a debt)")
             }
             .padding(.vertical, 10)
             .keyboardShortcut("1", modifiers: [])
-            Text(NSLocalizedString("» or «", comment: ""))
+            Text("» or «")
             FullWidthButton {
                 game.sendEvent(.guns)
             } content: {
                 VStack {
-                    Text(NSLocalizedString("2) With five guns and no cash", comment: ""))
-                    Text(NSLocalizedString("(But no debt!)", comment: ""))
+                    Text("2) With five guns and no cash")
+                    Text("(But no debt!)")
                         .font(.captionFont)
                 }
             }
             .padding(.vertical, 10)
             .keyboardShortcut("2", modifiers: [])
-            Text(NSLocalizedString("?", comment: ""))
+            Text("?")
             Spacer()
         }
         .frame(maxWidth: hasSmallScreen ? 500 : 768)
@@ -192,7 +192,7 @@ struct TradingView: View {
         Group {
             if hasLargeScreen {
                 VStack {
-                    Text(NSLocalizedString("Date", comment: ""))
+                    Text("Date")
                         .font(.captionFont)
                         .opacity(0.8)
                     CurrentDate
@@ -200,21 +200,21 @@ struct TradingView: View {
                 FixedSpacer(maxLength: 10)
             }
             VStack {
-                Text(NSLocalizedString("Location", comment: ""))
+                Text("Location")
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.currentCity?.label ?? NSLocalizedString("At sea", comment: ""))
             }
             FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
-                Text(NSLocalizedString("Debt", comment: ""))
+                Text("Debt")
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.debt.fancyFormatted())
             }
             FixedSpacer(maxLength: isLandscapePhone ? 0 : 10)
             VStack {
-                Text(NSLocalizedString("Ship Status", comment: ""))
+                Text("Ship Status")
                     .font(.captionFont)
                     .opacity(0.8)
                 Text(game.fancyShipStatus(.colon))
@@ -226,7 +226,7 @@ struct TradingView: View {
     var inventory: some View {
         Group {
             RoundRectVStack(.taipanColor) {
-                Text(NSLocalizedString("Hong Kong Warehouse", comment: ""))
+                Text("Hong Kong Warehouse")
                     .padding(.horizontal, 8)
                     .padding(.bottom, 2)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -243,11 +243,11 @@ struct TradingView: View {
                     }
                     Spacer()
                     VStack(alignment: .trailing) {
-                        Text(NSLocalizedString("In Use:", comment: ""))
+                        Text("In Use:")
                             .font(.captionFont)
                             .opacity(0.8)
                         Text("\(game.warehouseUsedCapacity)")
-                        Text(NSLocalizedString("Vacant", comment: ""))
+                        Text("Vacant")
                             .font(.captionFont)
                             .opacity(0.8)
                         Text("\(game.warehouseFreeCapacity)")
@@ -263,7 +263,7 @@ struct TradingView: View {
                         Text(String.localizedStringWithFormat(holdFormat, game.shipFreeCapacity))
                     }
                     else {
-                        Text(NSLocalizedString("Overload", comment: ""))
+                        Text("Overload")
                             .foregroundColor(.warningColor)
                     }
                     Spacer()
@@ -297,7 +297,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingBuyModal = true
             } content: {
-                Text(NSLocalizedString("Buy", comment: ""))
+                Text("Buy")
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -308,7 +308,7 @@ struct TradingView: View {
             RoundRectButton {
                 isShowingSellModal = true
             } content: {
-                Text(NSLocalizedString("Sell", comment: ""))
+                Text("Sell")
                     .frame(minWidth: bottomRowMinWidth,
                            maxWidth: wideButtons ? .infinity : nil,
                            minHeight: bottomRowMinHeight)
@@ -427,13 +427,13 @@ struct TradingView: View {
             switch game.state {
             case .trading:
                 Group {
-                    Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                    Text("Comprador‘s Report")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, isLandscapePhone ? 2 : 5)
                     
                     Spacer()
                     
-                    Text(NSLocalizedString("Taipan, present prices per unit here are", comment: ""))
+                    Text("Taipan, present prices per unit here are")
                         .withMessageStyle()
                     
                     HStack {
@@ -461,7 +461,7 @@ struct TradingView: View {
                     
                     Spacer()
                     
-                    Text(NSLocalizedString("Shall I", comment: ""))
+                    Text("Shall I")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     if sizeCategory > .large {
@@ -475,7 +475,7 @@ struct TradingView: View {
                         FullWidthButton {
                             game.transitionTo(.retirement)
                         } content: {
-                            Text(NSLocalizedString("Retire", comment: ""))
+                            Text("Retire")
                         }
                         .withDisabledStyle(game.cash! + game.bank < 1000000)
                         .keyboardShortcut("r", modifiers: [])
@@ -596,7 +596,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Captain‘s Report", comment: ""))
+                Text("Captain‘s Report")
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
@@ -616,9 +616,9 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Captain‘s Report", comment: ""))
+                Text("Captain‘s Report")
                     .withReportStyle()
-                Text(NSLocalizedString("Li Yuen‘s pirates, Taipan!!", comment: ""))
+                Text("Li Yuen‘s pirates, Taipan!!")
                     .withMessageStyle()
                 if let message = message {
                     Text(message)
@@ -636,24 +636,24 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Captain‘s Report", comment: ""))
+                Text("Captain‘s Report")
                     .withReportStyle()
-                Text(NSLocalizedString("Storm, Taipan!!", comment: ""))
+                Text("Storm, Taipan!!")
                     .withMessageStyle()
                 if [ .storm2, .stormGoingDown ].contains(game.state) {
-                    Text(NSLocalizedString("I think we‘re going down!!", comment: ""))
+                    Text("I think we‘re going down!!")
                         .withMessageStyle()
                         .padding(.leading, 20)
                         .padding(.top, 10)
                 }
                 else if game.state == .stormMadeIt {
-                    Text(NSLocalizedString("storm.madeit", comment: ""))
+                    Text("storm.madeit")
                         .withMessageStyle()
                         .padding(.leading, 20)
                         .padding(.top, 10)
                 }
                 if game.state == .stormGoingDown {
-                    Text(NSLocalizedString("We‘re going down, Taipan!!!!", comment: ""))
+                    Text("We‘re going down, Taipan!!!!")
                         .withMessageStyle()
                         .padding(.leading, 40)
                         .padding(.top, 10)
@@ -674,7 +674,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
@@ -694,7 +694,7 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
                 Text(message)
                     .withMessageStyle()
@@ -703,7 +703,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text(NSLocalizedString("comprador.no", comment: ""))
+                        Text("comprador.no")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -713,7 +713,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
-                        Text(NSLocalizedString("comprador.yes", comment: ""))
+                        Text("comprador.yes")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -735,9 +735,9 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
-                Text(NSLocalizedString("Bad Joss!!", comment: ""))
+                Text("Bad Joss!!")
                     .withMessageStyle()
                 Text(message)
                     .withMessageStyle()
@@ -754,16 +754,16 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
-                Text(NSLocalizedString("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!! He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"", comment: ""))
+                Text("Taipan, Mc Henry from the Hong Kong Shipyards has arrived!! He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"")
                     .withMessageStyle()
                 Spacer()
                 HStack {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text(NSLocalizedString("mchenry.no", comment: ""))
+                        Text("mchenry.no")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -773,7 +773,7 @@ struct TradingView: View {
                     RoundRectButton {
                         isShowingRepairModal = true
                     } content: {
-                        Text(NSLocalizedString("Repair", comment: ""))
+                        Text("Repair")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -792,16 +792,16 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
-                Text(NSLocalizedString("Do you have business with Elder Brother Wu, the moneylender?", comment: ""))
+                Text("Do you have business with Elder Brother Wu, the moneylender?")
                     .withMessageStyle()
                 Spacer()
                 HStack {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text(NSLocalizedString("elderbrotherwu.no", comment: ""))
+                        Text("elderbrotherwu.no")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -811,7 +811,7 @@ struct TradingView: View {
                     RoundRectButton {
                         isShowingBorrowModal = true
                     } content: {
-                        Text(NSLocalizedString("Borrow", comment: ""))
+                        Text("Borrow")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -821,7 +821,7 @@ struct TradingView: View {
                     RoundRectButton {
                         isShowingRepayModal = true
                     } content: {
-                        Text(NSLocalizedString("Repay", comment: ""))
+                        Text("Repay")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -838,12 +838,12 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
                 if game.shipDamage > 0 {
-                    (Text(NSLocalizedString("Do you wish to trade in your ", comment: ""))
-                     + Text(NSLocalizedString("damaged", comment: "...trade in your <damaged> ship for one...")).underline()
-                    + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
+                    (Text("Do you wish to trade in your ")
+                     + Text("damaged", comment: "...trade in your <damaged> ship for one...").underline()
+                     + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
                         .withMessageStyle()
                 }
                 else {
@@ -855,7 +855,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.no)
                     } content: {
-                        Text(NSLocalizedString("shipoffer.no", comment: ""))
+                        Text("shipoffer.no")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -865,7 +865,7 @@ struct TradingView: View {
                     RoundRectButton {
                         game.sendEvent(.yes)
                     } content: {
-                        Text(NSLocalizedString("shipoffer.yes", comment: ""))
+                        Text("shipoffer.yes")
                             .frame(minWidth: 100,
                                    maxWidth: hasLargeScreen ? 200 : nil,
                                    minHeight: 30)
@@ -882,22 +882,22 @@ struct TradingView: View {
         
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Captain‘s Report", comment: ""))
+                Text("Captain‘s Report")
                     .withReportStyle()
                 if let booty = game.booty {
-                    Text(NSLocalizedString("We captured some booty.", comment: ""))
+                    Text("We captured some booty.")
                         .withMessageStyle()
                     Text("It‘s worth \(booty.fancyFormatted())!")
                         .withMessageStyle()
                 }
                 else if game.shipStatus <= 0 {
-                    Text(NSLocalizedString("The buggers got us, Taipan!!!", comment: ""))
+                    Text("The buggers got us, Taipan!!!")
                         .withMessageStyle()
-                    Text(NSLocalizedString("It‘s all over, now!!!", comment: ""))
+                    Text("It‘s all over, now!!!")
                         .withMessageStyle()
                 }
                 else {
-                    Text(NSLocalizedString("pirates.madeit", comment: ""))
+                    Text("pirates.madeit")
                         .withMessageStyle()
                 }
                 Spacer()
@@ -912,12 +912,12 @@ struct TradingView: View {
 
         var body: some View {
             VStack {
-                Text(NSLocalizedString("Comprador‘s Report", comment: ""))
+                Text("Comprador‘s Report")
                     .withReportStyle()
                 VStack {
-                    Text(NSLocalizedString("You‘re a", comment: ""))
+                    Text("You‘re a")
                         .kerning(sizeCategory > .extraLarge ? 7 : 10)
-                    Text(NSLocalizedString("MILLIONAIRE!", comment: ""))
+                    Text("MILLIONAIRE!")
                         .kerning(sizeCategory > .extraLarge ? 7 : 10)
                         .padding(.top, 5)
                 }
@@ -1135,13 +1135,13 @@ struct BattleView: View {
             
             Spacer()
             
-            Text(NSLocalizedString("Current seaworthiness: ", comment: "")) +
+            Text("Current seaworthiness: ") +
             Text("\(game.fancyShipStatus(.parenthesis))").foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
             HStack {
                 RoundRectButton {
                     game.orderFight()
                 } content: {
-                    Text(NSLocalizedString("Fight", comment: ""))
+                    Text("Fight")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(game.shipGuns! == 0 || game.hostilesCount! == 0)
@@ -1150,7 +1150,7 @@ struct BattleView: View {
                 RoundRectButton {
                     game.orderRun()
                 } content: {
-                    Text(NSLocalizedString("Run", comment: ""))
+                    Text("Run")
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(game.hostilesCount! == 0)
