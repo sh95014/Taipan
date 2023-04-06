@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%2$@艘敵艦襲擊，大班！</string>
+			<string>%2$@ 艘敵艦襲擊，大班！</string>
 		</dict>
 	</dict>
 </dict>

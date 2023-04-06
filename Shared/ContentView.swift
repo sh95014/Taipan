@@ -236,7 +236,7 @@ struct TradingView: View {
                     }
                     VStack(alignment: .trailing) {
                         ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
-                            Text(verbatim: "\(game.warehouse[item] ?? 0)")
+                            Text(verbatim: "\((game.warehouse[item] ?? 0).formatted())")
                         }
                     }
                     Spacer()
@@ -244,11 +244,11 @@ struct TradingView: View {
                         Text("In Use:")
                             .font(.captionFont)
                             .opacity(0.8)
-                        Text(verbatim: "\(game.warehouseUsedCapacity)")
+                        Text(verbatim: "\(game.warehouseUsedCapacity.formatted())")
                         Text("Vacant")
                             .font(.captionFont)
                             .opacity(0.8)
-                        Text(verbatim: "\(game.warehouseFreeCapacity)")
+                        Text(verbatim: "\(game.warehouseFreeCapacity.formatted())")
                     }
                 }
                 .padding(.horizontal, merchandisePadding())
@@ -276,7 +276,7 @@ struct TradingView: View {
                     }
                     VStack(alignment: .trailing) {
                         ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
-                            Text(verbatim: "\(game.shipHold[item] ?? 0)")
+                            Text(verbatim: "\((game.shipHold[item] ?? 0).formatted())")
                         }
                     }
                     Spacer()
@@ -438,8 +438,8 @@ struct TradingView: View {
                             Text("\(Game.Merchandise.arms.shortLabel):", comment: "<merchandise>:")
                         }
                         VStack(alignment: .trailing) {
-                            Text(verbatim: "\(game.price[.opium] ?? 0)")
-                            Text(verbatim: "\(game.price[.arms] ?? 0)")
+                            Text(verbatim: "\((game.price[.opium] ?? 0).formatted())")
+                            Text(verbatim: "\((game.price[.arms] ?? 0).formatted())")
                         }
                         Spacer()
                         VStack(alignment: .leading) {
@@ -447,8 +447,8 @@ struct TradingView: View {
                             Text("\(Game.Merchandise.general.shortLabel):", comment: "<merchandise>:")
                         }
                         VStack(alignment: .trailing) {
-                            Text(verbatim: "\(game.price[.silk] ?? 0)")
-                            Text(verbatim: "\(game.price[.general] ?? 0)")
+                            Text(verbatim: "\((game.price[.silk] ?? 0).formatted())")
+                            Text(verbatim: "\((game.price[.general] ?? 0).formatted())")
                         }
                         Spacer()
                     }
