@@ -409,10 +409,10 @@ struct TradingView: View {
             }
             
             HStack {
-                let cashFormat = NSLocalizedString("Cash: %@", comment: "")
+                let cashFormat = String(localized: "Cash: %@")
                 Text(String.localizedStringWithFormat(cashFormat, game.cash!.fancyFormatted()))
                 Spacer()
-                let bankFormat = NSLocalizedString("Bank: %@", comment: "")
+                let bankFormat = String(localized: "Bank: %@")
                 Text(String.localizedStringWithFormat(bankFormat, game.bank.fancyFormatted()))
             }
             
@@ -477,38 +477,34 @@ struct TradingView: View {
                     }
                 }
             case .arriving:
-                let arrivingFormat = NSLocalizedString("Arriving at %@...", comment: "")
-                CaptainsReport(String.localizedStringWithFormat(arrivingFormat, game.destinationCity!.label))
+                CaptainsReport("Arriving at \(game.destinationCity!.label)...")
             case .liYuenExtortion:
-                let demandFormat = NSLocalizedString("Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?", comment: "")
-                CompradorsReportYesNo(String.localizedStringWithFormat(demandFormat, game.liYuenDemand!.formatted()))
+                CompradorsReportYesNo("Li Yuen asks \(game.liYuenDemand!.formatted()) in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?")
             case .notEnoughCash:
-                CompradorsReport(NSLocalizedString("Taipan, you do not have enough cash!!", comment: ""))
+                CompradorsReport("Taipan, you do not have enough cash!!")
             case .borrowForLiYuen:
-                CompradorsReportYesNo(NSLocalizedString("Do you want Elder Brother Wu to make up the difference for you?", comment: ""))
+                CompradorsReportYesNo("Do you want Elder Brother Wu to make up the difference for you?")
             case .borrowedForLiYuen:
-                CompradorsReport(NSLocalizedString("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.", comment: ""))
+                CompradorsReport("Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt.")
             case .elderBrotherWuPirateWarning:
-                CompradorsReport(NSLocalizedString("Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.", comment: ""))
+                CompradorsReport("Very well. Elder Brother Wu will not pay Li Yuen the difference. I would be very wary of pirates if I were you, Taipan.")
             case .mcHenryOffer:
                 McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
-                let wuBravesFormat = NSLocalizedString("Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan.", comment: "")
-                CompradorsReport(String.localizedStringWithFormat(wuBravesFormat, game.elderBrotherWuBraves))
+                CompradorsReport("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
             case .elderBrotherWuWarning2:
-                CompradorsReport(NSLocalizedString("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.", comment: ""))
+                CompradorsReport("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.")
             case .elderBrotherWuWarning3:
-                CompradorsReport(NSLocalizedString("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.", comment: ""))
+                CompradorsReport("He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan.")
             case .elderBrotherWuBusiness:
                 ElderBrotherWuBusinessView(isShowingBorrowModal: $isShowingBorrowModal,
                                            isShowingRepayModal: $isShowingRepayModal)
             case .elderBrotherWuBailout:
-                let bailoutFormat = NSLocalizedString("Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %1$@ if you will pay back %2$@. Are you willing, Taipan?", comment: "")
-                CompradorsReportYesNo(String.localizedStringWithFormat(bailoutFormat, game.bailoutOffer!.formatted(), game.bailoutRepay!.formatted()))
+                CompradorsReportYesNo("Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional \(game.bailoutOffer!.formatted()) if you will pay back \(game.bailoutRepay!.formatted()). Are you willing, Taipan?")
             case .bailoutReaction:
-                CompradorsReport(NSLocalizedString("Very well, Taipan. Good joss!!", comment: ""))
+                CompradorsReport("Very well, Taipan. Good joss!!")
             case .bankruptcy:
-                CompradorsReport(NSLocalizedString("Very well, Taipan, the game is over!", comment: ""))
+                CompradorsReport("Very well, Taipan, the game is over!")
             case .cutthroats:
                 CompradorsReportBadJoss("\(game.bodyguardsLost!.formatted()) of your bodyguards have been killed by cutthroats and you have been robbed of all of your cash, Taipan!!")
             case .newShipOffer:
@@ -518,9 +514,9 @@ struct TradingView: View {
             case .opiumSeized:
                 CompradorsReportBadJoss("The local authorities have seized your Opium cargo and have also fined you \(game.opiumFine!.fancyFormatted()), Taipan!")
             case .warehouseTheft:
-                CompradorsReport(NSLocalizedString("Messenger reports large theft from warehouse, Taipan.", comment: ""))
+                CompradorsReport("Messenger reports large theft from warehouse, Taipan.")
             case .liYuenMessage:
-                CompradorsReport(NSLocalizedString("Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!", comment: ""))
+                CompradorsReport("Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!")
             case .priceDrop:
                 CompradorsReport("Taipan!! The price of \(game.goodPriceMerchandise!.label) has dropped to \(game.price[game.goodPriceMerchandise!]!.formatted())!!")
             case .priceJump:
@@ -532,11 +528,11 @@ struct TradingView: View {
             case .battleSummary:
                 BattleSummaryView()
             case .liYuenDroveThemOff:
-                CaptainsReport(NSLocalizedString("Li Yuen‘s fleet drove them off!", comment: ""))
+                CaptainsReport("Li Yuen‘s fleet drove them off!")
             case .liYuenApproaching:
                 CaptainsReportLiYuen(nil)
             case .liYuenLetUsBe:
-                CaptainsReportLiYuen(NSLocalizedString("Good joss!! They let us be!!", comment: ""))
+                CaptainsReportLiYuen("Good joss!! They let us be!!")
             case .liYuenAttacking:
                 CaptainsReportLiYuen("\(game.hostilesCount!.formatted()) ships of Li Yuen‘s pirate fleet, Taipan!!")
             case .liYuenBattleSummary:
@@ -583,9 +579,9 @@ struct TradingView: View {
     
     struct CaptainsReport: View {
         @EnvironmentObject private var game: Game
-        var message: String
+        var message: LocalizedStringKey
         
-        init(_ message: String) {
+        init(_ message: LocalizedStringKey) {
             self.message = message
         }
         
@@ -603,9 +599,9 @@ struct TradingView: View {
     
     struct CaptainsReportLiYuen: View {
         @EnvironmentObject private var game: Game
-        var message: String?
+        var message: LocalizedStringKey?
         
-        init(_ message: String?) {
+        init(_ message: LocalizedStringKey?) {
             self.message = message
         }
         
@@ -661,9 +657,9 @@ struct TradingView: View {
     
     struct CompradorsReport: View {
         @EnvironmentObject private var game: Game
-        var message: String
+        var message: LocalizedStringKey
         
-        init(_ message: String) {
+        init(_ message: LocalizedStringKey) {
             self.message = message
         }
         
@@ -681,9 +677,9 @@ struct TradingView: View {
     
     struct CompradorsReportYesNo: View {
         @EnvironmentObject private var game: Game
-        var message: String
+        var message: LocalizedStringKey
         
-        init(_ message: String) {
+        init(_ message: LocalizedStringKey) {
             self.message = message
         }
         
@@ -722,9 +718,9 @@ struct TradingView: View {
     
     struct CompradorsReportBadJoss: View {
         @EnvironmentObject private var game: Game
-        var message: String
+        var message: LocalizedStringKey
         
-        init(_ message: String) {
+        init(_ message: LocalizedStringKey) {
             self.message = message
         }
         
@@ -938,7 +934,7 @@ struct KeypadView: View {
                 Text(verbatim: "\(amount)")
                     .withTextFieldStyle(width: 250, color: .taipanColor)
                 if let limitHint = limitHint {
-                    Text(limitHint)
+                    Text(verbatim: limitHint)
                         .padding(.leading, 20)
                         .multilineTextAlignment(.center)
                         .font(.captionFont)
@@ -950,7 +946,7 @@ struct KeypadView: View {
                     Text(verbatim: "\(amount)")
                         .withTextFieldStyle(width: 100, color: .taipanColor)
                     if let limitHint = limitHint {
-                        Text(limitHint)
+                        Text(verbatim: limitHint)
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.leading, 20)
                             .multilineTextAlignment(.center)
@@ -1041,7 +1037,7 @@ struct BattleView: View {
             HStack {
                 VStack {
                     let attacking = String.localizedPluralString("battle.attacking.count", game.hostilesCount!)
-                    let orderFormat = NSLocalizedString("Your orders are to: %@", comment: "")
+                    let orderFormat = String(localized: "Your orders are to: %@")
                     let orders = String.localizedStringWithFormat(orderFormat, game.battleOrder?.label ?? "")
                     Text(verbatim: "\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
                         .withMessageStyle()
@@ -1049,8 +1045,8 @@ struct BattleView: View {
                 .padding(.top, hasLargeScreen ? 10 : 0)
                 Spacer()
                 let gunsFormat = isLandscapePhone ?
-                    NSLocalizedString("We have %@ guns", comment: "") :
-                    NSLocalizedString("We have\n%@ guns", comment: "")
+                    String(localized: "We have %@ guns") :
+                    String(localized: "We have\n%@ guns")
                 Text(String.localizedStringWithFormat(gunsFormat, game.shipGuns!.formatted()))
                     .multilineTextAlignment(.trailing)
                     .padding(5)
@@ -1156,7 +1152,7 @@ struct BattleView: View {
                     game.orderThrowCargo()
                     isShowingSellModal = true
                 } content: {
-                    Text(wideButtons ? NSLocalizedString("Throw Cargo", comment: "") : NSLocalizedString("Throw\nCargo", comment: ""))
+                    Text(wideButtons ? String(localized: "Throw Cargo") : String(localized: "Throw\nCargo"))
                         .frame(maxWidth: .infinity, minHeight: bottomRowMinHeight)
                 }
                 .withDisabledStyle(!game.shipHasCargo() || game.hostilesCount! == 0)
@@ -1576,7 +1572,7 @@ struct ContentView: View {
                     Text("How much \(selectedMerchandise.label) shall I buy, Taipan:")
                     KeypadView(
                         amount: $amount,
-                        limitHint: "You can\nafford \(game.canAfford(selectedMerchandise).formatted())"
+                        limitHint: String(localized: "You can\nafford \(game.canAfford(selectedMerchandise).formatted())")
                     )
                     FullWidthButton {
                         amount = game.canAfford(selectedMerchandise)
@@ -1669,7 +1665,7 @@ struct ContentView: View {
                     }
                     KeypadView(
                         amount: $amount,
-                        limitHint: "You have\n\(amountOnShip.formatted())"
+                        limitHint: String(localized: "You have\n\(amountOnShip.formatted())")
                     )
                     FullWidthButton {
                         amount = amountOnShip
@@ -1804,7 +1800,7 @@ struct ContentView: View {
                 Text("How much do you wish to borrow?")
                 KeypadView(
                     amount: $amount,
-                    limitHint: "He will loan up to \(game.maximumLoan.formatted())",
+                    limitHint: String(localized: "He will loan up to \(game.maximumLoan.formatted())"),
                     bigNumbers: true
                 )
                 HStack {
@@ -1840,7 +1836,7 @@ struct ContentView: View {
                 Text("How much do you wish to repay him?")
                 KeypadView(
                     amount: $amount,
-                    limitHint: "You have\n\(game.cash!.formatted())"
+                    limitHint: String(localized: "You have\n\(game.cash!.formatted())")
                 )
                 HStack {
                     RoundRectButton {
@@ -1937,7 +1933,7 @@ struct ContentView: View {
                     let transferLimit = toWarehouse ? game.shipHold[selectedMerchandise]! : game.warehouse[selectedMerchandise]!
                     KeypadView(
                         amount: $amount,
-                        limitHint: "You have \(transferLimit.formatted())"
+                        limitHint: String(localized: "You have \(transferLimit.formatted())")
                     )
                     HStack {
                         RoundRectButton {
@@ -2034,7 +2030,7 @@ struct ContentView: View {
                 Text("Och, 'tis a pity to be \(shipDamagePercent.formatted(.percent)) damaged.\nWe can fix yer whole ship for \(mcHenryOffer.formatted()), or make partial repairs if you wish.\nHow much will ye spend?")
                 KeypadView(
                     amount: $amount,
-                    limitHint: "You have\n\(game.cash!.formatted())"
+                    limitHint: String(localized: "You have\n\(game.cash!.formatted())")
                 )
                 FullWidthButton {
                     amount = mcHenryOffer

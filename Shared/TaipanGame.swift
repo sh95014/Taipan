@@ -51,17 +51,17 @@ extension Int {
         else {
             if self >= 1_000_000_000_000 {
                 let s = self.formatted(.number.scale(0.000000000001).precision(.fractionLength(1)))
-                let format = NSLocalizedString("%@ Trillion", comment: "")
+                let format = String(localized: "%@ Trillion")
                 return String.localizedStringWithFormat(format, s)
             }
             else if self >= 1_000_000_000 {
                 let s = self.formatted(.number.scale(0.000000001).precision(.fractionLength(1)))
-                let format = NSLocalizedString("%@ Billion", comment: "")
+                let format = String(localized: "%@ Billion")
                 return String.localizedStringWithFormat(format, s)
             }
             else if self >= 1_000_000 {
                 let s = self.formatted(.number.scale(0.000001).precision(.fractionLength(1)))
-                let format = NSLocalizedString("%@ Million", comment: "")
+                let format = String(localized: "%@ Million")
                 return String.localizedStringWithFormat(format, s)
             }
         }
@@ -667,12 +667,12 @@ class Game: ObservableObject {
     }
     func fancyShipStatus(_ style: ShipStatusStyle = .colon) -> String {
         let statusStrings = [
-            NSLocalizedString("Critical", comment: ""),
-            NSLocalizedString("Poor", comment: ""),
-            NSLocalizedString("Fair", comment: ""),
-            NSLocalizedString("Good", comment: ""),
-            NSLocalizedString("Prime", comment: ""),
-            NSLocalizedString("Perfect", comment: "")
+            String(localized: "Critical"),
+            String(localized: "Poor"),
+            String(localized: "Fair"),
+            String(localized: "Good"),
+            String(localized: "Prime"),
+            String(localized: "Perfect")
             ]
         switch style {
         case .colon:
@@ -768,18 +768,18 @@ class Game: ObservableObject {
         case general
         var shortLabel: String {
             [
-                NSLocalizedString("merchandise.opium.short", comment: ""),
-                NSLocalizedString("merchandise.silk.short", comment: ""),
-                NSLocalizedString("merchandise.arms.short", comment: ""),
-                NSLocalizedString("merchandise.general.short", comment: ""),
+                String(localized: "merchandise.opium.short"),
+                String(localized: "merchandise.silk.short"),
+                String(localized: "merchandise.arms.short"),
+                String(localized: "merchandise.general.short"),
             ][self.rawValue]
         }
         var label: String {
             [
-                NSLocalizedString("merchandise.opium", comment: ""),
-                NSLocalizedString("merchandise.silk", comment: ""),
-                NSLocalizedString("merchandise.arms", comment: ""),
-                NSLocalizedString("merchandise.general", comment: ""),
+                String(localized: "merchandise.opium"),
+                String(localized: "merchandise.silk"),
+                String(localized: "merchandise.arms"),
+                String(localized: "merchandise.general"),
             ][self.rawValue]
         }
         var keyboardShortcut: Character {
@@ -899,13 +899,13 @@ class Game: ObservableObject {
         var keyboardShortcut: Character { Character("\(self.rawValue + 1)") }
         var label: String {
             [
-                NSLocalizedString("Hong Kong", comment: ""),
-                NSLocalizedString("Shanghai", comment: ""),
-                NSLocalizedString("Nagasaki", comment: ""),
-                NSLocalizedString("Saigon", comment: ""),
-                NSLocalizedString("Manila", comment: ""),
-                NSLocalizedString("Singapore", comment: ""),
-                NSLocalizedString("Batavia", comment: ""),
+                String(localized: "Hong Kong"),
+                String(localized: "Shanghai"),
+                String(localized: "Nagasaki"),
+                String(localized: "Saigon"),
+                String(localized: "Manila"),
+                String(localized: "Singapore"),
+                String(localized: "Batavia"),
             ][self.rawValue]
         }
     }
@@ -932,18 +932,18 @@ class Game: ObservableObject {
         }
         var label: String {
             [
-                NSLocalizedString("Jan", comment: "January"),
-                NSLocalizedString("Feb", comment: "February"),
-                NSLocalizedString("Mar", comment: "March"),
-                NSLocalizedString("Apr", comment: "April"),
-                NSLocalizedString("May", comment: "May"),
-                NSLocalizedString("Jun", comment: "June"),
-                NSLocalizedString("Jul", comment: "July"),
-                NSLocalizedString("Aug", comment: "August"),
-                NSLocalizedString("Sep", comment: "September"),
-                NSLocalizedString("Oct", comment: "October"),
-                NSLocalizedString("Nov", comment: "November"),
-                NSLocalizedString("Dec", comment: "December"),
+                String(localized: "Jan", comment: "January"),
+                String(localized: "Feb", comment: "February"),
+                String(localized: "Mar", comment: "March"),
+                String(localized: "Apr", comment: "April"),
+                String(localized: "May", comment: "May"),
+                String(localized: "Jun", comment: "June"),
+                String(localized: "Jul", comment: "July"),
+                String(localized: "Aug", comment: "August"),
+                String(localized: "Sep", comment: "September"),
+                String(localized: "Oct", comment: "October"),
+                String(localized: "Nov", comment: "November"),
+                String(localized: "Dec", comment: "December"),
             ][self.rawValue]
         }
     }
@@ -1214,9 +1214,9 @@ class Game: ObservableObject {
         case throwCargo
         var label: String {
             [
-                NSLocalizedString("Fight", comment: ""),
-                NSLocalizedString("Run", comment: ""),
-                NSLocalizedString("Throw Cargo", comment: ""),
+                String(localized: "Fight"),
+                String(localized: "Run"),
+                String(localized: "Throw Cargo"),
             ][self.rawValue]
         }
     }
@@ -1324,7 +1324,7 @@ class Game: ObservableObject {
             sendEvent(.battleEnded)
         }
         else if hostilesCount == 0 {
-            battleMessage = NSLocalizedString("We got ‘em all, Taipan!", comment: "")
+            battleMessage = String(localized: "We got ‘em all, Taipan!")
             setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
             }
@@ -1337,20 +1337,20 @@ class Game: ObservableObject {
                         fireGuns()
                     }
                     else {
-                        battleMessage = NSLocalizedString("We have no guns, Taipan!!", comment: "")
+                        battleMessage = String(localized: "We have no guns, Taipan!!")
                         setBattleTimer(3) { [self] in
                             hostileFile()
                         }
                     }
                 case .run:
-                    battleMessage = NSLocalizedString("Aye, we‘ll run, Taipan.", comment: "")
+                    battleMessage = String(localized: "Aye, we‘ll run, Taipan.")
                     runAway()
                     break
                 case .throwCargo:
                     runAway()
                     break
                 default:
-                    battleMessage = NSLocalizedString("Taipan, what shall we do??", comment: "")
+                    battleMessage = String(localized: "Taipan, what shall we do??")
                     setBattleTimer(3) { [self] in
                         hostileFile()
                     }
@@ -1362,7 +1362,7 @@ class Game: ObservableObject {
     // fire each of our available guns
     private func fireGuns() {
         shotsLeft = shipGuns!
-        battleMessage = NSLocalizedString("Aye, we‘ll fight ‘em, Taipan.", comment: "")
+        battleMessage = String(localized: "Aye, we‘ll fight ‘em, Taipan.")
         fillScreenWithShips()
         sinkCount = 0
         escapeChance = 3
@@ -1374,7 +1374,7 @@ class Game: ObservableObject {
     
     // fire one gun
     private func fireGun() {
-        self.battleMessage = NSLocalizedString("We‘re firing on ‘em, Taipan!", comment: "")
+        self.battleMessage = String(localized: "We‘re firing on ‘em, Taipan!")
         self.setBattleTimer(1) { [self] in
             // randomly pick a target among ships on screen that haven't sunk yet
             repeat {
@@ -1415,7 +1415,7 @@ class Game: ObservableObject {
             fireNextShot()
         }
         else {
-            battleMessage = NSLocalizedString("We got ‘em all, Taipan!", comment: "")
+            battleMessage = String(localized: "We got ‘em all, Taipan!")
             setBattleTimer(3) { [self] in
                 sendEvent(.battleEnded)
             }
@@ -1431,10 +1431,10 @@ class Game: ObservableObject {
             else {
                 // all guns fired, summarize the round
                 if sinkCount! > 0 {
-                    battleMessage = "Sunk \(sinkCount!.formatted()) of the buggers, Taipan!"
+                    battleMessage = String(localized: "Sunk \(sinkCount!.formatted()) of the buggers, Taipan!")
                 }
                 else {
-                    battleMessage = NSLocalizedString("Hit ‘em, but didn‘t sink ‘em, Taipan!", comment: "")
+                    battleMessage = String(localized: "Hit ‘em, but didn‘t sink ‘em, Taipan!")
                 }
                 
                 let numerator = Int(Double(hostilesCount!) * 0.6 / Double(hostileType!.rawValue))
@@ -1443,7 +1443,7 @@ class Game: ObservableObject {
                     let cowards = hostilesCount! / 3 / hostileType!.rawValue
                     let ranAway = cowards <= 1 ? 1 : Int.randomLog(in: 1...cowards, comment: "ran away")
                     setBattleTimer(3) { [self] in
-                        battleMessage = "\(ranAway.formatted()) ran away, Taipan!"
+                        battleMessage = String(localized: "\(ranAway.formatted()) ran away, Taipan!")
                         hostilesCount! -= ranAway
                         refreshHostilesOnScreen()
                         setBattleTimer(3) { [self] in
@@ -1476,7 +1476,7 @@ class Game: ObservableObject {
     
     // pirates fire at us
     private func hostileFile() {
-        battleMessage = NSLocalizedString("They‘re firing on us, Taipan!", comment: "")
+        battleMessage = String(localized: "They‘re firing on us, Taipan!")
         setBattleTimer(3) { [self] in
             shipBeingHit = true
             #if os(iOS)
@@ -1487,7 +1487,7 @@ class Game: ObservableObject {
     
     // animation for ship hit completed
     func shipDidGetHit() {
-        battleMessage = NSLocalizedString("We‘ve been hit, Taipan!!", comment: "")
+        battleMessage = String(localized: "We‘ve been hit, Taipan!!")
         shipBeingHit = false
         
         // we don't have an easy way of triggering the pop-up from here,
@@ -1509,7 +1509,7 @@ class Game: ObservableObject {
         if shipGuns! > 0 && (damagePercentage > 80 || Int.random(shipDamage, in: shipCapacity) || dbgHitGun) {
             dbgHitGun = false
             setBattleTimer(3) { [self] in
-                battleMessage = NSLocalizedString("The buggers hit a gun, Taipan!!", comment: "")
+                battleMessage = String(localized: "The buggers hit a gun, Taipan!!")
                 shipGuns! -= 1
                 shipDamage += Int(Double.randomLog(in: 0.0...(ed * id), comment: "damage 1") + i / 2)
                 setBattleTimer(3) { [self] in
@@ -1554,19 +1554,19 @@ class Game: ObservableObject {
             print("escapeChance = \(escapeChance!)")
             print("escapeChanceIncrement = \(escapeChanceIncrement!)")
             if Int.randomLog(in: 0..<escapeChance!, comment: "escape chance") > Int.randomLog(in: 0..<hostilesCount!, comment: "hostiles count") {
-                battleMessage = NSLocalizedString("We got away from ‘em, Taipan!", comment: "")
+                battleMessage = String(localized: "We got away from ‘em, Taipan!")
                 setBattleTimer(3) { [self] in
                     sendEvent(.battleEnded)
                 }
             }
             else {
-                battleMessage = NSLocalizedString("Couldn‘t lose ‘em.", comment: "")
+                battleMessage = String(localized: "Couldn‘t lose ‘em.")
                 setBattleTimer(3) { [self] in
                     if (hostilesCount! > 2 && Int.random(1, in: 5)) || dbgEscapedSome {
                         dbgEscapedSome = false
                         let lost = hostilesCount! < 4 ? 1 : Int.randomLog(in: 1..<hostilesCount! / 2, comment: "escaped from")
                         hostilesCount! -= lost
-                        battleMessage = "But we escaped from \(lost.formatted()) of ‘em!"
+                        battleMessage = String(localized: "But we escaped from \(lost.formatted()) of ‘em!")
                         refreshHostilesOnScreen()
                         setBattleTimer(3) { [self] in
                             hostileFile()
@@ -1586,7 +1586,7 @@ class Game: ObservableObject {
             shipHold[merchandise] = inventory - amount
             escapeChance! += amount / 10
             print("escapeChance = \(escapeChance!)")
-            battleMessage = NSLocalizedString("Let‘s hope we lose ‘em, Taipan!", comment: "")
+            battleMessage = String(localized: "Let‘s hope we lose ‘em, Taipan!")
             executeOrder()
         }
         else {
