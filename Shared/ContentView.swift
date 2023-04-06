@@ -136,7 +136,7 @@ struct DebtOrGunsView: View {
         VStack {
             Spacer()
             HStack {
-                Text("Do you want to start . . .")
+                Text("Do you want to start . . .", comment: "...with cash or guns?")
                 Spacer()
             }
             FullWidthButton {
@@ -146,7 +146,7 @@ struct DebtOrGunsView: View {
             }
             .padding(.vertical, 10)
             .keyboardShortcut("1", modifiers: [])
-            Text("» or «")
+            Text("» or «", comment: "start with cash... ...guns?")
             FullWidthButton {
                 game.sendEvent(.guns)
             } content: {
@@ -158,7 +158,7 @@ struct DebtOrGunsView: View {
             }
             .padding(.vertical, 10)
             .keyboardShortcut("2", modifiers: [])
-            Text("?")
+            Text("?", comment: "start with cash or guns...")
             Spacer()
         }
         .frame(maxWidth: hasSmallScreen ? 500 : 768)
@@ -236,7 +236,7 @@ struct TradingView: View {
                     }
                     VStack(alignment: .trailing) {
                         ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
-                            Text("\(game.warehouse[item] ?? 0)")
+                            Text(verbatim: "\(game.warehouse[item] ?? 0)")
                         }
                     }
                     Spacer()
@@ -244,11 +244,11 @@ struct TradingView: View {
                         Text("In Use:")
                             .font(.captionFont)
                             .opacity(0.8)
-                        Text("\(game.warehouseUsedCapacity)")
+                        Text(verbatim: "\(game.warehouseUsedCapacity)")
                         Text("Vacant")
                             .font(.captionFont)
                             .opacity(0.8)
-                        Text("\(game.warehouseFreeCapacity)")
+                        Text(verbatim: "\(game.warehouseFreeCapacity)")
                     }
                 }
                 .padding(.horizontal, merchandisePadding())
@@ -276,7 +276,7 @@ struct TradingView: View {
                     }
                     VStack(alignment: .trailing) {
                         ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
-                            Text("\(game.shipHold[item] ?? 0)")
+                            Text(verbatim: "\(game.shipHold[item] ?? 0)")
                         }
                     }
                     Spacer()
@@ -353,7 +353,7 @@ struct TradingView: View {
                 if hasSmallScreen {
                     if isPortrait {
                         VStack {
-                            Text("\(game.firmName!)")
+                            Text(verbatim: "\(game.firmName!)")
                                 .font(.titleFont)
                                 .lineLimit(1)
                             CurrentDate
@@ -434,21 +434,21 @@ struct TradingView: View {
                     HStack {
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text("\(Game.Merchandise.opium.shortLabel):")
-                            Text("\(Game.Merchandise.arms.shortLabel):")
+                            Text("\(Game.Merchandise.opium.shortLabel):", comment: "<merchandise>:")
+                            Text("\(Game.Merchandise.arms.shortLabel):", comment: "<merchandise>:")
                         }
                         VStack(alignment: .trailing) {
-                            Text("\(game.price[.opium] ?? 0)")
-                            Text("\(game.price[.arms] ?? 0)")
+                            Text(verbatim: "\(game.price[.opium] ?? 0)")
+                            Text(verbatim: "\(game.price[.arms] ?? 0)")
                         }
                         Spacer()
                         VStack(alignment: .leading) {
-                            Text("\(Game.Merchandise.silk.shortLabel):")
-                            Text("\(Game.Merchandise.general.shortLabel):")
+                            Text("\(Game.Merchandise.silk.shortLabel):", comment: "<merchandise>:")
+                            Text("\(Game.Merchandise.general.shortLabel):", comment: "<merchandise>:")
                         }
                         VStack(alignment: .trailing) {
-                            Text("\(game.price[.silk] ?? 0)")
-                            Text("\(game.price[.general] ?? 0)")
+                            Text(verbatim: "\(game.price[.silk] ?? 0)")
+                            Text(verbatim: "\(game.price[.general] ?? 0)")
                         }
                         Spacer()
                     }
@@ -456,7 +456,7 @@ struct TradingView: View {
                     
                     Spacer()
                     
-                    Text("Shall I")
+                    Text("Shall I", comment: "...buy, sell, etc")
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     if sizeCategory > .large {
@@ -554,7 +554,7 @@ struct TradingView: View {
             case .retirement:
                 RetirementView()
             default:
-                Text("unhandled state \(game.state.rawValue)")
+                Text(verbatim: "unhandled state \(game.state.rawValue)")
             }
         }
         .padding(.horizontal, 8)
@@ -910,9 +910,9 @@ struct TradingView: View {
                 Text("Comprador‘s Report")
                     .withReportStyle()
                 VStack {
-                    Text("You‘re a")
+                    Text("You‘re a", comment: "...millionaire!")
                         .kerning(sizeCategory > .extraLarge ? 7 : 10)
-                    Text("MILLIONAIRE!")
+                    Text("MILLIONAIRE!", comment: "you're a...")
                         .kerning(sizeCategory > .extraLarge ? 7 : 10)
                         .padding(.top, 5)
                 }
@@ -935,7 +935,7 @@ struct KeypadView: View {
     var body: some View {
         VStack {
             if bigNumbers ?? false {
-                Text("\(amount)")
+                Text(verbatim: "\(amount)")
                     .withTextFieldStyle(width: 250, color: .taipanColor)
                 if let limitHint = limitHint {
                     Text(limitHint)
@@ -947,7 +947,7 @@ struct KeypadView: View {
             }
             else {
                 HStack {
-                    Text("\(amount)")
+                    Text(verbatim: "\(amount)")
                         .withTextFieldStyle(width: 100, color: .taipanColor)
                     if let limitHint = limitHint {
                         Text(limitHint)
@@ -967,7 +967,7 @@ struct KeypadView: View {
                         KeypadButton {
                             amount = (amount % 1000000000000) * 10 + digit
                         } content: {
-                            Text("\(digit)")
+                            Text(verbatim: "\(digit)")
                                 .font(.keypadDigitFont)
                         }
                         .padding(2)
@@ -990,7 +990,7 @@ struct KeypadView: View {
                             KeypadButton {
                                 amount = (amount % 1000000000000) * 10 + digit
                             } content: {
-                                Text("\(digit)")
+                                Text(verbatim: "\(digit)")
                                     .font(.keypadDigitFont)
                             }
                             .padding(2)
@@ -1002,7 +1002,7 @@ struct KeypadView: View {
                     KeypadButton {
                         amount = (amount % 1000000000000) * 10
                     } content: {
-                        Text("0")
+                        Text(verbatim: "0")
                     }
                     .padding(2)
                     .keyboardShortcut("0", modifiers: [])
@@ -1043,7 +1043,7 @@ struct BattleView: View {
                     let attacking = String.localizedPluralString("battle.attacking.count", game.hostilesCount!)
                     let orderFormat = NSLocalizedString("Your orders are to: %@", comment: "")
                     let orders = String.localizedStringWithFormat(orderFormat, game.battleOrder?.label ?? "")
-                    Text("\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
+                    Text(verbatim: "\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
                         .withMessageStyle()
                 }
                 .padding(.top, hasLargeScreen ? 10 : 0)
@@ -1131,7 +1131,8 @@ struct BattleView: View {
             Spacer()
             
             Text("Current seaworthiness: ") +
-            Text("\(game.fancyShipStatus(.parenthesis))").foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
+            Text(verbatim: "\(game.fancyShipStatus(.parenthesis))")
+                .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
             HStack {
                 RoundRectButton {
                     game.orderFight()
@@ -1301,7 +1302,7 @@ struct FinalStatsView: View {
                 Group {
                     if hasSmallScreen {
                         if isPortrait {
-                            Text("\(game.firmName!)")
+                            Text(verbatim: "\(game.firmName!)")
                                 .font(.titleFont)
                                 .lineLimit(1)
                                 .padding(.bottom, 10)
@@ -1417,7 +1418,7 @@ struct FinalStatsView: View {
                         RoundRectButton {
                             game.sendEvent(.no)
                         } content: {
-                            Text("No")
+                            Text("playagain.no")
                                 .frame(minWidth: 100,
                                        maxWidth: wideButtons ? .infinity : nil,
                                        minHeight: 30)
@@ -1427,7 +1428,7 @@ struct FinalStatsView: View {
                         RoundRectButton {
                             game.sendEvent(.yes)
                         } content: {
-                            Text("Yes")
+                            Text("playagain.yes")
                                 .frame(minWidth: 100,
                                        maxWidth: wideButtons ? .infinity : nil,
                                        minHeight: 30)
@@ -1664,7 +1665,7 @@ struct ContentView: View {
                         Text("How much, Taipan?")
                     }
                     else {
-                        Text("How much \(merchandise.rawValue) shall I sell, Taipan:")
+                        Text("How much \(merchandise.label) shall I sell, Taipan:")
                     }
                     KeypadView(
                         amount: $amount,
@@ -1775,7 +1776,7 @@ struct ContentView: View {
                             game.departFor(city)
                             isShowingDestinationModal = false
                         } content: {
-                            Text("\(String(city.keyboardShortcut)). \(city.label)")
+                            Text("\(String(city.keyboardShortcut)). \(city.label)", comment: "<digit>. <city>")
                                 .frame(maxWidth: .infinity)
                         }
                         .keyboardShortcut(KeyEquivalent(city.keyboardShortcut), modifiers: [])
@@ -1927,10 +1928,10 @@ struct ContentView: View {
                 if let selectedMerchandise = selectedMerchandise,
                    let toWarehouse = toWarehouse {
                     if toWarehouse {
-                        Text("How much \(selectedMerchandise.rawValue) shall I move to the warehouse, Taipan?")
+                        Text("How much \(selectedMerchandise.label) shall I move to the warehouse, Taipan?")
                     }
                     else {
-                        Text("How much \(selectedMerchandise.rawValue) shall I move aboard ship, Taipan?")
+                        Text("How much \(selectedMerchandise.label) shall I move aboard ship, Taipan?")
                     }
                     
                     let transferLimit = toWarehouse ? game.shipHold[selectedMerchandise]! : game.warehouse[selectedMerchandise]!

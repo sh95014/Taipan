@@ -1,10 +1,10 @@
 /* No comment provided by engineer. */
 " ship for one with 50 more capacity by paying an additional %@, Taipan?" = "船另加 %@ 交換一艘載貨量大 50 的船嗎，大班？";
 
-/* No comment provided by engineer. */
+/* start with cash or guns... */
 "?" = "來起家？";
 
-/* No comment provided by engineer. */
+/* start with cash... ...guns? */
 "» or «" = "» 或是 «";
 
 /* No comment provided by engineer. */
@@ -19,17 +19,38 @@
 /* No comment provided by engineer. */
 "%@ Trillion" = "%@ Trillion";
 
+/* <merchandise>: */
+"%@:" = "%@：";
+
+/* No comment provided by engineer. */
+"1,000 to 7,999" = "1,000 至 7,999";
+
 /* No comment provided by engineer. */
 "1) With cash (and a debt)" = "1) 現金（和債務）";
 
 /* No comment provided by engineer. */
 "2) With five guns and no cash" = "2) 五座砲，無現金";
 
+/* No comment provided by engineer. */
+"8,000 to 49,999" = "8,000 至 49,999";
+
 /* day month year */
 "15 %@ %@" = "%2$@年%1$@";
 
 /* No comment provided by engineer. */
+"50,000 and over" = "50,000 以上";
+
+/* No comment provided by engineer. */
+"500 to 999" = "500 至 999";
+
+/* No comment provided by engineer. */
 "A game based on the China\ntrade of the 1800's" = "一個基於 1800 年代\n中國海上貿易的遊戲";
+
+/* No comment provided by engineer. */
+"All I can afford (%lld)" = "我付得起的（%lld）";
+
+/* No comment provided by engineer. */
+"All of it (%lld)" = "全部（%lld）";
 
 /* April */
 "Apr" = "四月";
@@ -65,6 +86,9 @@
 "Buy" = "購買";
 
 /* No comment provided by engineer. */
+"Cancel" = "取消";
+
+/* No comment provided by engineer. */
 "Captain‘s Report" = "船長報告";
 
 /* No comment provided by engineer. */
@@ -78,6 +102,9 @@
 
 /* No comment provided by engineer. */
 "Comprador‘s Report" = "買辦報告";
+
+/* No comment provided by engineer. */
+"Compradore" = "江擺渡";
 
 /* No comment provided by engineer. */
 "Couldn‘t lose ‘em." = "沒能逃掉。";
@@ -104,16 +131,22 @@
 "Dec" = "十二月";
 
 /* No comment provided by engineer. */
+"Deposit" = "儲蓄";
+
+/* No comment provided by engineer. */
 "Do you have business with Elder Brother Wu, the moneylender?" = "您與高利貸吳老大有來往嗎？";
 
 /* No comment provided by engineer. */
 "Do you want Elder Brother Wu to make up the difference for you?" = "您想要吳老大替您先代墊這些錢嗎？";
 
-/* No comment provided by engineer. */
+/* ...with cash or guns? */
 "Do you want to start . . ." = "您想要以．．．";
 
 /* No comment provided by engineer. */
 "Do you wish to trade in your " = "您想要用您";
+
+/* No comment provided by engineer. */
+"Do you wish to trade in your fine ship for one with 50 more capacity by paying an additional %@, Taipan?" = "您想要用您的好船另加 %@ 交換一艘載貨量大 50 的船嗎，大班？";
 
 /* No comment provided by engineer. */
 "Elder Brother has given Li Yuen the difference between what he wanted and your cash on hand and added the same amount to your debt." = "吳老大幫您先在李元那邊代墊了價差，錢也加在您帳上了。";
@@ -122,13 +155,16 @@
 "Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %1$@ if you will pay back %2$@. Are you willing, Taipan?" = "吳老大可以體諒您的困難，大班。如果您日後還他 %2$@，他可以先暫借 %1$@ 給您。您願意嗎，大班？";
 
 /* No comment provided by engineer. */
-"Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan." = "吳老大派了 %d 打手來護送您到吳府，大班。";
+"Elder Brother Wu has sent %d braves to escort you to the Wu mansion, Taipan." = "吳老大派了 %d 名打手來護送您到吳府，大班。";
 
 /* No comment provided by engineer. */
 "Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts." = "吳老大提醒您儒家以誠為本，欠債可是要還錢的。";
 
 /* No comment provided by engineer. */
 "elderbrotherwu.no" = "沒有";
+
+/* No comment provided by engineer. */
+"Enough to fill ship (%lld)" = "足夠裝滿船（%lld）";
 
 /* No comment provided by engineer. */
 "Fair" = "尚可";
@@ -146,6 +182,12 @@
 "Firm: %@, Hong Kong" = "行號：香港%@";
 
 /* No comment provided by engineer. */
+"Fix the whole ship (%@)" = "全船修理（%@）";
+
+/* No comment provided by engineer. */
+"Galleyhand" = "二廚";
+
+/* No comment provided by engineer. */
 "Good" = "良好";
 
 /* No comment provided by engineer. */
@@ -153,6 +195,9 @@
 
 /* No comment provided by engineer. */
 "Guns %@" = "%@ 座砲";
+
+/* No comment provided by engineer. */
+"Have you considered a land based job?" = "您有考慮在陸地上討生活嗎？";
 
 /* No comment provided by engineer. */
 "He is reminded of a fabled barbarian who came to a bad end, after not caring for his obligations.\n\nHe hopes no such fate awaits you, his friend, Taipan." = "他記得一個傳說中不守信的番人，最後落得死無葬身之地。\n\n大班是朋友，他衷誠希望您不會有這樣的下場。";
@@ -170,7 +215,25 @@
 "Hong Kong Warehouse" = "香港倉庫";
 
 /* No comment provided by engineer. */
+"How much %@ shall I buy, Taipan:" = "我該買多少%@，大班？";
+
+/* No comment provided by engineer. */
+"How much %@ shall I move aboard ship, Taipan?" = "我該把多少%@移到船上，大班？";
+
+/* No comment provided by engineer. */
+"How much %@ shall I move to the warehouse, Taipan?" = "我該把多少%@移到倉庫，大班？";
+
+/* No comment provided by engineer. */
+"How much %@ shall I sell, Taipan:" = "我該賣掉多少%@，大班？";
+
+/* No comment provided by engineer. */
 "How much do you wish to borrow?" = "您想要借多少？";
+
+/* No comment provided by engineer. */
+"How much do you wish to repay him?" = "您想要還他多少？";
+
+/* No comment provided by engineer. */
+"How much, Taipan?" = "多少啊，大班？";
 
 /* No comment provided by engineer. */
 "I think we‘re going down!!" = "我想我們要沉下去了!!";
@@ -181,6 +244,9 @@
 /* No comment provided by engineer. */
 "It‘s all over, now!!!" = "一切都完了!!!";
 
+/* No comment provided by engineer. */
+"It‘s worth %@!" = "價值足足有 %@!";
+
 /* January */
 "Jan" = "一月";
 
@@ -189,6 +255,9 @@
 
 /* June */
 "Jun" = "六月";
+
+/* No comment provided by engineer. */
+"less than 500" = "不到 500";
 
 /* No comment provided by engineer. */
 "Let‘s hope we lose ‘em, Taipan!" = "希望我們能逃得掉，大班！";
@@ -209,10 +278,16 @@
 "Location" = "位置";
 
 /* No comment provided by engineer. */
+"Ma Tsu" = "媽祖";
+
+/* No comment provided by engineer. */
 "Manila" = "馬尼拉";
 
 /* March */
 "Mar" = "三月";
+
+/* No comment provided by engineer. */
+"Master Taipan" = "大師";
 
 /* May */
 "May" = "五月";
@@ -253,8 +328,14 @@
 /* No comment provided by engineer. */
 "Nagasaki" = "長崎";
 
+/* No comment provided by engineer. */
+"Net Cash: %@" = "淨現金：%@";
+
 /* November */
 "Nov" = "十一月";
+
+/* No comment provided by engineer. */
+"Och, 'tis a pity to be %@ damaged.\nWe can fix yer whole ship for %@, or make partial repairs if you wish.\nHow much will ye spend?" = "啊，受損了 %@ 真是不幸。我們全船整修只收 %@，或者要做局部整修也可以。\n您想花多少？";
 
 /* October */
 "Oct" = "十月";
@@ -263,10 +344,22 @@
 "Overload" = "超載";
 
 /* No comment provided by engineer. */
-"Perfect" = "完美";
+"Overload (%lld)" = "超載（%@）";
+
+/* No comment provided by engineer. */
+"Perfect" = "無瑕";
 
 /* No comment provided by engineer. */
 "pirates.madeit" = "我們安然過關了!";
+
+/* No comment provided by engineer. */
+"Play again?" = "再玩一次？";
+
+/* No comment provided by engineer. */
+"playagain.no" = "不要";
+
+/* No comment provided by engineer. */
+"playagain.yes" = "好吧";
 
 /* No comment provided by engineer. */
 "Poor" = "糟糕";
@@ -302,10 +395,16 @@
 "Sep" = "九月";
 
 /* No comment provided by engineer. */
-"Shall I" = "請開示";
+"Shall I" = "請示下";
 
 /* No comment provided by engineer. */
 "Shanghai" = "上海";
+
+/* No comment provided by engineer. */
+"Ship" = "船舶";
+
+/* No comment provided by engineer. */
+"Ship Size: %@ units with %@ guns" = "船舶大小：%@ 單位，%@ 座砲";
 
 /* No comment provided by engineer. */
 "Ship Status" = "船舶狀態";
@@ -329,7 +428,13 @@
 "T   A   I   P   A   N   !" = "大      班";
 
 /* No comment provided by engineer. */
+"Taipan" = "大班";
+
+/* No comment provided by engineer. */
 "Taipan," = "大班，";
+
+/* No comment provided by engineer. */
+"Taipan, do you wish me to go to:" = "大班，要啟程往哪去？";
 
 /* No comment provided by engineer. */
 "Taipan, Mc Henry from the Hong Kong Shipyards has arrived!! He says, \"I see ye've a wee bit of damage to yer ship. Will ye be wanting repairs?\"" = "大班，香港船廠的麥亨利來了!! 他說，「俺見你船有點損壞，有需要修理嗎？」";
@@ -350,13 +455,22 @@
 "The buggers hit a gun, Taipan!!" = "混帳東西擊毀了一座砲，大班!!";
 
 /* No comment provided by engineer. */
+"The crew has requested that you stay on shore for their safety!!" = "船員們一致請求您為了他們的安全留在陸地上吧!!";
+
+/* No comment provided by engineer. */
 "They‘re firing on us, Taipan!" = "他們發砲了，大班!";
+
+/* No comment provided by engineer. */
+"Throw" = "拋棄";
 
 /* No comment provided by engineer. */
 "Throw\nCargo" = "拋棄\n貨物";
 
 /* No comment provided by engineer. */
 "Throw Cargo" = "拋棄貨物";
+
+/* No comment provided by engineer. */
+"Transfer" = "轉移";
 
 /* No comment provided by engineer. */
 "Transfer\nCargo" = "轉移\n貨物";
@@ -381,6 +495,9 @@
 
 /* No comment provided by engineer. */
 "Visit Bank" = "拜訪錢莊";
+
+/* No comment provided by engineer. */
+"Warehouse" = "倉庫";
 
 /* No comment provided by engineer. */
 "We captured some booty." = "我們擄獲了一些戰利品。";
@@ -409,12 +526,48 @@
 /* No comment provided by engineer. */
 "We‘ve been hit, Taipan!!" = "我們被擊中了，大班!!";
 
+/* No comment provided by engineer. */
+"What do you wish me to buy, Taipan?" = "您要我買進些什麼，大班？";
+
+/* No comment provided by engineer. */
+"What do you wish me to sell, Taipan?" = "您要我賣出些什麼，大班？";
+
+/* No comment provided by engineer. */
+"What shall I throw overboard, Taipan?" = "您要我拋棄些什麼，大班？";
+
+/* No comment provided by engineer. */
+"What shall I transfer, Taipan?" = "您要我轉移些什麼，大班？";
+
 /* ...firm */
 "What will you name your" = "您想如何稱呼您的";
+
+/* No comment provided by engineer. */
+"Withdraw" = "支領";
+
+/* No comment provided by engineer. */
+"You can afford %lld" = "您買得起 %lld";
+
+/* No comment provided by engineer. */
+"You have\n%@\nin cash" = "您有\n%@\n現金";
+
+/* No comment provided by engineer. */
+"You have\n%@\nin the bank" = "錢莊裡有\n%@\n存款";
+
+/* No comment provided by engineer. */
+"You have %lld" = "您有 %lld";
 
 /* No comment provided by engineer. */
 "You‘re a" = "您是個";
 
 /* No comment provided by engineer. */
+"Your final status:" = "您的最終地位：";
+
+/* No comment provided by engineer. */
 "Your orders are to: %@" = "您的命令是：%@";
+
+/* No comment provided by engineer. */
+"Your Rating:" = "您的等級：";
+
+/* No comment provided by engineer. */
+"Your score is %lld." = "您的評分是 %lld。";
 

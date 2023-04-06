@@ -696,7 +696,7 @@ class Game: ObservableObject {
         guard let warehouseMerchandise = warehouse[merchandise],
               warehouseMerchandise >= amount
         else {
-            print("insufficient \(merchandise.rawValue) in warehouse to transfer \(amount)")
+            print("insufficient \(merchandise.label) in warehouse to transfer \(amount)")
             return
         }
         
@@ -745,7 +745,7 @@ class Game: ObservableObject {
         guard let shipMerchandise = shipHold[merchandise],
               shipMerchandise >= amount
         else {
-            print("insufficient \(merchandise.rawValue) on ship to transfer \(amount)")
+            print("insufficient \(merchandise.label) on ship to transfer \(amount)")
             return
         }
         
@@ -810,7 +810,7 @@ class Game: ObservableObject {
         for merchandise in Merchandise.allCases {
             if let cityPriceMultiplerForMerchandise = cityPriceMultiplier[merchandise],
                let basePriceForMerchandise = basePrice[merchandise] {
-                price[merchandise] = cityPriceMultiplerForMerchandise / 2 * Int.randomLog(in: 1...3, comment: "price of \(merchandise.rawValue)") * basePriceForMerchandise
+                price[merchandise] = cityPriceMultiplerForMerchandise / 2 * Int.randomLog(in: 1...3, comment: "price of \(merchandise.label)") * basePriceForMerchandise
             }
             else {
                 print("unable to set price for \(merchandise)")
@@ -870,7 +870,7 @@ class Game: ObservableObject {
             shipHold[merchandise] = (shipHold[merchandise] ?? 0) + amount
         }
         else {
-            print("unable to buy \(amount) of \(merchandise.rawValue)")
+            print("unable to buy \(amount) of \(merchandise.label)")
         }
     }
     
@@ -882,7 +882,7 @@ class Game: ObservableObject {
             shipHold[merchandise] = inventory - amount
         }
         else {
-            print("unable to sell \(amount) of \(merchandise.rawValue)")
+            print("unable to sell \(amount) of \(merchandise.label)")
         }
     }
     
@@ -1590,7 +1590,7 @@ class Game: ObservableObject {
             executeOrder()
         }
         else {
-            print("unable to throw away \(amount) of \(merchandise.rawValue)")
+            print("unable to throw away \(amount) of \(merchandise.label)")
         }
     }
     

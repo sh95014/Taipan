@@ -1,3 +1,12 @@
+/* start with cash or guns... */
+"?" = "?";
+
+/* start with cash... ...guns? */
+"» or «" = "» or «";
+
+/* No comment provided by engineer. */
+"(But no debt!)" = "(But no debt!)";
+
 /* No comment provided by engineer. */
 "%@ Billion" = "%@ Billion";
 
@@ -8,19 +17,13 @@
 "%@ Trillion" = "%@ Trillion";
 
 /* No comment provided by engineer. */
-"(But no debt!)" = "(But no debt!)";
-
-/* No comment provided by engineer. */
 "1) With cash (and a debt)" = "1) With cash (and a debt)";
-
-/* day month year */
-"15 %@ %@" = "15 %1$@ %2$@";
 
 /* No comment provided by engineer. */
 "2) With five guns and no cash" = "2) With five guns and no cash";
 
-/* No comment provided by engineer. */
-"?" = "?";
+/* day month year */
+"15 %@ %@" = "15 %1$@ %2$@";
 
 /* No comment provided by engineer. */
 "A game based on the China\ntrade of the 1800's" = "A game based on the China\ntrade of the 1800's";
@@ -103,7 +106,7 @@
 /* No comment provided by engineer. */
 "Do you want Elder Brother Wu to make up the difference for you?" = "Do you want Elder Brother Wu to make up the difference for you?";
 
-/* No comment provided by engineer. */
+/* ...with cash or guns? */
 "Do you want to start . . ." = "Do you want to start . . .";
 
 /* No comment provided by engineer. */
@@ -153,9 +156,6 @@
 
 /* No comment provided by engineer. */
 "Hit ‘em, but didn‘t sink ‘em, Taipan!" = "Hit ‘em, but didn‘t sink ‘em, Taipan!";
-
-/* No comment provided by engineer. */
-"Hold %d" = "Hold %d";
 
 /* No comment provided by engineer. */
 "Hong Kong" = "Hong Kong";
@@ -238,7 +238,7 @@
 /* No comment provided by engineer. */
 "Messenger reports large theft from warehouse, Taipan." = "Messenger reports large theft from warehouse, Taipan.";
 
-/* No comment provided by engineer. */
+/* you're a... */
 "MILLIONAIRE!" = "MILLIONAIRE!";
 
 /* No comment provided by engineer. */
@@ -260,16 +260,22 @@
 "pirates.madeit" = "We made it!";
 
 /* No comment provided by engineer. */
+"playagain.no" = "No";
+
+/* No comment provided by engineer. */
+"playagain.yes" = "Yes";
+
+/* No comment provided by engineer. */
 "Poor" = "Poor";
 
 /* No comment provided by engineer. */
 "Prime" = "Prime";
 
 /* No comment provided by engineer. */
-"Quit Trading" = "Quit Trading";
+"Quit\nTrading" = "Quit\nTrading";
 
 /* No comment provided by engineer. */
-"Quit\nTrading" = "Quit\nTrading";
+"Quit Trading" = "Quit Trading";
 
 /* No comment provided by engineer. */
 "Repair" = "Repair";
@@ -292,7 +298,7 @@
 /* September */
 "Sep" = "Sep";
 
-/* No comment provided by engineer. */
+/* ...buy, sell, etc */
 "Shall I" = "Shall I";
 
 /* No comment provided by engineer. */
@@ -344,16 +350,16 @@
 "They‘re firing on us, Taipan!" = "They‘re firing on us, Taipan!";
 
 /* No comment provided by engineer. */
-"Throw Cargo" = "Throw Cargo";
-
-/* No comment provided by engineer. */
 "Throw\nCargo" = "Throw\nCargo";
 
 /* No comment provided by engineer. */
-"Transfer Cargo" = "Transfer Cargo";
+"Throw Cargo" = "Throw Cargo";
 
 /* No comment provided by engineer. */
 "Transfer\nCargo" = "Transfer\nCargo";
+
+/* No comment provided by engineer. */
+"Transfer Cargo" = "Transfer Cargo";
 
 /* No comment provided by engineer. */
 "Vacant" = "Vacant";
@@ -368,28 +374,28 @@
 "Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan." = "Very well. Elder Brother Wu will not pay Li Yuen the difference.  I would be very wary of pirates if I were you, Taipan.";
 
 /* No comment provided by engineer. */
-"Visit Bank" = "Visit Bank";
+"Visit\nBank" = "Visit\nBank";
 
 /* No comment provided by engineer. */
-"Visit\nBank" = "Visit\nBank";
+"Visit Bank" = "Visit Bank";
 
 /* No comment provided by engineer. */
 "We captured some booty." = "We captured some booty.";
 
 /* No comment provided by engineer. */
+"We got ‘em all, Taipan!" = "We got ‘em all, Taipan!";
+
+/* No comment provided by engineer. */
 "We got away from ‘em, Taipan!" = "We got away from ‘em, Taipan!";
 
 /* No comment provided by engineer. */
-"We got ‘em all, Taipan!" = "We got ‘em all, Taipan!";
+"We have\n%@ guns" = "We have\n%@ guns";
 
 /* No comment provided by engineer. */
 "We have %@ guns" = "We have %@ guns";
 
 /* No comment provided by engineer. */
 "We have no guns, Taipan!!" = "We have no guns, Taipan!!";
-
-/* No comment provided by engineer. */
-"We have\n%@ guns" = "We have\n%@ guns";
 
 /* No comment provided by engineer. */
 "We‘re firing on ‘em, Taipan!" = "We‘re firing on ‘em, Taipan!";
@@ -403,11 +409,9 @@
 /* ...firm */
 "What will you name your" = "What will you name your";
 
-/* No comment provided by engineer. */
-"Your orders are to: %@" = "Your orders are to: %@";
-
-/* No comment provided by engineer. */
+/* ...millionaire! */
 "You‘re a" = "You‘re a";
 
 /* No comment provided by engineer. */
-"» or «" = "» or «";
+"Your orders are to: %@" = "Your orders are to: %@";
+
