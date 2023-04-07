@@ -11,6 +11,7 @@
 		B0376A6229DCB846009C7E6B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B0376A6429DCB846009C7E6B /* Localizable.strings */; };
 		B0376A6C29DE7354009C7E6B /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = B0376A6F29DE7354009C7E6B /* Localizable.stringsdict */; };
 		B0376A6D29DE7354009C7E6B /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = B0376A6F29DE7354009C7E6B /* Localizable.stringsdict */; };
+		B0376A8329DFBBD9009C7E6B /* cwTeXQFangsong-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0376A8129DFBBD9009C7E6B /* cwTeXQFangsong-Medium.ttf */; };
 		B092377427F0EE7B0017C21D /* TaipanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B092376427F0EE7A0017C21D /* TaipanApp.swift */; };
 		B092377527F0EE7B0017C21D /* TaipanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B092376427F0EE7A0017C21D /* TaipanApp.swift */; };
 		B092377627F0EE7B0017C21D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B092376527F0EE7A0017C21D /* ContentView.swift */; };
@@ -28,6 +29,8 @@
 		B0376A6529DCB960009C7E6B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B0376A6E29DE7354009C7E6B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		B0376A7029DE7358009C7E6B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.stringsdict"; sourceTree = "<group>"; };
+		B0376A8129DFBBD9009C7E6B /* cwTeXQFangsong-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cwTeXQFangsong-Medium.ttf"; sourceTree = "<group>"; };
+		B0376A8229DFBBD9009C7E6B /* github.com:l10n-tw:cwtex-q-fonts.webloc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "github.com:l10n-tw:cwtex-q-fonts.webloc"; sourceTree = "<group>"; };
 		B092376427F0EE7A0017C21D /* TaipanApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaipanApp.swift; sourceTree = "<group>"; };
 		B092376527F0EE7A0017C21D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B092376627F0EE7B0017C21D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -65,6 +68,15 @@
 			path = iOS;
 			sourceTree = "<group>";
 		};
+		B0376A7D29DFB79C009C7E6B /* cwTeX */ = {
+			isa = PBXGroup;
+			children = (
+				B0376A8229DFBBD9009C7E6B /* github.com:l10n-tw:cwtex-q-fonts.webloc */,
+				B0376A8129DFBBD9009C7E6B /* cwTeXQFangsong-Medium.ttf */,
+			);
+			path = cwTeX;
+			sourceTree = "<group>";
+		};
 		B092375E27F0EE7A0017C21D = {
 			isa = PBXGroup;
 			children = (
@@ -86,6 +98,7 @@
 				B0376A6429DCB846009C7E6B /* Localizable.strings */,
 				B0376A6F29DE7354009C7E6B /* Localizable.stringsdict */,
 				B092378F27F10F140017C21D /* Morris Roman */,
+				B0376A7D29DFB79C009C7E6B /* cwTeX */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -199,6 +212,7 @@
 			files = (
 				B092379727F10F2E0017C21D /* MorrisRoman-Black.ttf in Resources */,
 				B0376A6C29DE7354009C7E6B /* Localizable.stringsdict in Resources */,
+				B0376A8329DFBBD9009C7E6B /* cwTeXQFangsong-Medium.ttf in Resources */,
 				B0376A6129DCB846009C7E6B /* Localizable.strings in Resources */,
 				B092377827F0EE7B0017C21D /* Assets.xcassets in Resources */,
 			);

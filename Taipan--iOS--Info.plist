@@ -4,8 +4,8 @@
 <dict>
 	<key>UIAppFonts</key>
 	<array>
-		<string>KingsCross.ttf</string>
 		<string>MorrisRoman-Black.ttf</string>
+		<string>cwTeXQFangsong-Medium.ttf</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict>

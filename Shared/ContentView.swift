@@ -2214,7 +2214,11 @@ extension Color {
 }
 
 extension Font {
-    static let taipanFont = Bundle.main.preferredLocalizations[0].hasPrefix("zh") ? "STFangSong" : "MorrisRoman-Black"
+    #if os(iOS)
+    static let taipanFont = Bundle.main.preferredLocalizations[0].hasPrefix("zh") ? "cwTeX Q Fangsong" : "MorrisRoman-Black"
+    #else
+    static let taipanFont = Bundle.main.preferredLocalizations[0].hasPrefix("zh") ? "STFangsong" : "MorrisRoman-Black"
+    #endif
     static let titleFont = Font.custom(taipanFont, size: hasSmallScreen ? 30 : 40)
     static let keypadDigitFont = Font.custom(taipanFont, size: hasSmallScreen ? 26 : 39)
     static let bodyFont = Font.custom(taipanFont, size: hasSmallScreen ? 22 : 28)
