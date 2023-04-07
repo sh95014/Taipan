@@ -59,10 +59,10 @@
 "A game based on the China\ntrade of the 1800's" = "一個基於 1800 年代\n中國海上貿易的遊戲";
 
 /* No comment provided by engineer. */
-"All I can afford (%lld)" = "我付得起的（%lld）";
+"All I can afford (%@)" = "我付得起的（%@）";
 
 /* No comment provided by engineer. */
-"All of it (%lld)" = "全部（%lld）";
+"All of it (%@)" = "全部（%@）";
 
 /* April */
 "Apr" = "四月";
@@ -173,7 +173,7 @@
 "Elder Brother is aware of your plight, Taipan. He is willing to loan you an additional %@ if you will pay back %@. Are you willing, Taipan?" = "吳老大可以體諒您的困難，大班。如果您日後還他 %2$@，他可以先暫借 %1$@ 給您。您願意嗎，大班？";
 
 /* No comment provided by engineer. */
-"Elder Brother Wu has sent %lld braves to escort you to the Wu mansion, Taipan." = "吳老大派了 %lld 名打手來護送您到吳府，大班。";
+"Elder Brother Wu has sent %@ braves to escort you to the Wu mansion, Taipan." = "吳老大派了 %@ 名打手來護送您到吳府，大班。";
 
 /* No comment provided by engineer. */
 "Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts." = "吳老大提醒您儒家以誠為本，欠債可是要還錢的。";
@@ -182,7 +182,7 @@
 "elderbrotherwu.no" = "沒有";
 
 /* No comment provided by engineer. */
-"Enough to fill ship (%lld)" = "足夠裝滿船（%lld）";
+"Enough to fill ship (%@)" = "足夠裝滿船（%@）";
 
 /* No comment provided by engineer. */
 "Fair" = "尚可";
@@ -209,7 +209,7 @@
 "Good" = "良好";
 
 /* No comment provided by engineer. */
-"Good joss!! They let us be!!" = "我的天啊!! 他們放了我們走!!";
+"Good joss!! They let us be!!" = "我的天啊!! 他們放了我們一馬!!";
 
 /* No comment provided by engineer. */
 "Guns %@" = "%@ 座砲";
@@ -227,7 +227,7 @@
 "Hit ‘em, but didn‘t sink ‘em, Taipan!" = "擊中了，但沒能擊沉他們，大班！";
 
 /* No comment provided by engineer. */
-"Hold %lld" = "船艙 %lld";
+"Hold %@" = "船艙 %@";
 
 /* No comment provided by engineer. */
 "Hong Kong" = "香港";
@@ -284,10 +284,10 @@
 "Let‘s hope we lose ‘em, Taipan!" = "希望我們能逃得掉，大班！";
 
 /* No comment provided by engineer. */
-"Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?" = "李元要求您捐獻 %@ 給護國庇民的媽祖天后廟。您願意付嗎？";
+"Li Yuen asks %@ in donation to the temple of Tin Hau, the Sea Goddess. Will you pay?" = "李元要求您捐獻 %@ 來給天后廟的媽祖重塑金身。您願意付嗎？";
 
 /* No comment provided by engineer. */
-"Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!" = "大班，李元派了個副手來，說他們校尉急欲想在香港跟您會面！";
+"Li Yuen has sent a Lieutenant, Taipan. He says his admiral wishes to see you in Hong Kong, posthaste!" = "大班，李元派了個副手來，說他首領急欲想在香港跟您會面！";
 
 /* No comment provided by engineer. */
 "Li Yuen‘s fleet drove them off!" = "李元的艦隊把他們趕跑了！";
@@ -365,7 +365,7 @@
 "Overload" = "超載";
 
 /* No comment provided by engineer. */
-"Overload (%lld)" = "超載（%@）";
+"Overload (%@)" = "超載部分（%@）";
 
 /* No comment provided by engineer. */
 "Perfect" = "完善";
@@ -584,7 +584,7 @@
 "You can\nafford %@" = "您買得起 %@";
 
 /* No comment provided by engineer. */
-"You can afford %lld" = "您買得起 %lld";
+"You can afford %@" = "您買得起 %@";
 
 /* No comment provided by engineer. */
 "You have\n%@" = "您有\n%@";
@@ -597,9 +597,6 @@
 
 /* No comment provided by engineer. */
 "You have %@" = "您有 %@";
-
-/* No comment provided by engineer. */
-"You have %lld" = "您有 %lld";
 
 /* ...millionaire! */
 "You‘re a" = "您是個";
@@ -617,5 +614,5 @@
 "Your Rating:" = "您的等級：";
 
 /* No comment provided by engineer. */
-"Your score is %lld." = "您的評分是 %lld。";
+"Your score is %@." = "您的評分是 %@";
 

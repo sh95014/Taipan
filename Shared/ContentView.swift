@@ -257,7 +257,7 @@ struct TradingView: View {
             RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor : .warningColor) {
                 HStack {
                     if game.shipFreeCapacity >= 0 {
-                        Text("Hold \(game.shipFreeCapacity)")
+                        Text("Hold \(game.shipFreeCapacity.formatted())")
                     }
                     else {
                         Text("Overload")
@@ -491,7 +491,7 @@ struct TradingView: View {
             case .mcHenryOffer:
                 McHenryOfferView(isShowingRepairModal: $isShowingRepairModal)
             case .elderBrotherWuWarning1:
-                CompradorsReport("Elder Brother Wu has sent \(game.elderBrotherWuBraves) braves to escort you to the Wu mansion, Taipan.")
+                CompradorsReport("Elder Brother Wu has sent \(game.elderBrotherWuBraves.formatted()) braves to escort you to the Wu mansion, Taipan.")
             case .elderBrotherWuWarning2:
                 CompradorsReport("Elder Brother Wu reminds you of the Confucian ideal of personal worthiness, and how this applies to paying one‘s debts.")
             case .elderBrotherWuWarning3:
@@ -1036,7 +1036,7 @@ struct BattleView: View {
         VStack {
             HStack {
                 VStack {
-                    let attacking = String.localizedPluralString("battle.attacking.count", game.hostilesCount!)
+                    let attacking = String(localized: "\(game.hostilesCount!) attacking, Taipan!")
                     let orderFormat = String(localized: "Your orders are to: %@")
                     let orders = String.localizedStringWithFormat(orderFormat, game.battleOrder?.label ?? "")
                     Text(verbatim: "\(attacking)\(isLandscapePhone ? " " : "\n")\(orders)")
@@ -1328,13 +1328,10 @@ struct FinalStatsView: View {
                     
                     let years = game.months / 12
                     let months = game.months % 12
-                    Text("You traded for \(years) " +
-                         ((years == 1) ? "year" : "years") +
-                         " \(months) " +
-                         ((months == 1) ? "month" : "months"))
+                    Text("You traded for \(years) \(months)")
                         .withReportStyle()
                     
-                    Text("Your score is \(score).")
+                    Text("Your score is \(score.formatted()).")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 3)
                         .foregroundColor(.taipanBackgroundColor)
@@ -1578,7 +1575,7 @@ struct ContentView: View {
                         amount = game.canAfford(selectedMerchandise)
                     } content: {
                         VStack {
-                            Text("All I can afford (\(game.canAfford(selectedMerchandise)))")
+                            Text("All I can afford (\(game.canAfford(selectedMerchandise).formatted()))")
                                 .frame(maxWidth: .infinity)
                         }
                     }
@@ -1587,7 +1584,7 @@ struct ContentView: View {
                         amount = game.shipFreeCapacity
                     } content: {
                         VStack {
-                            Text("Enough to fill ship (\(game.shipFreeCapacity))")
+                            Text("Enough to fill ship (\(game.shipFreeCapacity.formatted()))")
                                 .frame(maxWidth: .infinity)
                         }
                     }
@@ -1623,7 +1620,7 @@ struct ContentView: View {
                             VStack {
                                 Text(item.label)
                                     .frame(maxWidth: .infinity)
-                                Text("You can afford \(game.canAfford(item))")
+                                Text("You can afford \(game.canAfford(item).formatted())")
                                     .font(.captionFont)
                             }
                         }
@@ -1671,7 +1668,7 @@ struct ContentView: View {
                         amount = amountOnShip
                     } content: {
                         VStack {
-                            Text("All of it (\(amountOnShip))")
+                            Text("All of it (\(amountOnShip.formatted()))")
                                 .frame(maxWidth: .infinity)
                         }
                     }
@@ -1681,7 +1678,7 @@ struct ContentView: View {
                             amount = -game.shipFreeCapacity
                         } content: {
                             VStack {
-                                Text("Overload (\(-game.shipFreeCapacity))")
+                                Text("Overload (\((-game.shipFreeCapacity).formatted()))")
                                     .frame(maxWidth: .infinity)
                             }
                         }
@@ -1735,7 +1732,7 @@ struct ContentView: View {
                             VStack {
                                 Text(item.label)
                                     .frame(maxWidth: .infinity)
-                                Text("You have \(game.shipHold[item] ?? 0)")
+                                Text("You have \((game.shipHold[item] ?? 0).formatted())")
                                     .font(.captionFont)
                             }
                         }
@@ -1964,7 +1961,6 @@ struct ContentView: View {
                 else {
                     Text("What shall I transfer, Taipan?")
                         .padding(.bottom, 20)
-
                     HStack {
                         VStack {
                             Text("Ship")
@@ -1977,7 +1973,7 @@ struct ContentView: View {
                                         Label(item.label, systemImage: "chevron.compact.right")
                                             .frame(maxWidth: .infinity)
                                             .labelStyle(TrailingLabelStyle())
-                                        Text("You have \(game.shipHold[item] ?? 0)")
+                                        Text("You have \((game.shipHold[item] ?? 0).formatted())")
                                             .font(.captionFont)
                                     }
                                 }
@@ -1995,7 +1991,7 @@ struct ContentView: View {
                                         Label(item.label, systemImage: "chevron.compact.left")
                                             .frame(maxWidth: .infinity)
                                             .labelStyle(LeadingLabelStyle())
-                                        Text("You have \(game.warehouse[item] ?? 0)")
+                                        Text("You have \((game.warehouse[item] ?? 0).formatted())")
                                             .font(.captionFont)
                                     }
                                 }

@@ -47,7 +47,7 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 ## Known Issues
 
 - [X] App Icon
-- [ ] Localization, including proper plurality handling and `fancyFormatted`
+- [X] Localization, including proper plurality handling and `fancyFormatted`
 - [X] Keyboard support, including for the custom keypad and Apple \]\[ compatibility
 - [X] Untested haptics for when ship is hit
 - [ ] Feedback and alert sounds
