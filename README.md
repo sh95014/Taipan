@@ -48,7 +48,7 @@ The touch UI disables options when they're not applicable, which makes "the bug"
 
 本遊戲以經完全中文化。我翻譯時故意使用一些如「錢莊」等比較古拙的字眼來搭配遊戲中公元 1860 年左右的用詞，但有哪位先進願意指教的話，我是感激不盡。
 
-您如果在 macOS 上使用，請先用系統的 Font Book 程式確認有下載並安裝 STFangSong 仿宋字體。在 iOS 上我搞不懂該如何下載系統字體，所以內崁 cwTeX 的仿宋字型。這個字型有侵權的疑慮，要另用的話，請從[原出處](https://github.com/l10n-tw/cwtex-q-fonts)取得。據我所知，我沒有發表本遊戲的執行檔，應不受 GPL 約束而必須把遊戲本身也改以 GPL 授權。
+您如果在 macOS 上使用，請先用系統的 Font Book 程式確認有下載並安裝 STFangSong 仿宋字體。在 iOS 上我搞不懂該如何下載系統字體，所以內嵌了 cwTeX 的仿宋字型。這個字型有侵權的疑慮，要另用的話，請從[原出處](https://github.com/l10n-tw/cwtex-q-fonts)取得。據我所知，我沒有發表本遊戲的執行檔，應不受 GPL 約束而必須把遊戲本身也改以 GPL 授權。
 
 ## Known Issues
 
