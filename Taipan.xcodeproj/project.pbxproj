@@ -330,11 +330,6 @@
 				LOCALIZED_STRING_MACRO_NAMES = (
 					NSLocalizedString,
 					CFCopyLocalizedString,
-					CompradorsReport,
-					CompradorsReportYesNo,
-					CaptainsReport,
-					CompradorsReportBadJoss,
-					CaptainsReportLiYuen,
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -392,11 +387,6 @@
 				LOCALIZED_STRING_MACRO_NAMES = (
 					NSLocalizedString,
 					CFCopyLocalizedString,
-					CompradorsReport,
-					CompradorsReportYesNo,
-					CaptainsReport,
-					CompradorsReportBadJoss,
-					CaptainsReportLiYuen,
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
