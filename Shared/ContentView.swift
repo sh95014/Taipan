@@ -23,7 +23,7 @@ struct SplashView: View {
     @EnvironmentObject private var game: Game
     @State var splashAnimation = false
     @State var lorchaOpacity: CGFloat = 0.0
-    
+
     var body: some View {
         ZStack {
             VStack {
@@ -70,7 +70,7 @@ struct NameView: View {
     @EnvironmentObject private var game: Game
     @FocusState private var focused: Bool
     @State private var firmName: String = ""
-    
+
     var body: some View {
         VStack {
             Spacer()
@@ -95,8 +95,7 @@ struct NameView: View {
                             if firmName.count > 0 {
                                 game.firmName = firmName
                                 game.sendEvent(.done)
-                            }
-                            else {
+                            } else {
                                 focused = true
                             }
                         })
@@ -131,7 +130,7 @@ struct NameView: View {
 
 struct DebtOrGunsView: View {
     @EnvironmentObject private var game: Game
-    
+
     var body: some View {
         VStack {
             Spacer()
@@ -176,16 +175,16 @@ struct TradingView: View {
     @Binding var isShowingBankModal: Bool
     @Binding var isShowingTransferModal: Bool
     @Binding var isShowingRepairModal: Bool
-    
+
     var isLandscapePhone = hasSmallScreen && isLandscape
 
     private let bottomRowMinHeight: CGFloat = 45
     private let bottomRowMinWidth: CGFloat = 45
-    
-    var CurrentDate: some View {
+
+    var currentDate: some View {
         return Text("15 \(game.month.label) \(String(game.year!))", comment: "day month year")
     }
-    
+
     var locationDebtStatus: some View {
         Group {
             if hasLargeScreen {
@@ -193,7 +192,7 @@ struct TradingView: View {
                     Text("Date")
                         .font(.captionFont)
                         .opacity(0.8)
-                    CurrentDate
+                    currentDate
                 }
                 FixedSpacer(maxLength: 10)
             }
@@ -220,7 +219,7 @@ struct TradingView: View {
             }
         } // Group
     }
-    
+
     var inventory: some View {
         Group {
             RoundRectVStack(.taipanColor) {
@@ -253,13 +252,12 @@ struct TradingView: View {
                 }
                 .padding(.horizontal, merchandisePadding())
             }
-            
+
             RoundRectVStack(game.shipFreeCapacity >= 0 ? .taipanColor : .warningColor) {
                 HStack {
                     if game.shipFreeCapacity >= 0 {
                         Text("Hold \(game.shipFreeCapacity.formatted())")
-                    }
-                    else {
+                    } else {
                         Text("Overload")
                             .foregroundColor(.warningColor)
                     }
@@ -286,7 +284,7 @@ struct TradingView: View {
             }
         }
     }
-    
+
     var actions: some View {
         Group {
             let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
@@ -346,7 +344,7 @@ struct TradingView: View {
             .keyboardShortcut("q", modifiers: [])
         }
     }
-    
+
     var body: some View {
         VStack {
             Group {
@@ -356,22 +354,20 @@ struct TradingView: View {
                             Text(verbatim: "\(game.firmName!)")
                                 .font(.titleFont)
                                 .lineLimit(1)
-                            CurrentDate
+                            currentDate
                                 .padding(.bottom, 5)
                         }
-                    }
-                    else {
+                    } else {
                         HStack {
                             Text("Firm: \(game.firmName!), Hong Kong")
                                 .font(.titleFont)
                                 .lineLimit(1)
                             Spacer()
-                            CurrentDate
+                            currentDate
                                 .padding(.bottom, 5)
                         }
                     }
-                }
-                else {
+                } else {
                     Text("Firm: \(game.firmName!), Hong Kong")
                         .font(.titleFont)
                         .lineLimit(1)
@@ -380,26 +376,23 @@ struct TradingView: View {
                         #endif
                 }
             }
-            
+
             if hasSmallScreen {
                 if isPortrait {
                     if sizeCategory > .large {
                         VStack { locationDebtStatus }
-                    }
-                    else {
+                    } else {
                         HStack { locationDebtStatus }
                     }
                     VStack { inventory }
-                }
-                else {
+                } else {
                     HStack {
                         inventory
                         VStack { locationDebtStatus }
                             .frame(minWidth: 150)
                     }
                 }
-            }
-            else {
+            } else {
                 HStack {
                     VStack { inventory }
                     Spacer(minLength: 20)
@@ -407,7 +400,7 @@ struct TradingView: View {
                         .frame(minWidth: hasLargeScreen ? 200 : nil)
                 }
             }
-            
+
             HStack {
                 let cashFormat = String(localized: "Cash: %@")
                 Text(String.localizedStringWithFormat(cashFormat, game.cash!.fancyFormatted()))
@@ -415,22 +408,22 @@ struct TradingView: View {
                 let bankFormat = String(localized: "Bank: %@")
                 Text(String.localizedStringWithFormat(bankFormat, game.bank.fancyFormatted()))
             }
-            
+
             Divider()
                 .background(Color.taipanColor)
-            
+
             switch game.state {
             case .trading:
                 Group {
                     Text("Comprador‘s Report")
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, isLandscapePhone ? 2 : 5)
-                    
+
                     Spacer()
-                    
+
                     Text("Taipan, present prices per unit here are")
                         .withMessageStyle()
-                    
+
                     HStack {
                         Spacer()
                         VStack(alignment: .leading) {
@@ -453,19 +446,18 @@ struct TradingView: View {
                         Spacer()
                     }
                     .padding(.vertical, isLandscapePhone ? 0 : 3)
-                    
+
                     Spacer()
-                    
+
                     Text("Shall I", comment: "...buy, sell, etc")
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
+
                     if sizeCategory > .large {
                         VStack { actions }
-                    }
-                    else {
+                    } else {
                         HStack { actions }
                     }
-                    
+
                     if game.currentCity == .hongkong {
                         FullWidthButton {
                             game.transitionTo(.retirement)
@@ -555,36 +547,36 @@ struct TradingView: View {
         }
         .padding(.horizontal, 8)
     }
-    
+
     func merchandisePadding() -> CGFloat {
+        // FIXME probably should switch to @ScaledMetric
         if isLandscapePhone {
             return 10
         }
         switch sizeCategory {
-        case .extraSmall: fallthrough
-        case .small: fallthrough
-        case .medium: fallthrough
-        case .large: return 50
-        case .extraLarge: return 40
-        case .extraExtraLarge: return 30
-        case .extraExtraExtraLarge: return 20
-        case .accessibilityMedium: fallthrough
-        case .accessibilityLarge: fallthrough
-        case .accessibilityExtraLarge: fallthrough
-        case .accessibilityExtraExtraLarge: fallthrough
-        case .accessibilityExtraExtraExtraLarge: fallthrough
+        case .extraSmall, .small, .medium, .large:
+            return 50
+        case .extraLarge:
+            return 40
+        case .extraExtraLarge:
+            return 30
+        case .extraExtraExtraLarge:
+            return 20
+        case .accessibilityMedium, .accessibilityLarge, .accessibilityExtraLarge,
+             .accessibilityExtraExtraLarge, .accessibilityExtraExtraExtraLarge:
+            return 10
         @unknown default: return 10
         }
     }
-    
+
     struct CaptainsReport: View {
         @EnvironmentObject private var game: Game
         var message: LocalizedStringKey
-        
+
         init(_ message: LocalizedStringKey) {
             self.message = message
         }
-        
+
         var body: some View {
             VStack {
                 Text("Captain‘s Report")
@@ -596,15 +588,15 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
+
     struct CaptainsReportLiYuen: View {
         @EnvironmentObject private var game: Game
         var message: LocalizedStringKey?
-        
+
         init(_ message: LocalizedStringKey?) {
             self.message = message
         }
-        
+
         var body: some View {
             VStack {
                 Text("Captain‘s Report")
@@ -621,10 +613,10 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
+
     struct CaptainsReportStorm: View {
         @EnvironmentObject private var game: Game
-        
+
         var body: some View {
             VStack {
                 Text("Captain‘s Report")
@@ -636,8 +628,7 @@ struct TradingView: View {
                         .withMessageStyle()
                         .padding(.leading, 20)
                         .padding(.top, 10)
-                }
-                else if game.state == .stormMadeIt {
+                } else if game.state == .stormMadeIt {
                     Text("storm.madeit")
                         .withMessageStyle()
                         .padding(.leading, 20)
@@ -654,15 +645,15 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
+
     struct CompradorsReport: View {
         @EnvironmentObject private var game: Game
         var message: LocalizedStringKey
-        
+
         init(_ message: LocalizedStringKey) {
             self.message = message
         }
-        
+
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -674,15 +665,15 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
+
     struct CompradorsReportYesNo: View {
         @EnvironmentObject private var game: Game
         var message: LocalizedStringKey
-        
+
         init(_ message: LocalizedStringKey) {
             self.message = message
         }
-        
+
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -715,15 +706,15 @@ struct TradingView: View {
             }
         }
     }
-    
+
     struct CompradorsReportBadJoss: View {
         @EnvironmentObject private var game: Game
         var message: LocalizedStringKey
-        
+
         init(_ message: LocalizedStringKey) {
             self.message = message
         }
-        
+
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -738,11 +729,11 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
+
     struct McHenryOfferView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingRepairModal: Bool
-        
+
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -775,12 +766,12 @@ struct TradingView: View {
             } // VStack
         }
     }
-    
+
     struct ElderBrotherWuBusinessView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingBorrowModal: Bool
         @Binding var isShowingRepayModal: Bool
-        
+
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -823,10 +814,10 @@ struct TradingView: View {
             }
         }
     }
-    
+
     struct NewShipOfferView: View {
         @EnvironmentObject private var game: Game
-        
+
         var body: some View {
             VStack {
                 Text("Comprador‘s Report")
@@ -836,8 +827,7 @@ struct TradingView: View {
                      + Text("damaged", comment: "...trade in your <damaged> ship for one...").underline()
                      + Text(" ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?"))
                         .withMessageStyle()
-                }
-                else {
+                } else {
                     Text("Do you wish to trade in your fine ship for one with 50 more capacity by paying an additional \(game.offerAmount!.formatted()), Taipan?")
                         .withMessageStyle()
                 }
@@ -867,10 +857,10 @@ struct TradingView: View {
             }
         }
     }
-    
+
     struct BattleSummaryView: View {
         @EnvironmentObject private var game: Game
-        
+
         var body: some View {
             VStack {
                 Text("Captain‘s Report")
@@ -880,14 +870,12 @@ struct TradingView: View {
                         .withMessageStyle()
                     Text("It‘s worth \(booty.fancyFormatted())!")
                         .withMessageStyle()
-                }
-                else if game.shipStatus <= 0 {
+                } else if game.shipStatus <= 0 {
                     Text("The buggers got us, Taipan!!!")
                         .withMessageStyle()
                     Text("It‘s all over, now!!!")
                         .withMessageStyle()
-                }
-                else {
+                } else {
                     Text("pirates.madeit")
                         .withMessageStyle()
                 }
@@ -896,7 +884,7 @@ struct TradingView: View {
             .withTappableStyle(game)
         }
     }
-    
+
     struct RetirementView: View {
         @EnvironmentObject private var game: Game
         @Environment(\.sizeCategory) var sizeCategory
@@ -927,7 +915,7 @@ struct KeypadView: View {
     @Binding var amount: Int
     var limitHint: String?
     var bigNumbers: Bool?
-    
+
     var body: some View {
         VStack {
             if bigNumbers ?? false {
@@ -940,8 +928,7 @@ struct KeypadView: View {
                         .font(.captionFont)
                         .opacity(0.7)
                 }
-            }
-            else {
+            } else {
                 HStack {
                     Text(verbatim: "\(amount)")
                         .withTextFieldStyle(width: 100, color: .taipanColor)
@@ -970,15 +957,14 @@ struct KeypadView: View {
                         .keyboardShortcut(KeyEquivalent("\(digit)".first!), modifiers: [])
                     }
                     KeypadButton {
-                        amount = amount / 10
+                        amount /= 10
                     } content: {
                         Image(systemName: "delete.backward")
                     }
                     .padding(2)
                     .keyboardShortcut(.delete, modifiers: [])
                 }
-            }
-            else {
+            } else {
                 ForEach(0...2, id: \.self) { row in
                     HStack {
                         ForEach(0...2, id: \.self) { column in
@@ -1003,7 +989,7 @@ struct KeypadView: View {
                     .padding(2)
                     .keyboardShortcut("0", modifiers: [])
                     KeypadButton {
-                        amount = amount / 10
+                        amount /= 10
                     } content: {
                         Image(systemName: "delete.backward")
                     }
@@ -1027,12 +1013,12 @@ struct BattleView: View {
     @State private var shipOffset: CGSize = CGSize.zero
     @Binding var battleBackgroundColor: Color
     @Binding var isShowingSellModal: Bool
-    
+
     var isLandscapePhone = hasSmallScreen && isLandscape
 
     var body: some View {
         let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
-        
+
         VStack {
             HStack {
                 VStack {
@@ -1054,9 +1040,9 @@ struct BattleView: View {
                     .overlay(Rectangle().frame(width: 1, height: nil).foregroundColor(.taipanColor), alignment: .leading)
             }
             Text(game.battleMessage ?? " ")
-            
+
             Spacer()
-            
+
             if hasSmallScreen {
                 if isLandscapePhone {
                     LazyVGrid(columns: [
@@ -1064,7 +1050,7 @@ struct BattleView: View {
                         GridItem(),
                         GridItem(),
                         GridItem(),
-                        GridItem(),
+                        GridItem()
                     ], spacing: 10) {
                         ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
                             HostileShipView(ship: ship,
@@ -1078,12 +1064,11 @@ struct BattleView: View {
                             .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
                     }
                     .padding(.horizontal, 8)
-                }
-                else {
+                } else {
                     LazyVGrid(columns: [
                         GridItem(),
                         GridItem(),
-                        GridItem(),
+                        GridItem()
                     ], spacing: 10) {
                         ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
                             HostileShipView(ship: ship,
@@ -1098,15 +1083,14 @@ struct BattleView: View {
                         .padding(.top, 5)
                         .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
                 }
-            }
-            else {
+            } else {
                 HStack {
                     LazyVGrid(columns: [
                         GridItem(),
                         GridItem(),
                         GridItem(),
                         GridItem(),
-                        GridItem(),
+                        GridItem()
                     ], spacing: 10) {
                         ForEach(0..<game.maxHostilesOnScreen, id: \.self) { ship in
                             HostileShipView(ship: ship,
@@ -1123,9 +1107,9 @@ struct BattleView: View {
                         .opacity(game.hostilesCount! > game.countOfHostilesOnScreen ? 1.0 : 0.0)
                 }
             }
-            
+
             Spacer()
-            
+
             Text("Current seaworthiness: ") +
             Text(verbatim: "\(game.fancyShipStatus(.parenthesis))")
                 .foregroundColor(game.shipInDanger ? .warningColor : .taipanColor)
@@ -1165,23 +1149,22 @@ struct BattleView: View {
             if newValue ?? false {
                 let flashes = 6
                 let flashDuration = 0.07
-                for i in 1...flashes {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration * Double(i)) {
+                for flash in 1...flashes {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration * Double(flash)) {
                         shipTakingFire()
                     }
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + flashDuration * Double(flashes + 1)) {
                     game.shipDidGetHit()
                 }
-            }
-            else {
+            } else {
                 shipOffset = CGSize.zero
                 battleBackgroundColor = .taipanBackgroundColor
             }
         }
         .padding(2)
     }
-    
+
     struct HostileShipView: View {
         @EnvironmentObject private var game: Game
         var ship: Int
@@ -1189,7 +1172,7 @@ struct BattleView: View {
         @Binding var firedOnShipBackground: Color
         @Binding var battleBackgroundColor: Color
         @Binding var hostileYOffset: CGFloat
-        
+
         var body: some View {
             Image("lorcha")
                 .resizable()
@@ -1260,12 +1243,12 @@ struct BattleView: View {
                     normalHostileShip()
                 }
         }
-        
+
         private func normalHostileShip() {
             firedOnShipForeground = .taipanColor
             firedOnShipBackground = .taipanBackgroundColor
         }
-        
+
         private func reverseHostileShip() {
             // inverts the foreground and background colors to simulate hitting
             // a hostile ship
@@ -1273,7 +1256,7 @@ struct BattleView: View {
             firedOnShipBackground = .taipanColor
         }
     }
-    
+
     private func shipTakingFire() {
         // offset the entire view and change the background color randomly to
         // simulate getting hit
@@ -1288,11 +1271,11 @@ struct FinalStatsView: View {
     @Environment(\.sizeCategory) var sizeCategory
 
     var isLandscapePhone = hasSmallScreen && isLandscape
-    
+
     var body: some View {
         let score = game.score
         let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
-        
+
         VStack {
             if game.state == .finalStats {
                 Group {
@@ -1302,15 +1285,13 @@ struct FinalStatsView: View {
                                 .font(.titleFont)
                                 .lineLimit(1)
                                 .padding(.bottom, 10)
-                        }
-                        else {
+                        } else {
                             Text("Firm: \(game.firmName!), Hong Kong")
                                 .font(.titleFont)
                                 .lineLimit(1)
                                 .padding(.bottom, 10)
                         }
-                    }
-                    else {
+                    } else {
                         Text("Firm: \(game.firmName!), Hong Kong")
                             .font(.titleFont)
                             .lineLimit(1)
@@ -1325,30 +1306,29 @@ struct FinalStatsView: View {
                         .withReportStyle()
                     Text("Ship Size: \(game.shipCapacity.formatted()) units with \(game.shipGuns!.formatted()) guns")
                         .withReportStyle()
-                    
+
                     let years = game.months / 12
                     let months = game.months % 12
                     Text("You traded for \(years) \(months)")
                         .withReportStyle()
-                    
+
                     Text("Your score is \(score.formatted()).")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 3)
                         .foregroundColor(.taipanBackgroundColor)
                         .background(Color.taipanColor)
-                    
+
                     if score < 0 {
                         Text("The crew has requested that you stay on shore for their safety!!")
                             .withReportStyle()
                             .padding(.top, 10)
-                    }
-                    else if score < 100 {
+                    } else if score < 100 {
                         Text("Have you considered a land based job?")
                             .withReportStyle()
                             .padding(.top, 10)
                     }
                 } // Group
-                
+
                 Text("Your Rating:")
                     .withMessageStyle()
                     .padding(.top, 10)
@@ -1400,13 +1380,13 @@ struct FinalStatsView: View {
                     .padding(.vertical, 2)
                 } // RoundRectVStack
                 .padding(.horizontal, 2)
-                
+
                 Spacer()
-                
+
                 Group {
                     Text("Play again?")
                         .withMessageStyle()
-                    
+
                     HStack {
                         RoundRectButton {
                             game.sendEvent(.no)
@@ -1447,7 +1427,7 @@ struct ContentView: View {
     @State private var isShowingTransferModal = false
     @State private var isShowingRepairModal = false
     @State private var battleBackgroundColor = Color.clear
-    
+
     var body: some View {
         GeometryReader { proxy in
             #if os(iOS)
@@ -1457,7 +1437,7 @@ struct ContentView: View {
             let height = proxy.size.height - bottomPadding
             let width = proxy.size.width
             #endif
-            
+
             ZStack {
                 battleBackgroundColor
                     .ignoresSafeArea()
@@ -1468,15 +1448,14 @@ struct ContentView: View {
                                        isShowingSellModal: $isShowingSellModal)
                                 .blur(radius: isShowingModal ? 3 : 0)
                                 .disabled(isShowingModal)
-                            
+
                             if isShowingSellModal {
                                 SellModalView(isShowingSellModal: $isShowingSellModal)
                             }
                         }
                         .background(battleBackgroundColor)
                         .frame(minHeight: height)
-                    }
-                    else if [ .splash, .name, .debtOrGuns, .finalStats ].contains(game.state) {
+                    } else if [ .splash, .name, .debtOrGuns, .finalStats ].contains(game.state) {
                         VStack {
                             switch game.state {
                             case .splash: SplashView()
@@ -1488,8 +1467,7 @@ struct ContentView: View {
                         }
                         .padding(2)
                         .frame(minHeight: height)
-                    }
-                    else {
+                    } else {
                         ZStack {
                             TradingView(isShowingBuyModal: $isShowingBuyModal,
                                         isShowingSellModal: $isShowingSellModal,
@@ -1502,29 +1480,22 @@ struct ContentView: View {
                                 .blur(radius: isShowingModal ? 3 : 0)
                                 .disabled(isShowingModal)
                                 .padding(2)
-                            
+
                             if isShowingBuyModal {
                                 BuyModalView(isShowingBuyModal: $isShowingBuyModal)
-                            }
-                            else if isShowingSellModal {
+                            } else if isShowingSellModal {
                                 SellModalView(isShowingSellModal: $isShowingSellModal)
-                            }
-                            else if isShowingDestinationModal {
+                            } else if isShowingDestinationModal {
                                 DestinationModalView(isShowingDestinationModal: $isShowingDestinationModal)
-                            }
-                            else if isShowingBorrowModal {
+                            } else if isShowingBorrowModal {
                                 BorrowModalView(isShowingBorrowModal: $isShowingBorrowModal)
-                            }
-                            else if isShowingRepayModal {
+                            } else if isShowingRepayModal {
                                 RepayModalView(isShowingRepayModal: $isShowingRepayModal)
-                            }
-                            else if isShowingBankModal {
+                            } else if isShowingBankModal {
                                 BankModalView(isShowingBankModal: $isShowingBankModal)
-                            }
-                            else if isShowingTransferModal {
+                            } else if isShowingTransferModal {
                                 TransferModalView(isShowingTransferModal: $isShowingTransferModal)
-                            }
-                            else if isShowingRepairModal {
+                            } else if isShowingRepairModal {
                                 RepairModalView(isShowingRepairModal: $isShowingRepairModal)
                             }
                         }
@@ -1550,19 +1521,19 @@ struct ContentView: View {
         .frame(minWidth: 1024, minHeight: 768)
         #endif
     }
-    
+
     var isShowingModal: Bool {
         isShowingBuyModal || isShowingSellModal || isShowingDestinationModal ||
         isShowingBorrowModal || isShowingRepayModal || isShowingBankModal ||
         isShowingTransferModal || isShowingRepairModal
     }
-    
+
     struct BuyModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingBuyModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var amount = 0
-        
+
         var body: some View {
             VStack {
                 if let selectedMerchandise = selectedMerchandise {
@@ -1610,8 +1581,7 @@ struct ContentView: View {
                         .keyboardShortcut("b", modifiers: [])
                     }
                     .padding(.top, 10)
-                }
-                else {
+                } else {
                     Text("What do you wish me to buy, Taipan?")
                     ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
                         FullWidthButton {
@@ -1640,24 +1610,23 @@ struct ContentView: View {
             .frame(maxWidth: 500)
         }
     }
-    
+
     struct SellModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingSellModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var amount = 0
-        
+
         var body: some View {
             let discard = game.isUnderAttack()
-            
+
             VStack {
                 let merchandise = selectedMerchandise ?? game.onlyMerchandiseOnShip()
                 if let merchandise = merchandise,
                    let amountOnShip = game.shipHold[merchandise] {
                     if discard {
                         Text("How much, Taipan?")
-                    }
-                    else {
+                    } else {
                         Text("How much \(merchandise.label) shall I sell, Taipan:")
                     }
                     KeypadView(
@@ -1698,8 +1667,7 @@ struct ContentView: View {
                         RoundRectButton {
                             if discard {
                                 game.discard(merchandise, amount)
-                            }
-                            else {
+                            } else {
                                 game.sell(merchandise, amount)
                             }
                             isShowingSellModal = false
@@ -1707,8 +1675,7 @@ struct ContentView: View {
                             if discard {
                                 Text("Throw")
                                     .frame(minWidth: 80)
-                            }
-                            else {
+                            } else {
                                 Text("Sell")
                                     .frame(minWidth: 80)
                             }
@@ -1717,12 +1684,10 @@ struct ContentView: View {
                         .keyboardShortcut(discard ? "t" : "s", modifiers: [])
                     }
                     .padding(.top, 10)
-                }
-                else {
+                } else {
                     if discard {
                         Text("What shall I throw overboard, Taipan?")
-                    }
-                    else {
+                    } else {
                         Text("What do you wish me to sell, Taipan?")
                     }
                     ForEach(Game.Merchandise.allCases, id: \.rawValue) { item in
@@ -1755,11 +1720,11 @@ struct ContentView: View {
             .frame(maxWidth: 500)
         }
     }
-    
+
     struct DestinationModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingDestinationModal: Bool
-        
+
         var body: some View {
             VStack {
                 Text("Taipan, do you wish me to go to:")
@@ -1786,12 +1751,12 @@ struct ContentView: View {
             .frame(maxWidth: 500)
         }
     }
-    
+
     struct BorrowModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingBorrowModal: Bool
         @State private var amount = 0
-        
+
         var body: some View {
             VStack {
                 Text("How much do you wish to borrow?")
@@ -1822,12 +1787,12 @@ struct ContentView: View {
             .withModalStyle(.taipanSheetColor)
         }
     }
-    
+
     struct RepayModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingRepayModal: Bool
         @State private var amount = 0
-        
+
         var body: some View {
             VStack {
                 Text("How much do you wish to repay him?")
@@ -1857,12 +1822,12 @@ struct ContentView: View {
             .withModalStyle(.taipanSheetColor)
         }
     }
-    
+
     struct BankModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingBankModal: Bool
         @State private var amount = 0
-        
+
         var body: some View {
             VStack {
                 KeypadView(amount: $amount,
@@ -1908,25 +1873,24 @@ struct ContentView: View {
             .withModalStyle(.taipanSheetColor)
         }
     }
-    
+
     struct TransferModalView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingTransferModal: Bool
         @State private var selectedMerchandise: Game.Merchandise?
         @State private var toWarehouse: Bool?
         @State private var amount = 0
-        
+
         var body: some View {
             VStack {
                 if let selectedMerchandise = selectedMerchandise,
                    let toWarehouse = toWarehouse {
                     if toWarehouse {
                         Text("How much \(selectedMerchandise.label) shall I move to the warehouse, Taipan?")
-                    }
-                    else {
+                    } else {
                         Text("How much \(selectedMerchandise.label) shall I move aboard ship, Taipan?")
                     }
-                    
+
                     let transferLimit = toWarehouse ? game.shipHold[selectedMerchandise]! : game.warehouse[selectedMerchandise]!
                     KeypadView(
                         amount: $amount,
@@ -1944,8 +1908,7 @@ struct ContentView: View {
                         RoundRectButton {
                             if toWarehouse {
                                 game.transferToWarehouse(selectedMerchandise, amount)
-                            }
-                            else {
+                            } else {
                                 game.transferToShip(selectedMerchandise, amount)
                             }
                             isShowingTransferModal = false
@@ -1957,8 +1920,7 @@ struct ContentView: View {
                         .keyboardShortcut("t", modifiers: [])
                         .keyboardShortcut(.defaultAction)
                     }
-                }
-                else {
+                } else {
                     Text("What shall I transfer, Taipan?")
                         .padding(.bottom, 20)
                     HStack {
@@ -1999,7 +1961,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    
+
                     FullWidthButton {
                         isShowingTransferModal = false
                         self.selectedMerchandise = nil
@@ -2018,7 +1980,7 @@ struct ContentView: View {
         @EnvironmentObject private var game: Game
         @Binding var isShowingRepairModal: Bool
         @State private var amount = 0
-        
+
         var body: some View {
             VStack {
                 let shipDamagePercent = 100 - game.shipStatus
@@ -2081,12 +2043,12 @@ struct ContentView_Previews: PreviewProvider {
 struct FullWidthButton<Content: View>: View {
     let action: () -> Void
     let content: () -> Content
-    
+
     init(_ action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.action = action
         self.content = content
     }
-    
+
     var body: some View {
         Button {
             action()
@@ -2110,12 +2072,12 @@ struct KeypadButton<Content: View>: View {
     let action: () -> Void
     let content: () -> Content
     let size: CGFloat = 40.0
-    
+
     init(_ action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.action = action
         self.content = content
     }
-    
+
     var body: some View {
         Button {
             action()
@@ -2137,12 +2099,12 @@ struct KeypadButton<Content: View>: View {
 struct RoundRectButton<Content: View>: View {
     let action: () -> Void
     let content: () -> Content
-    
+
     init(_ action: @escaping () -> Void, @ViewBuilder content: @escaping () -> Content) {
         self.action = action
         self.content = content
     }
-    
+
     var body: some View {
         Button {
             action()
@@ -2163,12 +2125,12 @@ struct RoundRectButton<Content: View>: View {
 struct RoundRectVStack<Content: View>: View {
     let color: Color
     let content: () -> Content
-    
+
     init(_ color: Color, @ViewBuilder content: @escaping () -> Content) {
         self.color = color
         self.content = content
     }
-    
+
     var body: some View {
         VStack {
             content()
@@ -2188,16 +2150,15 @@ struct RoundRectVStack<Content: View>: View {
 
 struct FixedSpacer: View {
     private var maxLength: CGFloat = 0
-    
+
     init(maxLength: CGFloat) {
         self.maxLength = maxLength
     }
-    
+
     var body: some View {
         if hasSmallScreen && isPortrait {
             Spacer()
-        }
-        else {
+        } else {
             VStack {}
                 .frame(width: maxLength, height: maxLength)
         }
@@ -2257,13 +2218,13 @@ extension Text {
             )
             .font(.titleFont)
     }
-    
+
     func withReportStyle() -> some View {
         return (hasSmallScreen && isLandscape) ?
             self.frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 2) :
             self.frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 20)
     }
-    
+
     func withMessageStyle() -> some View {
         self.frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -2290,7 +2251,7 @@ extension VStack {
             .shadow(radius: 5)
             .padding(15)
     }
-    
+
     func withTappableStyle(_ game: Game) -> some View {
         self.contentShape(Rectangle())
             .onTapGesture {
