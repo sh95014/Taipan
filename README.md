@@ -16,7 +16,7 @@ I'm a beginner at Swift and SwiftUI, so all feedback are welcome. There's a lot 
 
 ## Legal
 
-The strings in the game, and possibly the general game mechanics, almost certainly still remain under copyright protection. Since the original software had long since left the market, I don't believe this harms the commercial interests of the copyright holder.
+The strings in the game, and possibly the general game mechanics, are almost certainly still remain under copyright protection. Since the original software had long since left the market, I don't believe this harms the commercial interests of the copyright holder.
 
 The formulas are mostly based on the [Cymon's Games version](https://github.com/cymonsgames/CymonsGames/tree/master/taipan) by [Jay Link](jlink@gmail.com) of https://taipangame.com.
 
