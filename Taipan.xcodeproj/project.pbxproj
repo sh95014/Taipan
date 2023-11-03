@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		975B15082AF49CCB00A40D76 /* TaipanMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 975B15062AF49CCB00A40D76 /* TaipanMono.ttf */; };
+		975B15092AF49CCB00A40D76 /* TaipanMono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 975B15062AF49CCB00A40D76 /* TaipanMono.ttf */; };
+		975B150A2AF49CCB00A40D76 /* Taipan.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 975B15072AF49CCB00A40D76 /* Taipan.ttf */; };
+		975B150B2AF49CCB00A40D76 /* Taipan.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 975B15072AF49CCB00A40D76 /* Taipan.ttf */; };
 		B0376A6129DCB846009C7E6B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B0376A6429DCB846009C7E6B /* Localizable.strings */; };
 		B0376A6229DCB846009C7E6B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B0376A6429DCB846009C7E6B /* Localizable.strings */; };
 		B0376A6C29DE7354009C7E6B /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = B0376A6F29DE7354009C7E6B /* Localizable.stringsdict */; };
@@ -25,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		975B15062AF49CCB00A40D76 /* TaipanMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = TaipanMono.ttf; sourceTree = "<group>"; };
+		975B15072AF49CCB00A40D76 /* Taipan.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Taipan.ttf; sourceTree = "<group>"; };
 		B0376A6329DCB846009C7E6B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B0376A6529DCB960009C7E6B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		B0376A6E29DE7354009C7E6B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -61,6 +67,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		975B15052AF49C6800A40D76 /* TaipanFont */ = {
+			isa = PBXGroup;
+			children = (
+				975B15072AF49CCB00A40D76 /* Taipan.ttf */,
+				975B15062AF49CCB00A40D76 /* TaipanMono.ttf */,
+			);
+			path = TaipanFont;
+			sourceTree = "<group>";
+		};
 		B036B56028075A4200245D0A /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -99,6 +114,7 @@
 				B0376A6F29DE7354009C7E6B /* Localizable.stringsdict */,
 				B092378F27F10F140017C21D /* Morris Roman */,
 				B0376A7D29DFB79C009C7E6B /* cwTeX */,
+				975B15052AF49C6800A40D76 /* TaipanFont */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -212,8 +228,10 @@
 			files = (
 				B092379727F10F2E0017C21D /* MorrisRoman-Black.ttf in Resources */,
 				B0376A6C29DE7354009C7E6B /* Localizable.stringsdict in Resources */,
+				975B15082AF49CCB00A40D76 /* TaipanMono.ttf in Resources */,
 				B0376A8329DFBBD9009C7E6B /* cwTeXQFangsong-Medium.ttf in Resources */,
 				B0376A6129DCB846009C7E6B /* Localizable.strings in Resources */,
+				975B150A2AF49CCB00A40D76 /* Taipan.ttf in Resources */,
 				B092377827F0EE7B0017C21D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -224,8 +242,10 @@
 			files = (
 				B092379827F10F2E0017C21D /* MorrisRoman-Black.ttf in Resources */,
 				B0376A6D29DE7354009C7E6B /* Localizable.stringsdict in Resources */,
+				975B15092AF49CCB00A40D76 /* TaipanMono.ttf in Resources */,
 				B0376A6229DCB846009C7E6B /* Localizable.strings in Resources */,
 				B092377927F0EE7B0017C21D /* Assets.xcassets in Resources */,
+				975B150B2AF49CCB00A40D76 /* Taipan.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
