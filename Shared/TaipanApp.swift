@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+enum Theme: String {
+    case classic, modern
+}
+
+var taipanTheme = Theme(rawValue: UserDefaults.standard.string(forKey: "theme") ?? "") ?? .modern
+
 @main
 struct TaipanApp: App {
     @StateObject var game = Game()

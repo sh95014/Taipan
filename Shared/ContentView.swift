@@ -53,6 +53,31 @@ struct SplashView: View {
                     Text("Created by: Art Canfil")
                         .transition(.opacity.animation(.easeIn(duration: 1).delay(1.5)))
                     Spacer()
+                    if !Bundle.main.preferredLocalizations[0].hasPrefix("zh") {
+                        HStack {
+                            RoundRectButton {
+                                taipanTheme = .modern
+                                UserDefaults.standard.setValue(taipanTheme.rawValue, forKey: "theme")
+                                game.sendEvent(.tap)
+                            } content: {
+                                Text("Modern")
+                                    .font(Font.custom(Font.modernFontName, size: hasSmallScreen ? 22 : 28))
+                                    .frame(height: 28)
+                            }
+                            .keyboardShortcut("m", modifiers: [])
+                            
+                            RoundRectButton {
+                                taipanTheme = .classic
+                                UserDefaults.standard.setValue(taipanTheme.rawValue, forKey: "theme")
+                                game.sendEvent(.tap)
+                            } content: {
+                                Text("Classic")
+                                    .font(Font.custom(Font.classicFontName, size: hasSmallScreen ? 16 : 20))
+                                    .frame(height: 28)
+                            }
+                            .keyboardShortcut("c", modifiers: [])
+                        }
+                    }
                 }
             }
             .withTappableStyle(game)
@@ -287,7 +312,7 @@ struct TradingView: View {
 
     var actions: some View {
         Group {
-            let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
+            let wideButtons = (sizeCategory > .large || hasLargeScreen || isLandscapePhone) && taipanTheme == .modern
             RoundRectButton {
                 isShowingBuyModal = true
             } content: {
@@ -2169,21 +2194,36 @@ struct FixedSpacer: View {
 
 extension Color {
     static let warningColor = Color.red
-    static let taipanColor = Color("ForegroundColor")
+    static var taipanColor: Color { Color(taipanTheme == .modern ? "ModernForegroundColor" : "ClassicForegroundColor") }
     static let taipanBackgroundColor = Color("BackgroundColor")
     static let taipanSheetColor = Color("SheetColor")
 }
 
 extension Font {
-    #if os(iOS)
-    static let taipanFont = Bundle.main.preferredLocalizations[0].hasPrefix("zh") ? "cwTeX Q Fangsong" : "MorrisRoman-Black"
-    #else
-    static let taipanFont = Bundle.main.preferredLocalizations[0].hasPrefix("zh") ? "STFangsong" : "MorrisRoman-Black"
-    #endif
-    static let titleFont = Font.custom(taipanFont, size: hasSmallScreen ? 30 : 40)
-    static let keypadDigitFont = Font.custom(taipanFont, size: hasSmallScreen ? 26 : 39)
-    static let bodyFont = Font.custom(taipanFont, size: hasSmallScreen ? 22 : 28)
-    static let captionFont = Font.custom(taipanFont, size: hasSmallScreen ? 16 : 20)
+    static let classicFontName = "Taipan"
+    static let modernFontName = "MorrisRoman-Black"
+    static var taipanFontName: String {
+        if Bundle.main.preferredLocalizations[0].hasPrefix("zh") {
+            #if os(iOS)
+                return "cwTeX Q Fangsong"
+            #else
+                return "STFangsong"
+            #endif
+        }
+        else {
+            switch taipanTheme {
+            case .modern:
+                return modernFontName
+            case .classic:
+                return classicFontName
+            }
+        }
+    }
+    
+    static var titleFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 30 : 40) }
+    static var keypadDigitFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 26 : 39) }
+    static var bodyFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 22 : 28) }
+    static var captionFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 16 : 20) }
 }
 
 struct LeadingLabelStyle: LabelStyle {
