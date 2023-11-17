@@ -312,7 +312,7 @@ struct TradingView: View {
 
     var actions: some View {
         Group {
-            let wideButtons = (sizeCategory > .large || hasLargeScreen || isLandscapePhone) && taipanTheme == .modern
+            let wideButtons = sizeCategory > .large || hasLargeScreen || isLandscapePhone
             RoundRectButton {
                 isShowingBuyModal = true
             } content: {
@@ -2222,8 +2222,28 @@ extension Font {
     
     static var titleFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 30 : 40) }
     static var keypadDigitFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 26 : 39) }
-    static var bodyFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 22 : 28) }
-    static var captionFont: Font { Font.custom(taipanFontName, size: hasSmallScreen ? 16 : 20) }
+    static var bodyFont: Font {
+        let size: CGFloat = {
+            switch taipanTheme {
+            case .modern:
+                return hasSmallScreen ? 22 : 28
+            case .classic:
+                return hasSmallScreen ? 12 : 24
+            }
+        }()
+        return Font.custom(taipanFontName, size: size)
+    }
+    static var captionFont: Font {
+        let size: CGFloat = {
+            switch taipanTheme {
+            case .modern:
+                return hasSmallScreen ? 16 : 20
+            case .classic:
+                return hasSmallScreen ? 8 : 16
+            }
+        }()
+        return Font.custom(taipanFontName, size: size)
+    }
 }
 
 struct LeadingLabelStyle: LabelStyle {
